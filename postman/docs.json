@@ -1,0 +1,1525 @@
+{
+  "info": {
+    "_postman_id": "b9c8215d-b04b-4d8c-bef9-cc76924ab4c5",
+    "name": "E-Polyclinics API",
+    "description": "API collection for the E-Polyclinics online medical consultation platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "28198332"
+  },
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?role=doctor&isActive=true&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "doctor",
+                  "description": "Filter by role (patient, doctor, admin)"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "description": "Filter by active status"
+                },
+                {
+                  "key": "isVerified",
+                  "value": "true",
+                  "description": "Filter by verification status",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "John",
+                  "description": "Search by name, email, or phone",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Results per page"
+                }
+              ]
+            },
+            "description": "Get all users with pagination and filtering (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"isActive\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/:id/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", ":id", "status"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "user_id_here"
+                }
+              ]
+            },
+            "description": "Activate/deactivate user account (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"isVerified\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/:id/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", ":id", "verify"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "user_id_here"
+                }
+              ]
+            },
+            "description": "Manually verify a user (useful for doctors verification)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "dashboard"]
+            },
+            "description": "Get dashboard statistics for admin panel"
+          },
+          "response": []
+        },
+        {
+          "name": "Get System Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/system-health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "system-health"]
+            },
+            "description": "Get system health status (MongoDB, Redis, etc.)"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Specialization",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Dermatology\",\n    \"description\": \"Specialists in skin disorders and treatments\",\n    \"icon\": \"fa-user-md\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/specializations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "specializations"]
+            },
+            "description": "Create a new medical specializations"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI Assistant",
+      "item": [
+        {
+          "name": "Chat with Assistant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"message\": \"What are the symptoms of the flu?\",\n    \"userId\": \"user_id_here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/assistant/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assistant", "chat"]
+            },
+            "description": "Chat with the medical assistant"
+          },
+          "response": []
+        },
+        {
+          "name": "Clear Conversation History",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/assistant/conversation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assistant", "conversation"]
+            },
+            "description": "Clear conversation history with the assistant"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Health Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/assistant/health/:topic",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assistant", "health", ":topic"],
+              "variable": [
+                {
+                  "key": "topic",
+                  "value": "diabetes"
+                }
+              ]
+            },
+            "description": "Get health information about a specific topic"
+          },
+          "response": []
+        },
+        {
+          "name": "Check Symptoms",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"symptoms\": [\"headache\", \"fever\", \"cough\"],\n    \"userId\": \"user_id_here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/assistant/symptoms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assistant", "symptoms"]
+            },
+            "description": "Check symptoms (basic guidance only)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Create Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"patientId\": \"patient_id_here\",\n    \"doctorId\": \"doctor_id_here\",\n    \"dateTime\": \"2025-01-30T14:00:00.000Z\",\n    \"type\": \"video\",\n    \"reasonForVisit\": \"Regular check-up\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments"]
+            },
+            "description": "Create a new appointment"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Patient Appointments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/patient/:patientId?status=scheduled&limit=10&skip=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments", "patient", ":patientId"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "scheduled",
+                  "description": "Filter by status (scheduled, completed, canceled, no-show)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Results per page"
+                },
+                {
+                  "key": "skip",
+                  "value": "0",
+                  "description": "Number of results to skip (for pagination)"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "patientId",
+                  "value": "patient_id_here"
+                }
+              ]
+            },
+            "description": "Get all appointments for a patient"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Doctor Appointments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/doctor/:doctorId?status=scheduled&date=2025-01-30&limit=10&skip=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments", "doctor", ":doctorId"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "scheduled",
+                  "description": "Filter by status (scheduled, completed, canceled, no-show)"
+                },
+                {
+                  "key": "date",
+                  "value": "2025-01-30",
+                  "description": "Filter by date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Results per page"
+                },
+                {
+                  "key": "skip",
+                  "value": "0",
+                  "description": "Number of results to skip (for pagination)"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "doctorId",
+                  "value": "doctor_id_here"
+                }
+              ]
+            },
+            "description": "Get all appointments for a doctor"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Appointment By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "appointment_id_here"
+                }
+              ]
+            },
+            "description": "Get a specific appointment by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Appointment Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"completed\",\n    \"consultationSummary\": \"Patient was examined and found to be in good health.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/:id/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments", ":id", "status"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "appointment_id_here"
+                }
+              ]
+            },
+            "description": "Update appointment status"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Prescriptions",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"prescriptions\": [\n        {\n            \"medication\": \"Paracetamol\",\n            \"dosage\": \"500mg\",\n            \"frequency\": \"Twice daily\",\n            \"duration\": \"5 days\",\n            \"instructions\": \"Take after meals\"\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/:id/prescriptions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments", ":id", "prescriptions"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "appointment_id_here"
+                }
+              ]
+            },
+            "description": "Add/update prescriptions for an appointment"
+          },
+          "response": []
+        },
+        {
+          "name": "Schedule Follow-up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"followUpDate\": \"2025-02-15T14:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/:id/follow-up",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments", ":id", "follow-up"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "appointment_id_here"
+                }
+              ]
+            },
+            "description": "Schedule a follow-up appointment"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Doctor Availability",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/availability/:doctorId?date=2025-01-30",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments", "availability", ":doctorId"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2025-01-30",
+                  "description": "Date for availability (YYYY-MM-DD)"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "doctorId",
+                  "value": "doctor_id_here"
+                }
+              ]
+            },
+            "description": "Get doctor's availability slots"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Patient User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"patient@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+998901234567\",\n    \"role\": \"patient\",\n    \"dateOfBirth\": \"1990-01-01\",\n    \"gender\": \"male\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "register"]
+            },
+            "description": "Register a new user (patient or doctor)"
+          },
+          "response": []
+        },
+        {
+          "name": "Register Doctor User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"patient@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+998901234567\",\n    \"role\": \"patient\",\n    \"dateOfBirth\": \"1990-01-01\",\n    \"gender\": \"male\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "register"]
+            },
+            "description": "Register a new user (patient or doctor)"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/verify/:token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "verify", ":token"],
+              "variable": [
+                {
+                  "key": "token",
+                  "value": "verification_token_here"
+                }
+              ]
+            },
+            "description": "Verify user email with token sent to email"
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "login"]
+            },
+            "description": "Login and get authentication token"
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "forgot-password"]
+            },
+            "description": "Request a password reset link"
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"password\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/reset-password/:token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "reset-password", ":token"],
+              "variable": [
+                {
+                  "key": "token",
+                  "value": "reset_token_here"
+                }
+              ]
+            },
+            "description": "Reset password with token sent to email"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Consultations",
+      "item": [
+        {
+          "name": "Join Consultation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/consultations/:appointmentId/join",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "consultations", ":appointmentId", "join"],
+              "variable": [
+                {
+                  "key": "appointmentId",
+                  "value": "appointment_id_here"
+                }
+              ]
+            },
+            "description": "Join a video/audio consultation session for an appointment"
+          },
+          "response": []
+        },
+        {
+          "name": "End Consultation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"consultationSummary\": \"Patient reported headaches. Recommended rest and hydration.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/consultations/:appointmentId/end",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "consultations", ":appointmentId", "end"],
+              "variable": [
+                {
+                  "key": "appointmentId",
+                  "value": "appointment_id_here"
+                }
+              ]
+            },
+            "description": "End a consultation session (doctor only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Consultation Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/consultations/:appointmentId/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "consultations", ":appointmentId", "status"],
+              "variable": [
+                {
+                  "key": "appointmentId",
+                  "value": "appointment_id_here"
+                }
+              ]
+            },
+            "description": "Check if a consultation session is active"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Checkout Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"appointmentId\": \"appointment_id_here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/create-checkout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "create-checkout"]
+            },
+            "description": "Create a Stripe checkout session for payment"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "payment_id_here"
+                }
+              ]
+            },
+            "description": "Get payment details by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Session Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/session/:sessionId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "session", ":sessionId"],
+              "variable": [
+                {
+                  "key": "sessionId",
+                  "value": "stripe_session_id_here"
+                }
+              ]
+            },
+            "description": "Verify payment session status (for redirect after payment)"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Invoice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/:paymentId/generate-invoice",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", ":paymentId", "generate-invoice"],
+              "variable": [
+                {
+                  "key": "paymentId",
+                  "value": "payment_id_here"
+                }
+              ]
+            },
+            "description": "Generate an invoice for a completed payment"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Patient Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/patient/:patientId?status=succeeded&limit=10&skip=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "patient", ":patientId"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "succeeded",
+                  "description": "Filter by status (pending, succeeded, failed, canceled)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Results per page"
+                },
+                {
+                  "key": "skip",
+                  "value": "0",
+                  "description": "Number of results to skip (for pagination)"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "patientId",
+                  "value": "patient_id_here"
+                }
+              ]
+            },
+            "description": "Get all payments for a patient"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Doctor Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/doctor/:doctorId?status=succeeded&limit=10&skip=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "doctor", ":doctorId"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "succeeded",
+                  "description": "Filter by status (pending, succeeded, failed, canceled)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Results per page"
+                },
+                {
+                  "key": "skip",
+                  "value": "0",
+                  "description": "Number of results to skip (for pagination)"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "doctorId",
+                  "value": "doctor_id_here"
+                }
+              ]
+            },
+            "description": "Get all payments for a doctor"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"appointmentId\": \"appointment_id_here\",\n    \"rating\": 5,\n    \"comment\": \"Excellent consultation. Doctor was very knowledgeable and helpful.\",\n    \"communicationRating\": 5,\n    \"professionalismRating\": 5,\n    \"satisfactionRating\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"]
+            },
+            "description": "Create a review for a completed appointment"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Doctor Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews/doctor/:doctorId?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews", "doctor", ":doctorId"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "doctorId",
+                  "value": "doctor_id_here"
+                }
+              ]
+            },
+            "description": "Get reviews for a specific doctor"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Doctor Rating Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews/doctor/:doctorId/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews", "doctor", ":doctorId", "summary"],
+              "variable": [
+                {
+                  "key": "doctorId",
+                  "value": "doctor_id_here"
+                }
+              ]
+            },
+            "description": "Get summary of a doctor's ratings"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Doctor Response",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"response\": \"Thank you for your feedback. I'm glad I could help.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews/:reviewId/respond",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews", ":reviewId", "respond"],
+              "variable": [
+                {
+                  "key": "reviewId",
+                  "value": "review_id_here"
+                }
+              ]
+            },
+            "description": "Add doctor's response to a review"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Specializations",
+      "item": [
+        {
+          "name": "Get All Active Specializations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/specializations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "specializations"
+              ]
+            },
+            "description": "Get all active medical specializations"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Specialization by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/specializations/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "specializations",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "specialization_id_here"
+                }
+              ]
+            },
+            "description": "Get a specific specializations by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Doctors by Specialization",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/specializations/:id/doctors?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "specializations",
+                ":id",
+                "doctors"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Results per page"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "specialization_id_here"
+                }
+              ]
+            },
+            "description": "Get doctors for a specific specializations"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            },
+            "description": "API health check"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Telegram Integration",
+      "item": [
+        {
+          "name": "Telegram Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"update_id\": 123456789,\n    \"message\": {\n        \"message_id\": 123,\n        \"from\": {\n            \"id\": 987654321,\n            \"first_name\": \"User\",\n            \"username\": \"username\"\n        },\n        \"chat\": {\n            \"id\": 987654321,\n            \"first_name\": \"User\",\n            \"username\": \"username\",\n            \"type\": \"private\"\n        },\n        \"date\": 1642789123,\n        \"text\": \"/start\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/telegram/webhook/:secret",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "telegram", "webhook", ":secret"],
+              "variable": [
+                {
+                  "key": "secret",
+                  "value": "your_webhook_secret_here"
+                }
+              ]
+            },
+            "description": "Webhook endpoint for Telegram updates"
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Verification Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"telegramChatId\": 987654321\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/telegram/verification",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "telegram", "verification"]
+            },
+            "description": "Generate a verification code to link Telegram account"
+          },
+          "response": []
+        },
+        {
+          "name": "Send Telegram Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{telegramApiKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": \"user_id_here\",\n    \"message\": \"Your appointment is scheduled for tomorrow at 2:00 PM.\",\n    \"parseMode\": \"HTML\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/telegram/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "telegram", "send"]
+            },
+            "description": "Send a message to a user via Telegram"
+          },
+          "response": []
+        },
+        {
+          "name": "Telegram Bot Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/telegram/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "telegram", "status"]
+            },
+            "description": "Check Telegram bot status"
+          },
+          "response": []
+        }
+      ]
+    },
+    
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            },
+            "description": "Get current user profile"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Smith\",\n    \"phone\": \"+998901234567\",\n    \"address\": {\n        \"city\": \"Tashkent\",\n        \"street\": \"Example Street\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            },
+            "description": "Update current user profile"
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"currentPassword\": \"OldPassword123!\",\n    \"newPassword\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "change-password"]
+            },
+            "description": "Change user password"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Doctors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/doctors?specializations=Cardiology&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "doctors"],
+              "query": [
+                {
+                  "key": "specializations",
+                  "value": "Cardiology",
+                  "description": "Filter by specializations"
+                },
+                {
+                  "key": "name",
+                  "value": "Smith",
+                  "description": "Search by name",
+                  "disabled": true
+                },
+                {
+                  "key": "city",
+                  "value": "Tashkent",
+                  "description": "Filter by city",
+                  "disabled": true
+                },
+                {
+                  "key": "availableDay",
+                  "value": "1",
+                  "description": "Filter by availability day (0=Sunday, 1=Monday)",
+                  "disabled": true
+                },
+                {
+                  "key": "minExperience",
+                  "value": "5",
+                  "description": "Minimum years of experience",
+                  "disabled": true
+                },
+                {
+                  "key": "maxFee",
+                  "value": "100000",
+                  "description": "Maximum consultation fee",
+                  "disabled": true
+                },
+                {
+                  "key": "language",
+                  "value": "Russian",
+                  "description": "Filter by language spoken",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Results per page"
+                }
+              ]
+            },
+            "description": "Get all doctors with optional filters"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Doctor By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/doctors/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "doctors", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "doctor_id_here"
+                }
+              ]
+            },
+            "description": "Get doctor by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Link Telegram Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"telegramId\": \"telegram_chat_id\",\n    \"verificationCode\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/link-telegram",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "link-telegram"]
+            },
+            "description": "Link user account to Telegram"
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "deactivate"]
+            },
+            "description": "Deactivate user account"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": "your_jwt_token_here"
+    },
+    {
+      "key": "telegramApiKey",
+      "value": "your_telegram_api_key_here"
+    }
+  ]
+}

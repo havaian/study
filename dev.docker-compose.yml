@@ -1,0 +1,209 @@
+version: '3.8'
+
+services:
+  # MongoDB service
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "${MONGODB_EXPOSE}:${MONGODB_PORT}"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - polyclinic_net
+    command: mongod --port ${MONGODB_PORT}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--port", "${MONGODB_PORT}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Redis service for caching
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "${REDIS_EXPOSE}:${REDIS_PORT}"
+    volumes:
+      - redis_data:/data
+    command: --port ${REDIS_PORT}
+    networks:
+      - polyclinic_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "${REDIS_PORT}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  # RabbitMQ for message broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "${RABBITMQ_EXPOSE_1}:${RABBITMQ_PORT_1}"
+      - "${RABBITMQ_EXPOSE_2}:${RABBITMQ_PORT_2}"
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq/main.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      - polyclinic_net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  # Backend API service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: polyclinic_backend
+    restart: always
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=development
+      # - NODE_ENV=production
+      - PORT=3000
+      - MONGO_URI=mongodb://mongodb:${MONGODB_PORT}/${MONGO_DATABASE}
+      - REDIS_URI=redis://redis:${REDIS_PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - RABBITMQ_URI=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT_1}
+      - FRONTEND_URL=${PROJECT_URL}
+      - API_URL=${PROJECT_URL}/api
+    env_file:
+      - ./.env
+    ports:
+      - "${BACKEND_EXPOSE}:${BACKEND_PORT}"
+    volumes:
+      - backend_logs:/usr/src/app/logs
+    networks:
+      - polyclinic_net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${BACKEND_PORT}/api/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Frontend service (development)
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: polyclinic_frontend_dev
+    restart: always
+    depends_on:
+      backend:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    environment:
+      - VUE_APP_API_URL=/api
+      - VUE_APP_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+    ports:
+      - "${FRONTEND_EXPOSE}:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - polyclinic_net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  # Monitoring with Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "${PROMETHEUS_EXPOSE}:${PROMETHEUS_PORT}"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - polyclinic_net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Visualization with Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "${GRAFANA_EXPOSE}:${GRAFANA_PORT}"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    networks:
+      - polyclinic_net
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Loki for log aggregation
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    restart: always
+    ports:
+      - "${LOKI_EXPOSE}:${LOKI_PORT}"
+    volumes:
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - polyclinic_net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  mongodb_data:
+  redis_data:
+  rabbitmq_data:
+  backend_logs:
+  frontend_logs:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  nginx_logs:
+
+networks:
+  polyclinic_net:
+    driver: bridge
