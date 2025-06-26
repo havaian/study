@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b9c8215d-b04b-4d8c-bef9-cc76924ab4c5",
     "name": "Online-study API",
-    "description": "API collection for the Online-study online medical consultation platform",
+    "description": "API collection for the Online-study online educational lesson platform",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "28198332"
   },
@@ -190,7 +190,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "admin", "specializations"]
             },
-            "description": "Create a new medical specializations"
+            "description": "Create a new educational specializations"
           },
           "response": []
         }
@@ -218,7 +218,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "assistant", "chat"]
             },
-            "description": "Chat with the medical assistant"
+            "description": "Chat with the educational assistant"
           },
           "response": []
         },
@@ -247,7 +247,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/assistant/health/:topic",
+              "raw": "{{baseUrl}}/api/assistant/performance/:topic",
               "host": ["{{baseUrl}}"],
               "path": ["api", "assistant", "health", ":topic"],
               "variable": [
@@ -317,7 +317,7 @@
           "response": []
         },
         {
-          "name": "Get Patient Appointments",
+          "name": "Get Student Appointments",
           "request": {
             "method": "GET",
             "header": [
@@ -359,7 +359,7 @@
           "response": []
         },
         {
-          "name": "Get Doctor Appointments",
+          "name": "Get Teacher Appointments",
           "request": {
             "method": "GET",
             "header": [
@@ -446,7 +446,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"status\": \"completed\",\n    \"consultationSummary\": \"Patient was examined and found to be in good health.\"\n}"
+              "raw": "{\n    \"status\": \"completed\",\n    \"lessonSummary\": \"Student was examined and found to be in good health.\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/appointments/:id/status",
@@ -464,7 +464,7 @@
           "response": []
         },
         {
-          "name": "Update Prescriptions",
+          "name": "Update Homeworks",
           "request": {
             "method": "PATCH",
             "header": [
@@ -479,12 +479,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"prescriptions\": [\n        {\n            \"medication\": \"Paracetamol\",\n            \"dosage\": \"500mg\",\n            \"frequency\": \"Twice daily\",\n            \"duration\": \"5 days\",\n            \"instructions\": \"Take after meals\"\n        }\n    ]\n}"
+              "raw": "{\n    \"homeworks\": [\n        {\n            \"medication\": \"Paracetamol\",\n            \"dosage\": \"500mg\",\n            \"frequency\": \"Twice daily\",\n            \"duration\": \"5 days\",\n            \"instructions\": \"Take after meals\"\n        }\n    ]\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/appointments/:id/prescriptions",
+              "raw": "{{baseUrl}}/api/appointments/:id/homeworks",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "appointments", ":id", "prescriptions"],
+              "path": ["api", "appointments", ":id", "homeworks"],
               "variable": [
                 {
                   "key": "id",
@@ -492,7 +492,7 @@
                 }
               ]
             },
-            "description": "Add/update prescriptions for an appointment"
+            "description": "Add/update homeworks for an appointment"
           },
           "response": []
         },
@@ -530,7 +530,7 @@
           "response": []
         },
         {
-          "name": "Get Doctor Availability",
+          "name": "Get Teacher Availability",
           "request": {
             "method": "GET",
             "header": [],
@@ -562,7 +562,7 @@
       "name": "Authentication",
       "item": [
         {
-          "name": "Register Patient User",
+          "name": "Register Student User",
           "request": {
             "method": "POST",
             "header": [
@@ -585,7 +585,7 @@
           "response": []
         },
         {
-          "name": "Register Doctor User",
+          "name": "Register Teacher User",
           "request": {
             "method": "POST",
             "header": [
@@ -705,10 +705,10 @@
       ]
     },
     {
-      "name": "Consultations",
+      "name": "Lessons",
       "item": [
         {
-          "name": "Join Consultation",
+          "name": "Join Lesson",
           "request": {
             "method": "GET",
             "header": [
@@ -718,9 +718,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/consultations/:appointmentId/join",
+              "raw": "{{baseUrl}}/api/lessons/:appointmentId/join",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "consultations", ":appointmentId", "join"],
+              "path": ["api", "lessons", ":appointmentId", "join"],
               "variable": [
                 {
                   "key": "appointmentId",
@@ -728,12 +728,12 @@
                 }
               ]
             },
-            "description": "Join a video/audio consultation session for an appointment"
+            "description": "Join a video/audio lesson session for an appointment"
           },
           "response": []
         },
         {
-          "name": "End Consultation",
+          "name": "End Lesson",
           "request": {
             "method": "POST",
             "header": [
@@ -748,12 +748,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"consultationSummary\": \"Patient reported headaches. Recommended rest and hydration.\"\n}"
+              "raw": "{\n    \"lessonSummary\": \"Student reported headaches. Recommended rest and hydration.\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/consultations/:appointmentId/end",
+              "raw": "{{baseUrl}}/api/lessons/:appointmentId/end",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "consultations", ":appointmentId", "end"],
+              "path": ["api", "lessons", ":appointmentId", "end"],
               "variable": [
                 {
                   "key": "appointmentId",
@@ -761,12 +761,12 @@
                 }
               ]
             },
-            "description": "End a consultation session (teacher only)"
+            "description": "End a lesson session (teacher only)"
           },
           "response": []
         },
         {
-          "name": "Get Consultation Status",
+          "name": "Get Lesson Status",
           "request": {
             "method": "GET",
             "header": [
@@ -776,9 +776,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/consultations/:appointmentId/status",
+              "raw": "{{baseUrl}}/api/lessons/:appointmentId/status",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "consultations", ":appointmentId", "status"],
+              "path": ["api", "lessons", ":appointmentId", "status"],
               "variable": [
                 {
                   "key": "appointmentId",
@@ -786,7 +786,7 @@
                 }
               ]
             },
-            "description": "Check if a consultation session is active"
+            "description": "Check if a lesson session is active"
           },
           "response": []
         }
@@ -893,7 +893,7 @@
           "response": []
         },
         {
-          "name": "Get Patient Payments",
+          "name": "Get Student Payments",
           "request": {
             "method": "GET",
             "header": [
@@ -935,7 +935,7 @@
           "response": []
         },
         {
-          "name": "Get Doctor Payments",
+          "name": "Get Teacher Payments",
           "request": {
             "method": "GET",
             "header": [
@@ -997,7 +997,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"appointmentId\": \"appointment_id_here\",\n    \"rating\": 5,\n    \"comment\": \"Excellent consultation. Doctor was very knowledgeable and helpful.\",\n    \"communicationRating\": 5,\n    \"professionalismRating\": 5,\n    \"satisfactionRating\": 5\n}"
+              "raw": "{\n    \"appointmentId\": \"appointment_id_here\",\n    \"rating\": 5,\n    \"comment\": \"Excellent lesson. Teacher was very knowledgeable and helpful.\",\n    \"communicationRating\": 5,\n    \"professionalismRating\": 5,\n    \"satisfactionRating\": 5\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/reviews",
@@ -1009,7 +1009,7 @@
           "response": []
         },
         {
-          "name": "Get Doctor Reviews",
+          "name": "Get Teacher Reviews",
           "request": {
             "method": "GET",
             "header": [],
@@ -1039,7 +1039,7 @@
           "response": []
         },
         {
-          "name": "Get Doctor Rating Summary",
+          "name": "Get Teacher Rating Summary",
           "request": {
             "method": "GET",
             "header": [],
@@ -1059,7 +1059,7 @@
           "response": []
         },
         {
-          "name": "Add Doctor Response",
+          "name": "Add Teacher Response",
           "request": {
             "method": "POST",
             "header": [
@@ -1111,7 +1111,7 @@
                 "specializations"
               ]
             },
-            "description": "Get all active medical specializations"
+            "description": "Get all active educational specializations"
           },
           "response": []
         },
@@ -1142,7 +1142,7 @@
           "response": []
         },
         {
-          "name": "Get Doctors by Specialization",
+          "name": "Get Teachers by Specialization",
           "request": {
             "method": "GET",
             "header": [],
@@ -1377,7 +1377,7 @@
           "response": []
         },
         {
-          "name": "Get All Doctors",
+          "name": "Get All Teachers",
           "request": {
             "method": "GET",
             "header": [],
@@ -1418,7 +1418,7 @@
                 {
                   "key": "maxFee",
                   "value": "100000",
-                  "description": "Maximum consultation fee",
+                  "description": "Maximum lesson fee",
                   "disabled": true
                 },
                 {
@@ -1444,7 +1444,7 @@
           "response": []
         },
         {
-          "name": "Get Doctor By ID",
+          "name": "Get Teacher By ID",
           "request": {
             "method": "GET",
             "header": [],

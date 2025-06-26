@@ -13,7 +13,7 @@ exports.getActiveSpecializations = async (req, res) => {
             .select('name description icon');
 
         // Get count of active teachers for each specializations
-        const specializationsWithDoctorCount = await Promise.all(
+        const specializationsWithTeacherCount = await Promise.all(
             specializations.map(async (spec) => {
                 const teacherCount = await User.countDocuments({
                     role: 'teacher',
@@ -30,7 +30,7 @@ exports.getActiveSpecializations = async (req, res) => {
         );
 
         res.status(200).json({
-            specializations: specializationsWithDoctorCount
+            specializations: specializationsWithTeacherCount
         });
     } catch (error) {
         console.error('Error fetching specializations:', error);
@@ -88,7 +88,7 @@ exports.getSpecializationById = async (req, res) => {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.getDoctorsBySpecialization = async (req, res) => {
+exports.getTeachersBySpecialization = async (req, res) => {
     try {
         const { id } = req.params;
         const { page = 1, limit = 10 } = req.query;
@@ -112,7 +112,7 @@ exports.getDoctorsBySpecialization = async (req, res) => {
             isActive: true,
             isVerified: true
         })
-            .select('firstName lastName profilePicture experience consultationFee bio languages address')
+            .select('firstName lastName profilePicture experience lessonFee bio languages address')
             .skip(skip)
             .limit(parseInt(limit))
             .sort({ experience: -1 });

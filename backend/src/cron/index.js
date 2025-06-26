@@ -1,6 +1,6 @@
 const scheduleAppointmentReminders = require('./appointmentReminders');
 const schedulePaymentExpirationChecks = require('./paymentExpirations');
-const scheduleConsultationTerminator = require('./consultationTerminator');
+const scheduleLessonTerminator = require('./lessonTerminator');
 const scheduleJwtSecretRotation = require('./jwtSecretRotation');
 
 /**
@@ -17,9 +17,9 @@ const initializeCronJobs = () => {
     schedulePaymentExpirationChecks();
     console.log('✅ Payment expiration check job scheduled');
 
-    // Schedule consultation auto-termination
-    scheduleConsultationTerminator();
-    console.log('✅ Consultation auto-termination job scheduled');
+    // Schedule lesson auto-termination
+    scheduleLessonTerminator();
+    console.log('✅ Lesson auto-termination job scheduled');
 
     // Schedule JWT secret rotation
     scheduleJwtSecretRotation();

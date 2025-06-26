@@ -100,7 +100,7 @@ exports.getUserById = async (req, res) => {
         let stats = {};
 
         if (user.role === 'teacher') {
-            // Doctor stats (appointments, ratings, etc.)
+            // Teacher stats (appointments, ratings, etc.)
             const appointmentCount = await Appointment.countDocuments({ teacher: id });
             const completedAppointments = await Appointment.countDocuments({ teacher: id, status: 'completed' });
             const canceledAppointments = await Appointment.countDocuments({ teacher: id, status: 'canceled' });
@@ -112,7 +112,7 @@ exports.getUserById = async (req, res) => {
                 completionRate: appointmentCount > 0 ? (completedAppointments / appointmentCount) * 100 : 0
             };
         } else if (user.role === 'student') {
-            // Patient stats (appointments, payments, etc.)
+            // Student stats (appointments, payments, etc.)
             const appointmentCount = await Appointment.countDocuments({ student: id });
             const completedAppointments = await Appointment.countDocuments({ student: id, status: 'completed' });
             const paymentCount = await Payment.countDocuments({ student: id });
@@ -154,7 +154,7 @@ exports.updateUser = async (req, res) => {
             role,
             specializations,
             experience,
-            consultationFee,
+            lessonFee,
             address,
             bio,
             languages
@@ -177,11 +177,11 @@ exports.updateUser = async (req, res) => {
             user.role = role;
         }
 
-        // Doctor-specific fields
+        // Teacher-specific fields
         if (user.role === 'teacher') {
             if (specializations) user.specializations = specializations;
             if (experience !== undefined) user.experience = experience;
-            if (consultationFee) user.consultationFee = consultationFee;
+            if (lessonFee) user.lessonFee = lessonFee;
             if (bio) user.bio = bio;
             if (languages) user.languages = languages;
         }
@@ -410,7 +410,7 @@ exports.updateAppointment = async (req, res) => {
             type,
             status,
             reasonForVisit,
-            consultationSummary
+            lessonSummary
         } = req.body;
 
         const appointment = await Appointment.findById(id);
@@ -424,7 +424,7 @@ exports.updateAppointment = async (req, res) => {
         if (type) appointment.type = type;
         if (status) appointment.status = status;
         if (reasonForVisit) appointment.reasonForVisit = reasonForVisit;
-        if (consultationSummary) appointment.consultationSummary = consultationSummary;
+        if (lessonSummary) appointment.lessonSummary = lessonSummary;
 
         await appointment.save();
 
@@ -573,8 +573,8 @@ exports.getDashboardStats = async (req, res) => {
 
         // User stats
         const totalUsers = await User.countDocuments();
-        const totalPatients = await User.countDocuments({ role: 'student' });
-        const totalDoctors = await User.countDocuments({ role: 'teacher' });
+        const totalStudents = await User.countDocuments({ role: 'student' });
+        const totalTeachers = await User.countDocuments({ role: 'teacher' });
         const newUsersToday = await User.countDocuments({ createdAt: { $gte: today } });
 
         // Appointment stats
@@ -679,8 +679,8 @@ exports.getDashboardStats = async (req, res) => {
         res.status(200).json({
             users: {
                 total: totalUsers,
-                students: totalPatients,
-                teachers: totalDoctors,
+                students: totalStudents,
+                teachers: totalTeachers,
                 newToday: newUsersToday
             },
             appointments: {
@@ -794,7 +794,7 @@ exports.getSystemHealth = async (req, res) => {
 };
 
 /**
- * Create a new medical specializations
+ * Create a new educational specializations
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */

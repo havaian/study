@@ -70,12 +70,12 @@ const appointmentSchema = new Schema({
     notes: {
         type: String
     },
-    consultationSummary: {
+    lessonSummary: {
         type: String
     },
     // Added chatLog field to store messages
     chatLog: [chatMessageSchema],
-    prescriptions: [{
+    homeworks: [{
         medication: String,
         dosage: String,
         frequency: String,
@@ -161,12 +161,12 @@ appointmentSchema.methods.cancel = function (reason) {
 appointmentSchema.methods.complete = function (summary) {
     this.status = 'completed';
     if (summary) {
-        this.consultationSummary = summary;
+        this.lessonSummary = summary;
     }
     return this.save();
 };
 
-appointmentSchema.methods.confirmDoctor = function () {
+appointmentSchema.methods.confirmTeacher = function () {
     if (this.status === 'pending-teacher-confirmation') {
         this.status = 'scheduled';
     }
@@ -174,7 +174,7 @@ appointmentSchema.methods.confirmDoctor = function () {
 };
 
 // Static methods
-appointmentSchema.statics.findUpcomingForPatient = function (studentId) {
+appointmentSchema.statics.findUpcomingForStudent = function (studentId) {
     return this.find({
         student: studentId,
         dateTime: { $gte: new Date() },
@@ -182,7 +182,7 @@ appointmentSchema.statics.findUpcomingForPatient = function (studentId) {
     }).sort({ dateTime: 1 }).populate('teacher');
 };
 
-appointmentSchema.statics.findUpcomingForDoctor = function (teacherId) {
+appointmentSchema.statics.findUpcomingForTeacher = function (teacherId) {
     return this.find({
         teacher: teacherId,
         dateTime: { $gte: new Date() },
@@ -191,7 +191,7 @@ appointmentSchema.statics.findUpcomingForDoctor = function (teacherId) {
 };
 
 // Add method to find pending-payment follow-ups for a student
-appointmentSchema.statics.findPendingFollowUpsForPatient = function (studentId) {
+appointmentSchema.statics.findPendingFollowUpsForStudent = function (studentId) {
     return this.find({
         student: studentId,
         status: 'pending-payment'
@@ -199,7 +199,7 @@ appointmentSchema.statics.findPendingFollowUpsForPatient = function (studentId) 
 };
 
 // Find appointments pending teacher confirmation
-appointmentSchema.statics.findPendingDoctorConfirmation = function (teacherId) {
+appointmentSchema.statics.findPendingTeacherConfirmation = function (teacherId) {
     return this.find({
         teacher: teacherId,
         status: 'pending-teacher-confirmation',
@@ -208,7 +208,7 @@ appointmentSchema.statics.findPendingDoctorConfirmation = function (teacherId) {
 };
 
 // Find expired teacher confirmation appointments
-appointmentSchema.statics.findExpiredDoctorConfirmation = function () {
+appointmentSchema.statics.findExpiredTeacherConfirmation = function () {
     return this.find({
         status: 'pending-teacher-confirmation',
         teacherConfirmationExpires: { $lte: new Date() }

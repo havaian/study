@@ -1,9 +1,9 @@
-const { MedicalAssistant } = require('./index');
+const { EducationalAssistant } = require('./index');
 const User = require('../user/model');
 const { redisClient } = require('../utils/redisClient');
 
 /**
- * Chat with the medical assistant
+ * Chat with the educational assistant
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
@@ -23,7 +23,7 @@ exports.chatWithAssistant = async (req, res) => {
         }
 
         // Generate response from AI assistant
-        const result = await MedicalAssistant.generateResponse(message, userId, chatId);
+        const result = await EducationalAssistant.generateResponse(message, userId, chatId);
 
         // Create or update chat session
         let sessionId = chatId;
@@ -153,7 +153,7 @@ exports.clearConversationHistory = async (req, res) => {
         }
 
         // Clear conversation history in the AI assistant
-        await MedicalAssistant.clearConversationHistory(userId);
+        await EducationalAssistant.clearConversationHistory(userId);
 
         res.status(200).json({
             success: true,
@@ -170,11 +170,11 @@ exports.clearConversationHistory = async (req, res) => {
 };
 
 /**
- * Get health information about a specific topic
+ * Get academic performance information about a specific topic
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.getHealthInfo = async (req, res) => {
+exports.getPerformanceInfo = async (req, res) => {
     try {
         const { topic } = req.params;
         // Use authenticated user ID if available, otherwise use anonymous
@@ -188,7 +188,7 @@ exports.getHealthInfo = async (req, res) => {
         const message = `Can you provide general information about ${topic}?`;
 
         // Generate response from AI assistant
-        const result = await MedicalAssistant.generateResponse(message, userId);
+        const result = await EducationalAssistant.generateResponse(message, userId);
 
         res.status(200).json({
             topic,
@@ -196,10 +196,10 @@ exports.getHealthInfo = async (req, res) => {
             success: true
         });
     } catch (error) {
-        console.error('Error getting health information:', error);
+        console.error('Error getting academic performance information:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while fetching health information',
+            message: 'An error occurred while fetching academic performance information',
             error: error.message
         });
     }
@@ -228,12 +228,12 @@ exports.checkSymptoms = async (req, res) => {
         const message = `I'm experiencing the following symptoms: ${symptoms.join(', ')}. What could this mean and what should I do?`;
 
         // Generate response from AI assistant
-        const result = await MedicalAssistant.generateResponse(message, userId);
+        const result = await EducationalAssistant.generateResponse(message, userId);
 
         res.status(200).json({
             symptoms,
             guidance: result.reply,
-            disclaimer: 'This information is for educational purposes only and is not a substitute for professional medical advice. Please consult with a qualified healthcare provider for diagnosis and treatment.',
+            disclaimer: 'This information is for educational purposes only and is not a substitute for professional educational advice. Please consult with a qualified education provider for diagnosis and treatment.',
             success: true
         });
     } catch (error) {

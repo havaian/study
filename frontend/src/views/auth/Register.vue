@@ -33,8 +33,8 @@
                     <div>
                         <label for="role" class="label">I am a</label>
                         <select id="role" v-model="formData.role" class="input mt-1" required>
-                            <option value="student">Patient</option>
-                            <option value="teacher">Doctor</option>
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
                         </select>
                     </div>
 
@@ -85,7 +85,7 @@
                                     </button>
                                 </div>
                                 <button type="button" @click="addSpecialization"
-                                    class="text-sm bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-800">
+                                    class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-800">
                                     + Add Specialization
                                 </button>
                             </div>
@@ -104,8 +104,8 @@
                         </div>
 
                         <div>
-                            <label for="consultationFee" class="label">Consultation Fee (UZS)</label>
-                            <input id="consultationFee" v-model.number="formData.consultationFee" type="number" min="0"
+                            <label for="lessonFee" class="label">Lesson Fee (UZS)</label>
+                            <input id="lessonFee" v-model.number="formData.lessonFee" type="number" min="0"
                                 required class="input mt-1" />
                         </div>
 
@@ -145,7 +145,7 @@
 
             <p class="mt-2 text-center text-sm text-gray-600">
                 Already have an account?
-                <router-link to="/login" class="font-medium bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-500">
+                <router-link to="/login" class="font-medium bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-500">
                     Sign in
                 </router-link>
             </p>
@@ -181,7 +181,7 @@ const formData = reactive({
     specializations: [],
     licenseNumber: '',
     experience: 0,
-    consultationFee: 0
+    lessonFee: 0
 })
 
 const registrationSuccess = ref(false)
@@ -238,7 +238,7 @@ async function handleSubmit() {
             delete registrationData.specializations;
             delete registrationData.licenseNumber;
             delete registrationData.experience;
-            delete registrationData.consultationFee;
+            delete registrationData.lessonFee;
             delete registrationData.languages;
         }
 

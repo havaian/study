@@ -1,24 +1,28 @@
 <template>
   <div>
-    <!-- Hero Section with New Medical Design -->
-    <div class="relative min-h-screen medical-gradient overflow-hidden">
-      <!-- Floating Medical Icons -->
+    <!-- Hero Section with New Educational Design -->
+    <div class="relative min-h-screen educational-gradient overflow-hidden">
+      <!-- Floating Educational Icons -->
       <div class="absolute inset-0 overflow-hidden">
-        <div class="absolute top-20 left-10 float-medical opacity-20">
-          <svg class="h-16 w-16 text-medical-blue" fill="currentColor" viewBox="0 0 24 24">
-            <path
-              d="M19 8h-2v3h-3v2h3v3h2v-3h3v-2h-3V8zM4 6h5v2h2V6h2V4h-2V1H9v3H4c-1.1 0-2 .9-2 2v15c0 1.1.9 2 2 2h8.31c-.37-.64-.62-1.37-.78-2.16H4V6z" />
-          </svg>
-        </div>
-        <div class="absolute top-32 right-20 float-medical opacity-15" style="animation-delay: -1s;">
-          <svg class="h-20 w-20 text-medical-green" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-            <path d="M2 12h3l2-6 2 12 2-9 2 6 2-3h7"/>
-          </svg>
-        </div>
-        <div class="absolute bottom-32 left-32 float-medical opacity-10" style="animation-delay: -2s;">
-          <svg class="h-12 w-12 text-medical-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="absolute top-20 left-10 float-educational opacity-20">
+          <svg class="text-educational-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+            </path>
+          </svg>
+        </div>
+        <div class="absolute top-32 right-20 float-educational opacity-15" style="animation-delay: -1s;">
+          <svg class="text-educational-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z">
+            </path>
+          </svg>
+        </div>
+        <div class="absolute bottom-32 left-32 float-educational opacity-10" style="animation-delay: -2s;">
+          <svg class="text-educational-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+            </path>
           </svg>
         </div>
       </div>
@@ -28,48 +32,71 @@
         <div class="mb-12 slide-in">
           <div class="flex items-center justify-center mb-8">
             <div class="relative">
-              <div class="float-medical bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-2xl glow-effect">
-                <svg class="h-16 w-16 text-medical-blue" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              <div
+                class="float-educational bg-gradient-to-r from-educational-blue to-educational-purple rounded-xl p-2 shadow-lg glow-effect">
+                <svg width="40" height="40" viewBox="4 4 40 40" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="educationalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+                    </linearGradient>
+                  </defs>
+
+                  <!-- Rounded rectangle background with gradient -->
+                  <rect x="4" y="4" width="40" height="40" rx="10" ry="10" fill="url(#educationalGradient)" />
+
+                  <!-- Graduation cap icon (centered in the container) -->
+                  <g transform="translate(12, 12)">
+                    <!-- Main cap (mortarboard) -->
+                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"
+                      d="M2 10l10-6 10 6-10 6-10-6z" />
+
+                    <!-- Cap base/band -->
+                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"
+                      d="M6 13v4c0 2 2.686 4 6 4s6-2 6-4v-4" />
+
+                    <!-- Tassel -->
+                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"
+                      d="M16 7v4" />
+                    <circle cx="16" cy="11" r="1" fill="white" />
+                  </g>
                 </svg>
               </div>
             </div>
           </div>
           <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-3">
             ONLINE-<span
-              class="bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent">POLYCLINIC</span><span
-              class="text-medical-green">.COM</span>
+              class="bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent">STUDY</span><span
+              class="text-educational-green">.COM</span>
           </h1>
-          <p class="text-xl text-gray-700 font-medium">Your Health, Our Digital Care</p>
+          <p class="text-xl text-gray-700 font-medium">Your Academic Performance, Our Digital Care</p>
         </div>
 
         <!-- Main Content -->
         <div class="mb-16">
           <div class="inline-flex items-center bg-white/80 backdrop-blur-sm rounded-full px-6 py-2 mb-6 shadow-lg">
-            <div class="bg-medical-green rounded-full w-3 h-3 mr-3 pulse-animation"></div>
-            <span class="text-sm font-semibold text-gray-700">Professional Healthcare Platform</span>
+            <div class="bg-educational-green rounded-full w-3 h-3 mr-3 pulse-animation"></div>
+            <span class="text-sm font-semibold text-gray-700">Professional Education Platform</span>
           </div>
           <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
-            Professional Healthcare
-            <span class="bg-gradient-to-r from-medical-blue to-medical-green bg-clip-text text-transparent">
+            Professional Education
+            <span class="bg-gradient-to-r from-educational-blue to-educational-green bg-clip-text text-transparent">
               At Your Fingertips
             </span>
           </h2>
           <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-8">
-            Connect with qualified teachers online for consultations, prescriptions, and medical advice from the comfort
+            Connect with qualified teachers online for lessons, homeworks, and educational advice from the comfort
             of your home.
           </p>
 
           <!-- Action Buttons -->
           <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <router-link to="/teachers"
-              class="px-8 py-4 bg-gradient-to-r from-medical-blue to-medical-teal text-white font-semibold rounded-2xl hover:from-medical-teal hover:to-medical-blue focus:ring-4 focus:ring-medical-blue/30 transition-all shadow-lg glow-effect">
-              Find a Doctor
+              class="px-8 py-4 bg-gradient-to-r from-educational-blue to-educational-purple text-white font-semibold rounded-2xl hover:from-educational-teal hover:to-educational-blue focus:ring-4 focus:ring-educational-blue/30 transition-all shadow-lg glow-effect">
+              Find a Teacher
             </router-link>
             <router-link to="/register"
-              class="px-8 py-4 bg-white/90 backdrop-blur-sm text-medical-blue font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-medical-blue/30 transition-all shadow-lg border-2 border-medical-blue/20">
+              class="px-8 py-4 bg-white/90 backdrop-blur-sm text-educational-blue font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-educational-blue/30 transition-all shadow-lg border-2 border-educational-blue/20">
               Register Now
             </router-link>
           </div>
@@ -81,30 +108,31 @@
     <div class="py-20 bg-gradient-to-b from-gray-50 to-white">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-          <h2 class="text-base text-medical-blue font-semibold tracking-wide uppercase mb-2">Features</h2>
+          <h2 class="text-base text-educational-blue font-semibold tracking-wide uppercase mb-2">Features</h2>
           <h3 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
-            Better Healthcare Solution
+            Better Education Solution
           </h3>
           <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
-            Experience healthcare reimagined with our comprehensive online medical consultation platform.
+            Experience education reimagined with our comprehensive online educational lesson platform.
           </p>
         </div>
 
         <!-- Feature Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
-            <div class="bg-gradient-to-r from-medical-blue to-sky-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+            <div class="bg-gradient-to-r from-educational-blue to-sky-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
               <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
             </div>
-            <h4 class="font-bold text-gray-800 mb-3 text-lg">Video Consultations</h4>
-            <p class="text-sm text-gray-600">High-quality video calls with certified healthcare professionals</p>
+            <h4 class="font-bold text-gray-800 mb-3 text-lg">Video Lessons</h4>
+            <p class="text-sm text-gray-600">High-quality video calls with certified education professionals</p>
           </div>
 
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
-            <div class="bg-gradient-to-r from-medical-green to-emerald-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+            <div
+              class="bg-gradient-to-r from-educational-green to-emerald-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
               <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -115,14 +143,14 @@
           </div>
 
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
-            <div class="bg-gradient-to-r from-medical-teal to-cyan-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+            <div class="bg-gradient-to-r from-educational-teal to-cyan-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
               <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h4 class="font-bold text-gray-800 mb-3 text-lg">Digital Prescriptions</h4>
-            <p class="text-sm text-gray-600">Electronic prescriptions sent directly to pharmacies</p>
+            <h4 class="font-bold text-gray-800 mb-3 text-lg">Digital Homeworks</h4>
+            <p class="text-sm text-gray-600">Electronic homeworks sent directly to pharmacies</p>
           </div>
 
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
@@ -132,25 +160,25 @@
                   d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 00-2-2z" />
               </svg>
             </div>
-            <h4 class="font-bold text-gray-800 mb-3 text-lg">Health Monitoring</h4>
-            <p class="text-sm text-gray-600">Track vitals and receive personalized health insights</p>
+            <h4 class="font-bold text-gray-800 mb-3 text-lg">Academic Performance</h4>
+            <p class="text-sm text-gray-600">Track vitals and receive personalized academic perfornamce insights</p>
           </div>
         </div>
 
         <!-- Trust Indicators -->
         <div class="bg-white/50 backdrop-blur-sm rounded-2xl p-8 mt-16">
-          <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">Trusted Healthcare Technology</h3>
+          <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">Trusted Education Technology</h3>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
-              <div class="text-2xl font-bold text-medical-blue mb-1">24/7</div>
+              <div class="text-2xl font-bold text-educational-blue mb-1">24/7</div>
               <div class="text-sm text-gray-600">Available</div>
             </div>
             <div>
-              <div class="text-2xl font-bold text-medical-green mb-1">500+</div>
-              <div class="text-sm text-gray-600">Certified Doctors</div>
+              <div class="text-2xl font-bold text-educational-green mb-1">500+</div>
+              <div class="text-sm text-gray-600">Certified Teachers</div>
             </div>
             <div>
-              <div class="text-2xl font-bold text-medical-teal mb-1">15min</div>
+              <div class="text-2xl font-bold text-educational-teal mb-1">15min</div>
               <div class="text-sm text-gray-600">Average Wait Time</div>
             </div>
             <div>
@@ -166,40 +194,40 @@
     <div class="py-20 bg-white">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-          <h2 class="text-base text-medical-blue font-semibold tracking-wide uppercase mb-2">How It Works</h2>
+          <h2 class="text-base text-educational-blue font-semibold tracking-wide uppercase mb-2">How It Works</h2>
           <h3 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
-            Simple Steps to Better Health
+            Simple Steps to Better Performance
           </h3>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="text-center">
             <div
-              class="bg-gradient-to-r from-medical-blue to-sky-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+              class="bg-gradient-to-r from-educational-blue to-sky-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
               <span class="text-white font-bold text-xl">1</span>
             </div>
-            <h4 class="text-xl font-bold text-gray-800 mb-4">Choose a Doctor</h4>
-            <p class="text-gray-600">Browse our network of qualified healthcare professionals and select the right
+            <h4 class="text-xl font-bold text-gray-800 mb-4">Choose a Teacher</h4>
+            <p class="text-gray-600">Browse our network of qualified education professionals and select the right
               specialist for your needs.</p>
           </div>
 
           <div class="text-center">
             <div
-              class="bg-gradient-to-r from-medical-green to-emerald-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+              class="bg-gradient-to-r from-educational-green to-emerald-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
               <span class="text-white font-bold text-xl">2</span>
             </div>
             <h4 class="text-xl font-bold text-gray-800 mb-4">Book Appointment</h4>
-            <p class="text-gray-600">Schedule your consultation at a convenient time that works for both you and your
+            <p class="text-gray-600">Schedule your lesson at a convenient time that works for both you and your
               chosen teacher.</p>
           </div>
 
           <div class="text-center">
             <div
-              class="bg-gradient-to-r from-medical-teal to-cyan-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+              class="bg-gradient-to-r from-educational-teal to-cyan-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
               <span class="text-white font-bold text-xl">3</span>
             </div>
             <h4 class="text-xl font-bold text-gray-800 mb-4">Get Treatment</h4>
-            <p class="text-gray-600">Join your secure video consultation and receive professional medical care from the
+            <p class="text-gray-600">Join your secure video lesson and receive professional educational care from the
               comfort of your home.</p>
           </div>
         </div>
@@ -207,23 +235,23 @@
     </div>
 
     <!-- Call to Action Section -->
-    <div class="py-20 medical-gradient">
+    <div class="py-20 educational-gradient">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
-          Ready to Experience the Future of Healthcare?
+          Ready to Experience the Future of Education?
         </h2>
         <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-          Join thousands of students who have already discovered the convenience and quality of online medical
-          consultations.
+          Join thousands of students who have already discovered the convenience and quality of online educational
+          lessons.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
           <router-link to="/register"
-            class="px-8 py-4 bg-gradient-to-r from-medical-blue to-medical-teal text-white font-semibold rounded-2xl hover:from-medical-teal hover:to-medical-blue focus:ring-4 focus:ring-medical-blue/30 transition-all shadow-lg glow-effect">
+            class="px-8 py-4 bg-gradient-to-r from-educational-blue to-educational-purple text-white font-semibold rounded-2xl hover:from-educational-teal hover:to-educational-blue focus:ring-4 focus:ring-educational-blue/30 transition-all shadow-lg glow-effect">
             Get Started Today
           </router-link>
           <router-link to="/teachers"
-            class="px-8 py-4 bg-white/90 backdrop-blur-sm text-medical-blue font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-medical-blue/30 transition-all shadow-lg border-2 border-medical-blue/20">
-            Browse Doctors
+            class="px-8 py-4 bg-white/90 backdrop-blur-sm text-educational-blue font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-educational-blue/30 transition-all shadow-lg border-2 border-educational-blue/20">
+            Browse Teachers
           </router-link>
         </div>
       </div>
@@ -236,7 +264,7 @@
 </script>
 
 <style scoped>
-.medical-gradient {
+.educational-gradient {
   background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 25%, #f0f9ff 50%, #e0f2fe 75%, #f0f9ff 100%);
 }
 
@@ -244,11 +272,11 @@
   animation: pulse 3s linear infinite;
 }
 
-.float-medical {
-  animation: floatMedical 4s linear infinite;
+.float-educational {
+  animation: floatEducational 4s linear infinite;
 }
 
-@keyframes floatMedical {
+@keyframes floatEducational {
 
   0%,
   100% {

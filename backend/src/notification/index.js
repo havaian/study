@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const amqp = require('amqplib');
 const { telegramBot } = require('../bot');
-const consultationNotification = require('./consultationNotification');
+const lessonNotification = require('./lessonNotification');
 const emailService = require('./emailService');
 
 /**
@@ -415,10 +415,10 @@ class NotificationService {
             <p>Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been confirmed.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
-              <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
+              <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the consultation by logging into your Online-study.com account.</p>
+            <p>You can view your appointment details and join the lesson by logging into your Online-study.com account.</p>
           </div>
         `
             };
@@ -434,10 +434,10 @@ class NotificationService {
             <p>You have a new appointment with ${student.firstName} ${student.lastName}.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
-              <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+              <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+              <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
-            <p>You can view appointment details and join the consultation by logging into your Online-study.com account.</p>
+            <p>You can view appointment details and join the lesson by logging into your Online-study.com account.</p>
           </div>
         `
             };
@@ -502,8 +502,8 @@ class NotificationService {
             <p>Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been canceled.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
-              <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
+              <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
             <p>You can schedule a new appointment by logging into your Online-study.com account.</p>
           </div>
@@ -521,8 +521,8 @@ class NotificationService {
             <p>Your appointment with ${student.firstName} ${student.lastName} has been canceled.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
-              <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+              <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+              <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
           </div>
         `
@@ -578,7 +578,7 @@ class NotificationService {
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Appointment Completed</h2>
             <p>Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been completed.</p>
-            <p>If any prescriptions were provided, you can view them in your Online-study.com account.</p>
+            <p>If any homeworks were provided, you can view them in your Online-study.com account.</p>
             <a href="${process.env.FRONTEND_URL}/appointments/feedback/${appointment._id}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Leave Feedback</a>
             <p>Your feedback helps us improve our services.</p>
           </div>
@@ -592,7 +592,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `✅ Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been completed. Any prescriptions will be available in your account. Please consider leaving feedback.`,
+                    text: `✅ Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been completed. Any homeworks will be available in your account. Please consider leaving feedback.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -605,25 +605,25 @@ class NotificationService {
     }
 
     /**
-     * Send prescription notification
-     * @param {Object} appointment Appointment object with prescriptions
+     * Send homework notification
+     * @param {Object} appointment Appointment object with homeworks
      */
-    async sendPrescriptionNotification(appointment) {
+    async sendHomeworkNotification(appointment) {
         try {
             await appointment.populate('student teacher');
 
-            const { student, teacher, prescriptions } = appointment;
+            const { student, teacher, homeworks } = appointment;
 
-            // Format prescriptions for email
-            let prescriptionsHtml = '';
-            prescriptions.forEach((prescription, index) => {
-                prescriptionsHtml += `
+            // Format homeworks for email
+            let homeworksHtml = '';
+            homeworks.forEach((homework, index) => {
+                homeworksHtml += `
           <div style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 10px;">
-            <p><strong>Medication:</strong> ${prescription.medication}</p>
-            <p><strong>Dosage:</strong> ${prescription.dosage}</p>
-            <p><strong>Frequency:</strong> ${prescription.frequency}</p>
-            <p><strong>Duration:</strong> ${prescription.duration}</p>
-            <p><strong>Instructions:</strong> ${prescription.instructions}</p>
+            <p><strong>Medication:</strong> ${homework.medication}</p>
+            <p><strong>Dosage:</strong> ${homework.dosage}</p>
+            <p><strong>Frequency:</strong> ${homework.frequency}</p>
+            <p><strong>Duration:</strong> ${homework.duration}</p>
+            <p><strong>Instructions:</strong> ${homework.instructions}</p>
           </div>
         `;
             });
@@ -631,16 +631,16 @@ class NotificationService {
             // Email to student
             const studentEmailData = {
                 to: student.email,
-                subject: 'New Prescriptions - Online-study.com',
-                text: `Dr. ${teacher.firstName} ${teacher.lastName} has added prescriptions to your recent appointment.`,
+                subject: 'New Homeworks - Online-study.com',
+                text: `Dr. ${teacher.firstName} ${teacher.lastName} has added homeworks to your recent appointment.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #4a90e2;">New Prescriptions</h2>
-            <p>Dr. ${teacher.firstName} ${teacher.lastName} has added the following prescriptions to your recent appointment:</p>
+            <h2 style="color: #4a90e2;">New Homeworks</h2>
+            <p>Dr. ${teacher.firstName} ${teacher.lastName} has added the following homeworks to your recent appointment:</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              ${prescriptionsHtml}
+              ${homeworksHtml}
             </div>
-            <p>You can view these prescriptions anytime by logging into your Online-study.com account.</p>
+            <p>You can view these homeworks anytime by logging into your Online-study.com account.</p>
           </div>
         `
             };
@@ -652,7 +652,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `💊 Dr. ${teacher.firstName} ${teacher.lastName} has added prescriptions to your recent appointment. Check your email or Online-study.com account for details.`,
+                    text: `💊 Dr. ${teacher.firstName} ${teacher.lastName} has added homeworks to your recent appointment. Check your email or Online-study.com account for details.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -660,7 +660,7 @@ class NotificationService {
                 this.queueTelegramMessage(telegramData);
             }
         } catch (error) {
-            console.error('Error sending prescription notification:', error);
+            console.error('Error sending homework notification:', error);
         }
     }
 
@@ -693,10 +693,10 @@ class NotificationService {
             <p>A follow-up appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been scheduled.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
-              <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
+              <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the consultation by logging into your Online-study.com account.</p>
+            <p>You can view your appointment details and join the lesson by logging into your Online-study.com account.</p>
           </div>
         `
             };
@@ -712,10 +712,10 @@ class NotificationService {
             <p>A follow-up appointment with ${student.firstName} ${student.lastName} has been scheduled.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
-              <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+              <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+              <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
-            <p>You can view appointment details and join the consultation by logging into your Online-study.com account.</p>
+            <p>You can view appointment details and join the lesson by logging into your Online-study.com account.</p>
           </div>
         `
             };
@@ -780,10 +780,10 @@ class NotificationService {
             <p>This is a reminder that your appointment with Dr. ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
-              <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
+              <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the consultation by logging into your Online-study.com account.</p>
+            <p>You can view your appointment details and join the lesson by logging into your Online-study.com account.</p>
           </div>
         `
             };
@@ -799,10 +799,10 @@ class NotificationService {
             <p>This is a reminder that your appointment with ${student.firstName} ${student.lastName} is scheduled for tomorrow.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
-              <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+              <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+              <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
-            <p>You can view appointment details and join the consultation by logging into your Online-study.com account.</p>
+            <p>You can view appointment details and join the lesson by logging into your Online-study.com account.</p>
           </div>
         `
             };
@@ -839,10 +839,10 @@ class NotificationService {
     }
 
     /**
-     * Send consultation start notification (15 minutes before)
+     * Send lesson start notification (15 minutes before)
      * @param {Object} appointment Appointment object
      */
-    async sendConsultationStartNotification(appointment) {
+    async sendLessonStartNotification(appointment) {
         try {
             await appointment.populate('student teacher');
 
@@ -852,19 +852,19 @@ class NotificationService {
                 minute: '2-digit'
             });
 
-            const consultationLink = `${process.env.FRONTEND_URL}/consultation/${_id}`;
+            const lessonLink = `${process.env.FRONTEND_URL}/lesson/${_id}`;
 
             // Email to student
             const studentEmailData = {
                 to: student.email,
-                subject: 'Your Consultation Starts Soon - Online-study.com',
-                text: `Your consultation with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes.`,
+                subject: 'Your Lesson Starts Soon - Online-study.com',
+                text: `Your lesson with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #4a90e2;">Your Consultation Starts Soon</h2>
-            <p>Your consultation with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes at ${formattedTime}.</p>
-            <a href="${consultationLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Join Consultation</a>
-            <p>Please ensure your device has a working camera and microphone for a video consultation.</p>
+            <h2 style="color: #4a90e2;">Your Lesson Starts Soon</h2>
+            <p>Your lesson with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes at ${formattedTime}.</p>
+            <a href="${lessonLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Join Lesson</a>
+            <p>Please ensure your device has a working camera and microphone for a video lesson.</p>
           </div>
         `
             };
@@ -872,14 +872,14 @@ class NotificationService {
             // Email to teacher
             const teacherEmailData = {
                 to: teacher.email,
-                subject: 'Consultation Starts Soon - Online-study.com',
-                text: `Your consultation with ${student.firstName} ${student.lastName} starts in 15 minutes.`,
+                subject: 'Lesson Starts Soon - Online-study.com',
+                text: `Your lesson with ${student.firstName} ${student.lastName} starts in 15 minutes.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #4a90e2;">Consultation Starts Soon</h2>
-            <p>Your consultation with ${student.firstName} ${student.lastName} starts in 15 minutes at ${formattedTime}.</p>
-            <a href="${consultationLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Join Consultation</a>
-            <p>Please ensure your device has a working camera and microphone for a video consultation.</p>
+            <h2 style="color: #4a90e2;">Lesson Starts Soon</h2>
+            <p>Your lesson with ${student.firstName} ${student.lastName} starts in 15 minutes at ${formattedTime}.</p>
+            <a href="${lessonLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Join Lesson</a>
+            <p>Please ensure your device has a working camera and microphone for a video lesson.</p>
           </div>
         `
             };
@@ -892,7 +892,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `🔔 Your consultation with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes. Click here to join: ${consultationLink}`,
+                    text: `🔔 Your lesson with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes. Click here to join: ${lessonLink}`,
                     options: {
                         parse_mode: 'HTML',
                         disable_web_page_preview: false
@@ -904,7 +904,7 @@ class NotificationService {
             if (teacher.telegramId) {
                 const telegramData = {
                     chatId: teacher.telegramId,
-                    text: `🔔 Your consultation with ${student.firstName} ${student.lastName} starts in 15 minutes. Click here to join: ${consultationLink}`,
+                    text: `🔔 Your lesson with ${student.firstName} ${student.lastName} starts in 15 minutes. Click here to join: ${lessonLink}`,
                     options: {
                         parse_mode: 'HTML',
                         disable_web_page_preview: false
@@ -913,7 +913,7 @@ class NotificationService {
                 this.queueTelegramMessage(telegramData);
             }
         } catch (error) {
-            console.error('Error sending consultation start notification:', error);
+            console.error('Error sending lesson start notification:', error);
         }
     }
 
@@ -935,7 +935,7 @@ class NotificationService {
             <h2 style="color: #4a90e2;">Payment Successful</h2>
             <p>Your payment for the appointment has been processed successfully.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
               <p><strong>Date & Time:</strong> ${formattedDate}</p>
               <p><strong>Type:</strong> ${appointment.type}</p>
               <p><strong>Payment ID:</strong> ${paymentId}</p>
@@ -955,7 +955,7 @@ class NotificationService {
      * Send teacher appointment email
      * @param {Object} appointment Appointment object
      */
-    async sendDoctorAppointmentEmail(appointment) {
+    async sendTeacherAppointmentEmail(appointment) {
         try {
             const { student, teacher, dateTime } = appointment;
             const formattedDate = new Date(dateTime).toLocaleString();
@@ -968,7 +968,7 @@ class NotificationService {
             <h2 style="color: #4a90e2;">New Appointment Confirmed</h2>
             <p>A new appointment has been scheduled and payment has been received.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+              <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
               <p><strong>Date & Time:</strong> ${formattedDate}</p>
               <p><strong>Type:</strong> ${appointment.type}</p>
             </div>
@@ -1001,7 +1001,7 @@ class NotificationService {
             <h2 style="color: #e74c3c;">Payment Failed</h2>
             <p>We were unable to process your payment for the following appointment:</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
               <p><strong>Date & Time:</strong> ${formattedDate}</p>
               <p><strong>Type:</strong> ${appointment.type}</p>
             </div>
@@ -1089,11 +1089,11 @@ class NotificationService {
     }
 
     /**
-     * Send prescription notification
+     * Send homework notification
      * @param {Object} appointment - Appointment object with populated student and teacher
      */
-    async sendPrescriptionNotification(appointment) {
-        return emailService.sendPrescriptionNotification(appointment);
+    async sendHomeworkNotification(appointment) {
+        return emailService.sendHomeworkNotification(appointment);
     }
 
     /**
@@ -1105,11 +1105,11 @@ class NotificationService {
     }
 
     /**
-     * Send consultation completed notification
+     * Send lesson completed notification
      * @param {Object} appointment - Appointment object with populated student and teacher
      */
-    async sendConsultationCompletedNotification(appointment) {
-        return consultationNotification.sendConsultationCompletedNotification(appointment);
+    async sendLessonCompletedNotification(appointment) {
+        return lessonNotification.sendLessonCompletedNotification(appointment);
     }
 }
 

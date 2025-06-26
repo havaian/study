@@ -324,7 +324,7 @@ function initializeSocket() {
 
     console.log('Initializing socket connection...')
 
-    socket.value = io('http://localhost:3333', {
+    socket.value = io('http://localhost:6633', {
         query: { token },
         path: '/socket.io/',
         transports: ['websocket', 'polling'],

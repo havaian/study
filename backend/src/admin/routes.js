@@ -85,7 +85,7 @@ router.get('/system-health', adminController.getSystemHealth);
 
 /**
  * @route POST /api/admin/specializations
- * @desc Create a new medical specializations
+ * @desc Create a new educational specializations
  * @access Private (Admin only)
  */
 router.post('/specializations', adminController.createSpecialization);

@@ -47,13 +47,13 @@ exports.createAppointment = async (req, res) => {
         // Verify that teacher exists
         const teacher = await User.findById(teacherId);
         if (!teacher || teacher.role !== 'teacher') {
-            return res.status(404).json({ message: 'Doctor not found' });
+            return res.status(404).json({ message: 'Teacher not found' });
         }
 
         // Verify that student exists
         const student = await User.findById(studentId);
         if (!student || student.role !== 'student') {
-            return res.status(404).json({ message: 'Patient not found' });
+            return res.status(404).json({ message: 'Student not found' });
         }
 
         // Check appointment type is valid
@@ -96,10 +96,10 @@ exports.createAppointment = async (req, res) => {
                 teacher,
                 dateTime,
                 type,
-                error: 'Doctor is not available at this time'
+                error: 'Teacher is not available at this time'
             });
 
-            return res.status(409).json({ message: 'Doctor is not available at this time' });
+            return res.status(409).json({ message: 'Teacher is not available at this time' });
         }
 
         // Check if teacher's working hours allow this appointment
@@ -109,7 +109,7 @@ exports.createAppointment = async (req, res) => {
         const teacherAvailability = teacher.availability.find(a => a.dayOfWeek === dayIndex);
 
         if (!teacherAvailability || !teacherAvailability.isAvailable) {
-            return res.status(400).json({ message: 'Doctor is not available on this day' });
+            return res.status(400).json({ message: 'Teacher is not available on this day' });
         }
 
         // Check if appointment falls within teacher's working hours
@@ -167,7 +167,7 @@ exports.createAppointment = async (req, res) => {
             reasonForVisit,
             notes: notes || '',
             status: 'pending-teacher-confirmation',
-            teacherConfirmationExpires: calculateDoctorConfirmationDeadline(teacher, appointmentDate)
+            teacherConfirmationExpires: calculateTeacherConfirmationDeadline(teacher, appointmentDate)
         });
 
         await appointment.save();
@@ -190,7 +190,7 @@ exports.createAppointment = async (req, res) => {
 };
 
 // Helper function to calculate teacher confirmation deadline
-function calculateDoctorConfirmationDeadline(teacher, appointmentDate) {
+function calculateTeacherConfirmationDeadline(teacher, appointmentDate) {
     // Get the day of the appointment
     const appointmentDay = appointmentDate.getDay(); // 0 is Sunday, 1 is Monday
     const dayIndex = appointmentDay === 0 ? 6 : appointmentDay - 1; // Convert to 0-based (Monday = 0, Sunday = 6)
@@ -227,7 +227,7 @@ function calculateDoctorConfirmationDeadline(teacher, appointmentDate) {
 }
 
 // Get all appointments for a student
-exports.getPatientAppointments = async (req, res) => {
+exports.getStudentAppointments = async (req, res) => {
     try {
         const { studentId } = req.params || req.user.id;
         const { status, limit = 10, skip = 0, view = 'list' } = req.query;
@@ -271,7 +271,7 @@ exports.getPatientAppointments = async (req, res) => {
 };
 
 // Get all appointments for a teacher
-exports.getDoctorAppointments = async (req, res) => {
+exports.getTeacherAppointments = async (req, res) => {
     try {
         const { teacherId } = req.params;
         const { status, date, limit = 10, skip = 0, view = 'list' } = req.query;
@@ -327,7 +327,7 @@ exports.getDoctorAppointments = async (req, res) => {
     }
 };
 
-// Doctor confirms appointment
+// Teacher confirms appointment
 exports.confirmAppointment = async (req, res) => {
     try {
         const { id } = req.params;
@@ -355,7 +355,7 @@ exports.confirmAppointment = async (req, res) => {
         if (appointment.teacherConfirmationExpires && new Date() > new Date(appointment.teacherConfirmationExpires)) {
             // Auto-cancel appointment if deadline passed
             appointment.status = 'canceled';
-            appointment.cancellationReason = 'Doctor did not confirm in time';
+            appointment.cancellationReason = 'Teacher did not confirm in time';
             await appointment.save();
 
             // Refund payment if any
@@ -396,7 +396,7 @@ exports.confirmAppointment = async (req, res) => {
 exports.updateAppointmentStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status, consultationSummary, cancellationReason } = req.body;
+        const { status, lessonSummary, cancellationReason } = req.body;
 
         const appointment = await Appointment.findById(id)
             .populate('student')
@@ -425,8 +425,8 @@ exports.updateAppointmentStatus = async (req, res) => {
         const oldStatus = appointment.status;
         appointment.status = status;
 
-        if (status === 'completed' && consultationSummary) {
-            appointment.consultationSummary = consultationSummary;
+        if (status === 'completed' && lessonSummary) {
+            appointment.lessonSummary = lessonSummary;
         }
 
         if (status === 'canceled' && cancellationReason) {
@@ -483,45 +483,45 @@ exports.getAppointmentById = async (req, res) => {
     }
 };
 
-// Add/update prescriptions for an appointment
-exports.updatePrescriptions = async (req, res) => {
+// Add/update homeworks for an appointment
+exports.updateHomeworks = async (req, res) => {
     try {
         const { id } = req.params;
-        const { prescriptions } = req.body;
+        const { homeworks } = req.body;
 
         const appointment = await Appointment.findById(id);
         if (!appointment) {
             return res.status(404).json({ message: 'Appointment not found' });
         }
 
-        // Only allow teachers to update prescriptions for completed appointments
+        // Only allow teachers to update homeworks for completed appointments
         if (appointment.status !== 'completed') {
             return res.status(400).json({
-                message: 'Prescriptions can only be added to completed appointments'
+                message: 'Homeworks can only be added to completed appointments'
             });
         }
 
         // Validate teacher is assigned to this appointment
         if (req.user.role === 'teacher' && appointment.teacher.toString() !== req.user.id) {
-            return res.status(403).json({ message: 'You are not authorized to update prescriptions for this appointment' });
+            return res.status(403).json({ message: 'You are not authorized to update homeworks for this appointment' });
         }
 
-        // Add new prescriptions (preserve existing ones)
-        const existingPrescriptions = appointment.prescriptions || [];
-        appointment.prescriptions = [...existingPrescriptions, ...prescriptions];
+        // Add new homeworks (preserve existing ones)
+        const existingHomeworks = appointment.homeworks || [];
+        appointment.homeworks = [...existingHomeworks, ...homeworks];
 
         await appointment.save();
 
-        // Notify student about new prescriptions
-        await NotificationService.sendPrescriptionNotification(appointment);
+        // Notify student about new homeworks
+        await NotificationService.sendHomeworkNotification(appointment);
 
         res.status(200).json({
-            message: 'Prescriptions updated successfully',
+            message: 'Homeworks updated successfully',
             appointment
         });
     } catch (error) {
-        console.error('Error updating prescriptions:', error);
-        res.status(500).json({ message: 'An error occurred while updating prescriptions' });
+        console.error('Error updating homeworks:', error);
+        res.status(500).json({ message: 'An error occurred while updating homeworks' });
     }
 };
 
@@ -570,7 +570,7 @@ exports.scheduleFollowUp = async (req, res) => {
             reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${notes || 'No notes provided'}`,
             status: 'pending-payment',
             payment: {
-                amount: appointment.teacher.consultationFee,
+                amount: appointment.teacher.lessonFee,
                 status: 'pending'
             }
         });
@@ -618,7 +618,7 @@ exports.getPendingFollowUps = async (req, res) => {
 };
 
 // Get teacher's availability slots
-exports.getDoctorAvailability = async (req, res) => {
+exports.getTeacherAvailability = async (req, res) => {
     try {
         const { teacherId } = req.params;
         const { date } = req.query;
@@ -630,7 +630,7 @@ exports.getDoctorAvailability = async (req, res) => {
         // Get teacher's working hours
         const teacher = await User.findById(teacherId);
         if (!teacher || teacher.role !== 'teacher') {
-            return res.status(404).json({ message: 'Doctor not found' });
+            return res.status(404).json({ message: 'Teacher not found' });
         }
 
         // Parse date and get working hours for that day of week
@@ -641,7 +641,7 @@ exports.getDoctorAvailability = async (req, res) => {
         const dayAvailability = teacher.availability.find(a => a.dayOfWeek === dayIndex);
         if (!dayAvailability || !dayAvailability.isAvailable) {
             return res.status(200).json({
-                message: 'Doctor is not available on this day',
+                message: 'Teacher is not available on this day',
                 availableSlots: []
             });
         }
@@ -815,7 +815,7 @@ exports.cleanupExpiredAppointments = async () => {
         for (const appointment of expiredAppointments) {
             // Update status to canceled
             appointment.status = 'canceled';
-            appointment.cancellationReason = 'Doctor did not confirm in time';
+            appointment.cancellationReason = 'Teacher did not confirm in time';
             await appointment.save();
 
             // Process refund if payment exists
@@ -839,14 +839,14 @@ exports.cleanupExpiredAppointments = async () => {
 };
 
 /**
- * Update consultation summary and add new prescriptions
+ * Update lesson summary and add new homeworks
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.updateConsultationResults = async (req, res) => {
+exports.updateLessonResults = async (req, res) => {
     try {
         const { id } = req.params;
-        const { consultationSummary, prescriptions, followUp } = req.body;
+        const { lessonSummary, homeworks, followUp } = req.body;
         const teacherId = req.user.id;
 
         // Find the appointment
@@ -860,43 +860,43 @@ exports.updateConsultationResults = async (req, res) => {
 
         // Verify teacher is assigned to this appointment
         if (appointment.teacher._id.toString() !== teacherId.toString()) {
-            return res.status(403).json({ message: 'You are not authorized to update this consultation' });
+            return res.status(403).json({ message: 'You are not authorized to update this lesson' });
         }
 
         // Verify appointment is completed
         if (appointment.status !== 'completed') {
-            return res.status(400).json({ message: 'Can only update completed consultations' });
+            return res.status(400).json({ message: 'Can only update completed lessons' });
         }
 
-        // Update consultation summary if provided
-        if (consultationSummary) {
-            appointment.consultationSummary = consultationSummary;
+        // Update lesson summary if provided
+        if (lessonSummary) {
+            appointment.lessonSummary = lessonSummary;
         }
 
-        // Add new prescriptions if provided (don't replace existing ones)
-        if (prescriptions && Array.isArray(prescriptions) && prescriptions.length > 0) {
-            // Filter out invalid prescriptions
-            const validPrescriptions = prescriptions.filter(prescription => {
-                return prescription.medication && prescription.dosage &&
-                    prescription.frequency && prescription.duration;
+        // Add new homeworks if provided (don't replace existing ones)
+        if (homeworks && Array.isArray(homeworks) && homeworks.length > 0) {
+            // Filter out invalid homeworks
+            const validHomeworks = homeworks.filter(homework => {
+                return homework.medication && homework.dosage &&
+                    homework.frequency && homework.duration;
             });
 
-            // Add timestamp to each new prescription
-            const timestampedPrescriptions = validPrescriptions.map(prescription => ({
-                ...prescription,
+            // Add timestamp to each new homework
+            const timestampedHomeworks = validHomeworks.map(homework => ({
+                ...homework,
                 createdAt: Date.now()
             }));
 
-            // If appointment already has prescriptions, append new ones
-            if (appointment.prescriptions && Array.isArray(appointment.prescriptions)) {
-                appointment.prescriptions = [...appointment.prescriptions, ...timestampedPrescriptions];
+            // If appointment already has homeworks, append new ones
+            if (appointment.homeworks && Array.isArray(appointment.homeworks)) {
+                appointment.homeworks = [...appointment.homeworks, ...timestampedHomeworks];
             } else {
-                appointment.prescriptions = timestampedPrescriptions;
+                appointment.homeworks = timestampedHomeworks;
             }
 
-            // Send prescription notification
-            if (timestampedPrescriptions.length > 0) {
-                await NotificationService.sendPrescriptionNotification(appointment);
+            // Send homework notification
+            if (timestampedHomeworks.length > 0) {
+                await NotificationService.sendHomeworkNotification(appointment);
             }
         }
 
@@ -926,7 +926,7 @@ exports.updateConsultationResults = async (req, res) => {
                     reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
                     status: 'pending-payment',
                     payment: {
-                        amount: appointment.teacher.consultationFee,
+                        amount: appointment.teacher.lessonFee,
                         status: 'pending'
                     }
                 });
@@ -942,18 +942,18 @@ exports.updateConsultationResults = async (req, res) => {
         await appointment.save();
 
         res.status(200).json({
-            message: 'Consultation results updated successfully',
+            message: 'Lesson results updated successfully',
             appointment
         });
 
     } catch (error) {
-        console.error('Error updating consultation results:', error);
-        res.status(500).json({ message: 'An error occurred while updating consultation results' });
+        console.error('Error updating lesson results:', error);
+        res.status(500).json({ message: 'An error occurred while updating lesson results' });
     }
 };
 
 /**
- * Upload medical documents for an appointment
+ * Upload educational documents for an appointment
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
@@ -974,10 +974,10 @@ exports.uploadDocument = async (req, res) => {
         }
 
         // Determine who is uploading (student or teacher)
-        const isDoctor = req.user.role === 'teacher' && appointment.teacher.toString() === userId;
-        const isPatient = req.user.role === 'student' && appointment.student.toString() === userId;
+        const isTeacher = req.user.role === 'teacher' && appointment.teacher.toString() === userId;
+        const isStudent = req.user.role === 'student' && appointment.student.toString() === userId;
 
-        if (!isDoctor && !isPatient) {
+        if (!isTeacher && !isStudent) {
             // Remove uploaded file if user is not authorized
             if (req.file && req.file.path) {
                 fs.unlinkSync(req.file.path);
@@ -990,7 +990,7 @@ exports.uploadDocument = async (req, res) => {
             name: req.file.originalname,
             fileUrl: `/uploads/documents/${req.file.filename}`,
             fileType: req.file.mimetype,
-            uploadedBy: isDoctor ? 'teacher' : 'student',
+            uploadedBy: isTeacher ? 'teacher' : 'student',
             uploadedAt: Date.now()
         };
 
@@ -1002,7 +1002,7 @@ exports.uploadDocument = async (req, res) => {
         await appointment.save();
 
         // Notify the other party about the new document
-        const recipient = isDoctor ? appointment.student : appointment.teacher;
+        const recipient = isTeacher ? appointment.student : appointment.teacher;
         await NotificationService.sendDocumentUploadNotification(appointment, document, recipient);
 
         res.status(201).json({
@@ -1033,10 +1033,10 @@ exports.getDocuments = async (req, res) => {
         }
 
         // Verify user is involved in the appointment
-        const isDoctor = req.user.role === 'teacher' && appointment.teacher.toString() === userId;
-        const isPatient = req.user.role === 'student' && appointment.student.toString() === userId;
+        const isTeacher = req.user.role === 'teacher' && appointment.teacher.toString() === userId;
+        const isStudent = req.user.role === 'student' && appointment.student.toString() === userId;
 
-        if (!isDoctor && !isPatient && req.user.role !== 'admin') {
+        if (!isTeacher && !isStudent && req.user.role !== 'admin') {
             return res.status(403).json({ message: 'You are not authorized to access documents for this appointment' });
         }
 

@@ -16,7 +16,7 @@ exports.createCheckoutSession = async (req, res) => {
 
         // Find appointment
         const appointment = await Appointment.findById(appointmentId)
-            .populate('teacher', 'consultationFee firstName lastName email specializations')
+            .populate('teacher', 'lessonFee firstName lastName email specializations')
             .populate('student', 'firstName lastName email');
 
         if (!appointment) {
@@ -37,8 +37,8 @@ exports.createCheckoutSession = async (req, res) => {
             });
         }
 
-        // Get consultation fee from teacher's profile
-        const amount = appointment.teacher.consultationFee;
+        // Get lesson fee from teacher's profile
+        const amount = appointment.teacher.lessonFee;
         const currency = 'uzs';
 
         // Format appointment date for display
@@ -52,7 +52,7 @@ exports.createCheckoutSession = async (req, res) => {
                     price_data: {
                         currency: currency.toLowerCase(),
                         product_data: {
-                            name: `Medical Consultation with Dr. ${appointment.teacher.firstName} ${appointment.teacher.lastName}`,
+                            name: `Educational Lesson with Dr. ${appointment.teacher.firstName} ${appointment.teacher.lastName}`,
                             description: `${appointment.teacher.specializations} - ${appointmentDate}`
                         },
                         unit_amount: amount * 100, // Stripe uses smallest currency unit
@@ -173,7 +173,7 @@ async function handleCheckoutSessionCompleted(session) {
         if (appointment) {
             // Send success emails
             await NotificationService.sendPaymentSuccessEmail(payment._id, appointment);
-            await NotificationService.sendDoctorAppointmentEmail(appointment);
+            await NotificationService.sendTeacherAppointmentEmail(appointment);
 
             appointment.payment.status = 'completed';
             await appointment.save();

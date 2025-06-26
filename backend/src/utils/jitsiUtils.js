@@ -48,7 +48,7 @@ class JitsiUtils {
     }
 
     /**
-     * Generate a unique room name for a consultation
+     * Generate a unique room name for a lesson
      * @param {String} appointmentId - Appointment ID
      * @returns {String} Room name
      */
@@ -64,11 +64,11 @@ class JitsiUtils {
             .digest('hex');
 
         // Use a portion of the hash to create a room name
-        return `epolyclinic-${hash.substring(0, 12)}`;
+        return `estudy-${hash.substring(0, 12)}`;
     }
 
     /**
-     * Generate Jitsi configuration for a consultation
+     * Generate Jitsi configuration for a lesson
      * @param {String} appointmentId - Appointment ID
      * @param {Object} user - User object with id, name, and role
      * @returns {Object} Jitsi configuration

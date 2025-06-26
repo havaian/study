@@ -15,7 +15,7 @@ exports.registerUser = async (req, res) => {
             delete userData.specializations;
             delete userData.licenseNumber;
             delete userData.experience;
-            delete userData.consultationFee;
+            delete userData.lessonFee;
             delete userData.bio;
             delete userData.languages;
             delete userData.education;
@@ -65,7 +65,7 @@ exports.registerUser = async (req, res) => {
             user.experience = userData.experience || 0;
             user.bio = userData.bio ? decodeURIComponent(userData.bio) : '';
             user.languages = userData.languages || [];
-            user.consultationFee = userData.consultationFee || 0;
+            user.lessonFee = userData.lessonFee || 0;
             user.education = userData.education || [];
             user.certifications = userData.certifications || [];
 
@@ -81,20 +81,20 @@ exports.registerUser = async (req, res) => {
             ];
         }
         else if (role === 'student' || !role) {
-            const { dateOfBirth, gender, medicalHistory } = userData;
+            const { dateOfBirth, gender, educationalHistory } = userData;
 
             user.dateOfBirth = dateOfBirth;
             user.gender = gender;
 
-            if (medicalHistory) {
-                user.medicalHistory = medicalHistory;
+            if (educationalHistory) {
+                user.educationalHistory = educationalHistory;
             }
             
             // Explicitly ensure teacher-specific fields are unset for students
             user.specializations = undefined;
             user.licenseNumber = undefined;
             user.experience = undefined;
-            user.consultationFee = undefined;
+            user.lessonFee = undefined;
             user.bio = undefined;
             user.languages = undefined;
             user.education = undefined;
@@ -219,7 +219,7 @@ exports.updateUserProfile = async (req, res) => {
         const allowedUpdates = [
             'firstName', 'lastName', 'phone', 'profilePicture',
             'address', 'bio', 'languages', 'availability',
-            'consultationFee', 'medicalHistory', 'emergencyContact',
+            'lessonFee', 'educationalHistory', 'emergencyContact',
             'specializations', 'education', 'certifications', 'experience'
         ];
 
@@ -364,7 +364,7 @@ exports.resetPassword = async (req, res) => {
 };
 
 // Get all teachers (with optional filters)
-exports.getDoctors = async (req, res) => {
+exports.getTeachers = async (req, res) => {
     try {
         const {
             specializations,
@@ -408,7 +408,7 @@ exports.getDoctors = async (req, res) => {
         }
 
         if (maxFee) {
-            query['consultationFee'] = { $lte: parseInt(maxFee) };
+            query['lessonFee'] = { $lte: parseInt(maxFee) };
         }
 
         if (language) {
@@ -442,7 +442,7 @@ exports.getDoctors = async (req, res) => {
 };
 
 // Get teacher by ID
-exports.getDoctorById = async (req, res) => {
+exports.getTeacherById = async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -454,7 +454,7 @@ exports.getDoctorById = async (req, res) => {
         }).select('-password -verificationToken -resetPasswordToken -resetPasswordExpire');
 
         if (!teacher) {
-            return res.status(404).json({ message: 'Doctor not found' });
+            return res.status(404).json({ message: 'Teacher not found' });
         }
 
         res.status(200).json({ teacher });
@@ -513,7 +513,7 @@ exports.deactivateAccount = async (req, res) => {
 };
 
 // Get teacher's availability slots
-exports.getDoctorAvailability = async (req, res) => {
+exports.getTeacherAvailability = async (req, res) => {
     try {
         const { teacherId } = req.params;
         const { date } = req.query;
@@ -525,7 +525,7 @@ exports.getDoctorAvailability = async (req, res) => {
         // Get teacher's working hours
         const teacher = await User.findById(teacherId);
         if (!teacher || teacher.role !== 'teacher') {
-            return res.status(404).json({ message: 'Doctor not found' });
+            return res.status(404).json({ message: 'Teacher not found' });
         }
 
         // Parse date and get working hours for that day of week
@@ -536,7 +536,7 @@ exports.getDoctorAvailability = async (req, res) => {
         const dayAvailability = teacher.availability.find(a => a.dayOfWeek === dayIndex);
         if (!dayAvailability || !dayAvailability.isAvailable) {
             return res.status(200).json({
-                message: 'Doctor is not available on this day',
+                message: 'Teacher is not available on this day',
                 availableSlots: []
             });
         }

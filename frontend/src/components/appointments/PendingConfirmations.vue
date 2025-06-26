@@ -79,7 +79,7 @@
                             <p class="text-gray-900">{{ appointment.duration || 30 }} minutes</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Consultation Type</p>
+                            <p class="text-sm text-gray-500">Lesson Type</p>
                             <p class="text-gray-900">
                                 {{ appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1) }}
                             </p>
@@ -99,7 +99,7 @@
                         <p class="text-gray-900 bg-gray-50 p-3 rounded-md">{{ appointment.reasonForVisit }}</p>
                     </div>
 
-                    <!-- Patient Contact Info -->
+                    <!-- Student Contact Info -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-md">
                         <div v-if="appointment.student.email">
                             <p class="text-sm text-gray-500">Email</p>

@@ -71,7 +71,7 @@ const userSchema = new Schema({
         zipCode: String,
         country: String
     },
-    // Doctor-specific fields
+    // Teacher-specific fields
     specializations: [{
         type: String,
         required: function () { return this.role === 'teacher'; }
@@ -112,12 +112,12 @@ const userSchema = new Schema({
         // New field - multiple time slots per day
         timeSlots: [timeSlotSchema]
     }],
-    consultationFee: {
+    lessonFee: {
         type: Number,
         required: function () { return this.role === 'teacher'; }
     },
-    // Patient-specific fields
-    medicalHistory: {
+    // Student-specific fields
+    educationalHistory: {
         allergies: [String],
         chronicConditions: [String],
         currentMedications: [String],
@@ -277,7 +277,7 @@ userSchema.methods.getPublicProfile = function () {
 };
 
 // Static method to find available teachers by specializations
-userSchema.statics.findAvailableDoctors = function (specializations) {
+userSchema.statics.findAvailableTeachers = function (specializations) {
     return this.find({
         role: 'teacher',
         isActive: true,

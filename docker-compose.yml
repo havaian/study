@@ -11,7 +11,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     networks:
-      - polyclinic_net
+      - study_net
     command: mongod --port ${MONGODB_PORT}
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--port", "${MONGODB_PORT}"]
@@ -31,7 +31,7 @@ services:
       - redis_data:/data
     command: --port ${REDIS_PORT}
     networks:
-      - polyclinic_net
+      - study_net
     healthcheck:
       test: ["CMD", "redis-cli", "-p", "${REDIS_PORT}", "ping"]
       interval: 5s
@@ -54,7 +54,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
       - ./rabbitmq/main.conf:/etc/rabbitmq/rabbitmq.conf
     networks:
-      - polyclinic_net
+      - study_net
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
@@ -67,7 +67,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: polyclinic_backend
+    container_name: study_backend
     restart: always
     depends_on:
       mongodb:
@@ -94,7 +94,7 @@ services:
     volumes:
       - backend_logs:/usr/src/app/logs
     networks:
-      - polyclinic_net
+      - study_net
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${BACKEND_PORT}/api/health"]
       interval: 20s
@@ -107,7 +107,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    container_name: polyclinic_frontend_prod
+    container_name: study_frontend_prod
     restart: always
     depends_on:
       backend:
@@ -121,7 +121,7 @@ services:
     ports:
       - "${FRONTEND_EXPOSE}:80"
     networks:
-      - polyclinic_net
+      - study_net
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
       interval: 30s
@@ -140,7 +140,7 @@ services:
   #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
   #     - prometheus_data:/prometheus
   #   networks:
-  #     - polyclinic_net
+  #     - study_net
   #   healthcheck:
   #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
   #     interval: 10s
@@ -161,7 +161,7 @@ services:
   #     - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
   #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
   #   networks:
-  #     - polyclinic_net
+  #     - study_net
   #   depends_on:
   #     prometheus:
   #       condition: service_healthy
@@ -183,7 +183,7 @@ services:
   #     - loki_data:/loki
   #   command: -config.file=/etc/loki/local-config.yaml
   #   networks:
-  #     - polyclinic_net
+  #     - study_net
   #   healthcheck:
   #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
   #     interval: 10s
@@ -203,5 +203,5 @@ volumes:
   nginx_logs:
 
 networks:
-  polyclinic_net:
+  study_net:
     driver: bridge

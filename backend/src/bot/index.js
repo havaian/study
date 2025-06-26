@@ -53,12 +53,12 @@
 //         try {
 //             await ctx.reply(
 //                 "👋 Welcome to Online-study.com bot!\n\n" +
-//                 "I can help you manage your medical appointments and consultations.\n\n" +
+//                 "I can help you manage your educational appointments and lessons.\n\n" +
 //                 "Here's what you can do:\n" +
 //                 "- Link your Online-study.com account\n" +
 //                 "- View your upcoming appointments\n" +
-//                 "- Get reminders for consultations\n" +
-//                 "- Chat with virtual medical assistant\n\n" +
+//                 "- Get reminders for lessons\n" +
+//                 "- Chat with virtual educational assistant\n\n" +
 //                 "To begin, please use the /link command to connect your Online-study.com account."
 //             );
 //         } catch (error) {
@@ -76,7 +76,7 @@
 //                 "/appointments - View your appointments\n" +
 //                 "/profile - View your profile\n" +
 //                 "/unlink - Unlink your account\n" +
-//                 "/assistant - Chat with medical assistant\n\n" +
+//                 "/assistant - Chat with educational assistant\n\n" +
 //                 "If you need further assistance, contact support@online-study.com"
 //             );
 //         } catch (error) {
@@ -183,7 +183,7 @@
 //                     if (response.data.message === 'Telegram account linked successfully') {
 //                         await ctx.reply(
 //                             "🎉 Your Online-study.com account has been successfully linked!\n\n" +
-//                             "You'll now receive notifications about your appointments and consultations.\n\n" +
+//                             "You'll now receive notifications about your appointments and lessons.\n\n" +
 //                             "Use /appointments to view your upcoming appointments or /help to see all available commands."
 //                         );
 
@@ -230,7 +230,7 @@
 
 //                 await ctx.reply(
 //                     "📋 Please confirm your appointment details:\n\n" +
-//                     `Doctor: ${teacherName}\n` +
+//                     `Teacher: ${teacherName}\n` +
 //                     `Date: ${date}\n` +
 //                     `Time: ${time}\n` +
 //                     `Type: ${type}\n` +
@@ -440,7 +440,7 @@
 //                         `${appointment.teacher.firstName} ${appointment.teacher.lastName}` : 
 //                         "Unknown teacher";
 
-//                     message += `${index + 1}. Doctor: ${teacherName}\n`;
+//                     message += `${index + 1}. Teacher: ${teacherName}\n`;
 //                     message += `   Date: ${date} at ${time}\n`;
 //                     message += `   Type: ${appointment.type || 'N/A'}\n`;
 //                     message += `   Status: ${appointment.status || 'scheduled'}\n\n`;
@@ -517,19 +517,19 @@
 //                 message += `Phone: ${user.phone || 'N/A'}\n`;
 
 //                 if (user.role === 'student') {
-//                     message += `Role: Patient\n`;
+//                     message += `Role: Student\n`;
 //                     message += `Gender: ${user.gender || 'Not specified'}\n`;
 //                     if (user.dateOfBirth) {
 //                         const dob = new Date(user.dateOfBirth).toLocaleDateString();
 //                         message += `Date of Birth: ${dob}\n`;
 //                     }
 //                 } else if (user.role === 'teacher') {
-//                     message += `Role: Doctor\n`;
+//                     message += `Role: Teacher\n`;
 //                     message += `Specialization: ${user.specializations || 'N/A'}\n`;
 //                     message += `Experience: ${user.experience || 0} years\n`;
                     
-//                     if (user.consultationFee) {
-//                         message += `Consultation Fee: ${user.consultationFee} 'UZS'\n`;
+//                     if (user.lessonFee) {
+//                         message += `Lesson Fee: ${user.lessonFee} 'UZS'\n`;
 //                     }
 //                 }
 
@@ -613,7 +613,7 @@
 //             ctx.session.step = 'assistant_chat';
 
 //             await ctx.reply(
-//                 "👨‍⚕️ I'm the Online-study.com virtual medical assistant. I can answer general medical questions and provide health information.\n\n" +
+//                 "👨‍⚕️ I'm the Online-study.com virtual educational assistant. I can answer general educational questions and provide academic performance information.\n\n" +
 //                 "What would you like to know about? (Type /stop to end the chat)"
 //             );
 //         } catch (error) {
@@ -676,7 +676,7 @@
 //                 ctx.session.step = 'appointment_specialization';
 //                 ctx.session.appointmentData = {};
 
-//                 let message = "Please select a medical specializations:\n\n";
+//                 let message = "Please select a educational specializations:\n\n";
 //                 specializations.forEach((spec, index) => {
 //                     message += `${index + 1}. ${spec}\n`;
 //                 });
@@ -758,7 +758,7 @@
 //             teachers.forEach((teacher, index) => {
 //                 message += `${index + 1}. Dr. ${teacher.firstName} ${teacher.lastName}\n`;
 //                 message += `   Experience: ${teacher.experience} years\n`;
-//                 message += `   Fee: ${teacher.consultationFee} 'UZS'\n\n`;
+//                 message += `   Fee: ${teacher.lessonFee} 'UZS'\n\n`;
 //             });
             
 //             message += "Reply with the number of your selection.";

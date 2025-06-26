@@ -3,9 +3,9 @@
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <!-- Chat Header -->
             <div class="p-4 border-b border-gray-200">
-                <h1 class="text-lg font-medium text-gray-900">AI Medical Assistant</h1>
+                <h1 class="text-lg font-medium text-gray-900">AI Educational Assistant</h1>
                 <p class="mt-1 text-sm text-gray-500">
-                    Ask general health questions and get instant guidance
+                    Ask general academic performance questions and get instant guidance
                 </p>
             </div>
 
@@ -14,8 +14,8 @@
                 <div class="space-y-4">
                     <template v-if="messages.length === 0">
                         <div class="text-center text-gray-500">
-                            <p>👋 Hi! I'm your AI medical assistant.</p>
-                            <p>I can provide general health information and guidance.</p>
+                            <p>👋 Hi! I'm your AI educational assistant.</p>
+                            <p>I can provide general academic performance information and guidance.</p>
                             <p>How can I help you today?</p>
                         </div>
                     </template>
@@ -26,7 +26,7 @@
                         <!-- Assistant Avatar -->
                         <div v-if="message.sender === 'assistant'" class="flex-shrink-0 mr-3">
                             <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                <svg class="h-6 w-6 bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent " fill="none" viewBox="0 0 24 24"
+                                <svg class="h-6 w-6 bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent " fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -60,7 +60,7 @@
                     <div v-if="isTyping" class="flex justify-start mb-4">
                         <div class="flex-shrink-0 mr-3">
                             <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                <svg class="h-6 w-6 bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent " fill="none" viewBox="0 0 24 24"
+                                <svg class="h-6 w-6 bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent " fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -101,7 +101,7 @@
 
                 <div class="mt-3 flex justify-between items-center">
                     <p class="text-xs text-gray-500">
-                        Note: This is for general information only. Always consult a teacher for medical advice.
+                        Note: This is for general information only. Always consult a teacher for educational advice.
                     </p>
 
                     <div class="flex space-x-2">

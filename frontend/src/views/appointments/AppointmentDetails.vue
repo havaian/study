@@ -30,7 +30,7 @@
                     <!-- Participants -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Doctor</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Teacher</h3>
                             <div class="flex items-center space-x-4">
                                 <img :src="appointment.teacher.profilePicture || '/images/user-placeholder.jpg'"
                                     :alt="appointment.teacher.firstName" class="h-12 w-12 rounded-full object-cover" />
@@ -49,7 +49,7 @@
                         </div>
 
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Patient</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Student</h3>
                             <div class="flex items-center space-x-4">
                                 <img :src="appointment.student.profilePicture || '/images/user-placeholder.jpg'"
                                     :alt="appointment.student.firstName" class="h-12 w-12 rounded-full object-cover" />
@@ -73,7 +73,7 @@
                         </div>
 
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Consultation Type</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Lesson Type</h3>
                             <p class="text-gray-900">
                                 {{ appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1) }}
                             </p>
@@ -86,42 +86,42 @@
                         <p class="text-gray-900">{{ appointment.reasonForVisit }}</p>
                     </div>
 
-                    <!-- Consultation Summary (only for completed appointments) -->
-                    <div v-if="appointment.status === 'completed' && appointment.consultationSummary">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Consultation Summary</h3>
+                    <!-- Lesson Summary (only for completed appointments) -->
+                    <div v-if="appointment.status === 'completed' && appointment.lessonSummary">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Lesson Summary</h3>
                         <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-gray-900 whitespace-pre-line">{{ appointment.consultationSummary }}</p>
+                            <p class="text-gray-900 whitespace-pre-line">{{ appointment.lessonSummary }}</p>
                         </div>
                     </div>
 
-                    <!-- Prescriptions (only for completed appointments) -->
+                    <!-- Homeworks (only for completed appointments) -->
                     <div
-                        v-if="appointment.status === 'completed' && appointment.prescriptions && appointment.prescriptions.length > 0">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Prescriptions</h3>
+                        v-if="appointment.status === 'completed' && appointment.homeworks && appointment.homeworks.length > 0">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Homeworks</h3>
                         <div class="space-y-4">
-                            <div v-for="(prescription, index) in appointment.prescriptions" :key="index"
+                            <div v-for="(homework, index) in appointment.homeworks" :key="index"
                                 class="bg-gray-50 p-4 rounded-lg">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <p class="text-sm font-medium text-gray-500">Medication</p>
-                                        <p class="text-gray-900">{{ prescription.medication }}</p>
+                                        <p class="text-gray-900">{{ homework.medication }}</p>
                                     </div>
                                     <div>
                                         <p class="text-sm font-medium text-gray-500">Dosage</p>
-                                        <p class="text-gray-900">{{ prescription.dosage }}</p>
+                                        <p class="text-gray-900">{{ homework.dosage }}</p>
                                     </div>
                                     <div>
                                         <p class="text-sm font-medium text-gray-500">Frequency</p>
-                                        <p class="text-gray-900">{{ prescription.frequency }}</p>
+                                        <p class="text-gray-900">{{ homework.frequency }}</p>
                                     </div>
                                     <div>
                                         <p class="text-sm font-medium text-gray-500">Duration</p>
-                                        <p class="text-gray-900">{{ prescription.duration }}</p>
+                                        <p class="text-gray-900">{{ homework.duration }}</p>
                                     </div>
                                 </div>
-                                <div v-if="prescription.instructions" class="mt-2">
+                                <div v-if="homework.instructions" class="mt-2">
                                     <p class="text-sm font-medium text-gray-500">Instructions</p>
-                                    <p class="text-gray-900">{{ prescription.instructions }}</p>
+                                    <p class="text-gray-900">{{ homework.instructions }}</p>
                                 </div>
                             </div>
                         </div>
@@ -155,7 +155,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div v-else-if="authStore.isPatient && appointment.followUp.recommended" class="mt-4">
+                            <div v-else-if="authStore.isStudent && appointment.followUp.recommended" class="mt-4">
                                 <button @click="findFollowUpAppointment" class="btn-primary text-sm">
                                     View Follow-up Details
                                 </button>
@@ -168,7 +168,7 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-medium text-gray-900">Chat History</h3>
                             <button @click="showChatLog = !showChatLog"
-                                class="text-sm bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-900">
+                                class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-900">
                                 {{ showChatLog ? 'Hide Chat' : 'Show Chat' }}
                             </button>
                         </div>
@@ -205,7 +205,7 @@
                         </div>
                     </div>
 
-                    <!-- Doctor-student chat -->
+                    <!-- Teacher-student chat -->
                     <div class="mt-8" v-if="canStartChat">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Communication</h3>
                         <div class="bg-gray-50 p-4 rounded-lg">
@@ -224,13 +224,13 @@
 
                     <!-- Actions -->
                     <div class="flex justify-end space-x-4">
-                        <button v-if="appointment.status === 'scheduled' && authStore.isPatient"
+                        <button v-if="appointment.status === 'scheduled' && authStore.isStudent"
                             class="btn-secondary text-red-600 hover:text-red-700" @click="cancelAppointment">
                             Cancel Appointment
                         </button>
                         <button v-if="appointment.status === 'scheduled' && isWithinJoinWindow" class="btn-primary"
-                            @click="joinConsultation">
-                            {{ authStore.isDoctor ? 'Start Consultation' : 'Join Consultation' }}
+                            @click="joinLesson">
+                            {{ authStore.isTeacher ? 'Start Lesson' : 'Join Lesson' }}
                         </button>
                         <div v-if="showFollowUpModal"
                             class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
@@ -353,7 +353,7 @@ const isWithinJoinWindow = computed(() => {
 const canStartChat = computed(() => {
     if (!appointment.value) return false
 
-    const isParticipant = authStore.isDoctor ?
+    const isParticipant = authStore.isTeacher ?
         appointment.value.teacher._id === authStore.user._id :
         appointment.value.student._id === authStore.user._id
 
@@ -364,7 +364,7 @@ const canStartChat = computed(() => {
 const getChatButtonText = computed(() => {
     if (!appointment.value) return ''
 
-    const otherParty = authStore.isDoctor ?
+    const otherParty = authStore.isTeacher ?
         `${appointment.value.student.firstName} ${appointment.value.student.lastName}` :
         `Dr. ${appointment.value.teacher.firstName} ${appointment.value.teacher.lastName}`
 
@@ -422,22 +422,22 @@ async function cancelAppointment() {
     }
 }
 
-async function joinConsultation() {
+async function joinLesson() {
     try {
-        const response = await axios.get(`/api/consultations/${appointment.value._id}/join`)
-        if (response.data.consultation) {
+        const response = await axios.get(`/api/lessons/${appointment.value._id}/join`)
+        if (response.data.lesson) {
             router.push({
-                name: 'consultation-room',
+                name: 'lesson-room',
                 params: { appointmentId: appointment.value._id }
             })
         }
     } catch (error) {
-        console.error('Error joining consultation:', error)
-        // If consultation is not ready yet, show the time remaining
+        console.error('Error joining lesson:', error)
+        // If lesson is not ready yet, show the time remaining
         if (error.response && error.response.data && error.response.data.startsInMinutes) {
-            alert(`This consultation will be available in ${error.response.data.startsInMinutes} minutes.`)
+            alert(`This lesson will be available in ${error.response.data.startsInMinutes} minutes.`)
         } else {
-            alert('Unable to join consultation at this time. Please try again later.')
+            alert('Unable to join lesson at this time. Please try again later.')
         }
     }
 }
@@ -454,7 +454,7 @@ async function proceedToPayment(appointmentId) {
 
 async function startChat() {
     try {
-        const participantId = authStore.isDoctor ?
+        const participantId = authStore.isTeacher ?
             appointment.value.student._id :
             appointment.value.teacher._id
 

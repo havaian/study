@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('./controller');
-const { authenticateUser, authorizeRoles, preventDoctorRegistration, ensureTermsAccepted } = require('../auth');
+const { authenticateUser, authorizeRoles, preventTeacherRegistration, ensureTermsAccepted } = require('../auth');
 
 /**
  * @route POST /api/users/register
  * @desc Register a new user (student or teacher)
  * @access Public
  */
-router.post('/register', preventDoctorRegistration, ensureTermsAccepted, userController.registerUser);
+router.post('/register', preventTeacherRegistration, ensureTermsAccepted, userController.registerUser);
 
 /**
  * @route GET /api/users/verify/:token
@@ -64,14 +64,14 @@ router.post('/reset-password/:token', userController.resetPassword);
  * @desc Get all teachers with optional filters
  * @access Public
  */
-router.get('/teachers', userController.getDoctors);
+router.get('/teachers', userController.getTeachers);
 
 /**
  * @route GET /api/users/teachers/:id
  * @desc Get teacher by ID
  * @access Public
  */
-router.get('/teachers/:id', userController.getDoctorById);
+router.get('/teachers/:id', userController.getTeacherById);
 
 /**
  * @route POST /api/users/link-telegram

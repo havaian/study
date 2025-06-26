@@ -23,7 +23,7 @@
             </div>
             <div v-if="review.teacherResponse" class="mt-4 bg-gray-50 rounded-lg p-4">
                 <p class="text-sm text-gray-900">
-                    <span class="font-medium">Doctor's response:</span>
+                    <span class="font-medium">Teacher's response:</span>
                     {{ review.teacherResponse.text }}
                 </p>
                 <p class="mt-1 text-xs text-gray-500">

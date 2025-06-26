@@ -7,22 +7,23 @@ export default {
   theme: {
     extend: {
       colors: {
-        'medical-blue': '#0ea5e9',
-        'medical-green': '#10b981',
-        'medical-teal': '#06b6d4',
-        'soft-blue': '#e0f2fe',
-        'soft-green': '#ecfdf5',
+        'educational-blue': '#1e3a8a',
+        'educational-green': '#059669',
+        'educational-teal': '#0d9488',
+        'educational-purple': '#7c3aed',
+        'soft-blue': '#1e40af',
+        'soft-green': '#f3f4f6',
       },
       backgroundImage: {
-        'medical-gradient': 'linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 25%, #f0f9ff 50%, #e0f2fe 75%, #f0f9ff 100%)',
+        'educational-gradient': 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 25%, #f8fafc 50%, #ddd6fe 75%, #f8fafc 100%)',
       },
       animation: {
-        'float-medical': 'floatMedical 4s ease-in-out infinite',
-        'pulse-medical': 'pulse 3s ease-in-out infinite',
+        'float-educational': 'floatEducational 4s ease-in-out infinite',
+        'pulse-educational': 'pulse 3s ease-in-out infinite',
         'slide-in': 'slideIn 1.2s ease-out',
       },
       keyframes: {
-        floatMedical: {
+        floatEducational: {
           '0%, 100%': {
             transform: 'translateY(0px) rotate(0deg)',
           },

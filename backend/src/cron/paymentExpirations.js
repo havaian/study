@@ -55,7 +55,7 @@ const schedulePaymentExpirationChecks = () => {
             for (const appointment of pendingConfirmationAppointments) {
                 // Update appointment status
                 appointment.status = 'canceled';
-                appointment.cancellationReason = 'Doctor did not confirm in time';
+                appointment.cancellationReason = 'Teacher did not confirm in time';
                 await appointment.save();
 
                 // Process refund if payment exists

@@ -8,7 +8,7 @@ const upload = require('../utils/multerConfig');
 /**
  * @route POST /api/appointments
  * @desc Create a new appointment
- * @access Private (Patients only - uses authenticated user ID)
+ * @access Private (Students only - uses authenticated user ID)
  */
 router.post(
     '/',
@@ -20,20 +20,20 @@ router.post(
 /**
  * @route GET /api/appointments/student/:studentId
  * @desc Get all appointments for a student
- * @access Private (Patient must be the owner or Admin)
+ * @access Private (Student must be the owner or Admin)
  */
 router.get(
     '/student/:studentId',
     authenticateUser,
     authorizeRoles(['student', 'admin']),
     ensureOwnership('studentId'),
-    appointmentController.getPatientAppointments
+    appointmentController.getStudentAppointments
 );
 
 /**
  * @route GET /api/appointments/student/:studentId/pending-followups
  * @desc Get pending follow-up appointments for a student
- * @access Private (Patient must be the owner or Admin)
+ * @access Private (Student must be the owner or Admin)
  */
 router.get(
     '/student/:studentId/pending-followups',
@@ -46,14 +46,14 @@ router.get(
 /**
  * @route GET /api/appointments/teacher/:teacherId
  * @desc Get all appointments for a teacher
- * @access Private (Doctor must be the owner or Admin)
+ * @access Private (Teacher must be the owner or Admin)
  */
 router.get(
     '/teacher/:teacherId',
     authenticateUser,
     authorizeRoles(['teacher', 'admin']),
     ensureOwnership('teacherId'),
-    appointmentController.getDoctorAppointments
+    appointmentController.getTeacherAppointments
 );
 
 /**
@@ -81,7 +81,7 @@ router.get(
 /**
  * @route PATCH /api/appointments/:id/status
  * @desc Update appointment status
- * @access Private (Doctor, Patient or Admin - only for their own appointments)
+ * @access Private (Teacher, Student or Admin - only for their own appointments)
  */
 router.patch(
     '/:id/status',
@@ -91,8 +91,8 @@ router.patch(
 
 /**
  * @route POST /api/appointments/:id/confirm
- * @desc Doctor confirms appointment
- * @access Private (Doctors only - only for their appointments)
+ * @desc Teacher confirms appointment
+ * @access Private (Teachers only - only for their appointments)
  */
 router.post(
     '/:id/confirm',
@@ -102,21 +102,21 @@ router.post(
 );
 
 /**
- * @route PATCH /api/appointments/:id/prescriptions
- * @desc Add/update prescriptions for an appointment
- * @access Private (Doctors only - only for their appointments)
+ * @route PATCH /api/appointments/:id/homeworks
+ * @desc Add/update homeworks for an appointment
+ * @access Private (Teachers only - only for their appointments)
  */
 router.patch(
-    '/:id/prescriptions',
+    '/:id/homeworks',
     authenticateUser,
     authorizeRoles(['teacher']),
-    appointmentController.updatePrescriptions
+    appointmentController.updateHomeworks
 );
 
 /**
  * @route POST /api/appointments/:id/documents
- * @desc Upload medical documents for an appointment
- * @access Private (Patients and Doctors - only for their appointments)
+ * @desc Upload educational documents for an appointment
+ * @access Private (Students and Teachers - only for their appointments)
  */
 router.post(
     '/:id/documents',
@@ -138,7 +138,7 @@ router.get(
 /**
  * @route POST /api/appointments/:id/follow-up
  * @desc Schedule a follow-up appointment
- * @access Private (Doctors only - only for their appointments)
+ * @access Private (Teachers only - only for their appointments)
  */
 router.post(
     '/:id/follow-up',
@@ -154,13 +154,13 @@ router.post(
  */
 router.get(
     '/availability/:teacherId',
-    appointmentController.getDoctorAvailability
+    appointmentController.getTeacherAvailability
 );
 
 /**
  * @route GET /api/appointments/pending-confirmation/teacher/:teacherId
  * @desc Get appointments pending teacher confirmation
- * @access Private (Doctor must be the owner or Admin)
+ * @access Private (Teacher must be the owner or Admin)
  */
 router.get(
     '/pending-confirmation/teacher/:teacherId',
@@ -171,21 +171,21 @@ router.get(
 );
 
 /**
- * @route PATCH /api/appointments/:id/consultation-results
- * @desc Update consultation results (summary, prescriptions, follow-up)
- * @access Private (Doctors only - only for their appointments)
+ * @route PATCH /api/appointments/:id/lesson-results
+ * @desc Update lesson results (summary, homeworks, follow-up)
+ * @access Private (Teachers only - only for their appointments)
  */
 router.patch(
-    '/:id/consultation-results',
+    '/:id/lesson-results',
     authenticateUser,
     authorizeRoles(['teacher']),
-    appointmentController.updateConsultationResults
+    appointmentController.updateLessonResults
 );
 
 /**
  * @route POST /api/appointments/:id/documents
- * @desc Upload medical documents for an appointment
- * @access Private (Patients and Doctors - only for their appointments)
+ * @desc Upload educational documents for an appointment
+ * @access Private (Students and Teachers - only for their appointments)
  */
 router.post(
     '/:id/documents',

@@ -195,10 +195,10 @@ exports.ensureAppointmentAccess = async (req, res, next) => {
 
         // Check if user is involved in the appointment
         const userId = req.user.id.toString();
-        const isDoctor = req.user.role === 'teacher' && appointment.teacher.toString() === userId;
-        const isPatient = req.user.role === 'student' && appointment.student.toString() === userId;
+        const isTeacher = req.user.role === 'teacher' && appointment.teacher.toString() === userId;
+        const isStudent = req.user.role === 'student' && appointment.student.toString() === userId;
 
-        if (!isDoctor && !isPatient) {
+        if (!isTeacher && !isStudent) {
             return res.status(403).json({
                 message: 'You are not authorized to access this appointment.'
             });
@@ -361,13 +361,13 @@ async function logContentViolation(userId, matches, content) {
  * Middleware to check if a user is a teacher and registered by admin
  * Only admin can register teachers - rejects direct teacher registrations
  */
-exports.preventDoctorRegistration = (req, res, next) => {
+exports.preventTeacherRegistration = (req, res, next) => {
     // // If user is trying to register as a teacher
     // if (req.body.role === 'teacher') {
     //     // Only allow if the request is from an admin
     //     if (!req.user || req.user.role !== 'admin') {
     //         return res.status(403).json({
-    //             message: 'Doctor registration is only available through administrators. Please contact the clinic to register as a teacher.'
+    //             message: 'Teacher registration is only available through administrators. Please contact the clinic to register as a teacher.'
     //         });
     //     }
     // }
@@ -395,7 +395,7 @@ exports.ensureTermsAccepted = (req, res, next) => {
 };
 
 /**
- * Middleware to restrict chat during active video/audio consultations
+ * Middleware to restrict chat during active video/audio lessons
  */
 exports.restrictChatDuringCall = async (req, res, next) => {
     try {
@@ -423,7 +423,7 @@ exports.restrictChatDuringCall = async (req, res, next) => {
                 return next();
             }
 
-            // If appointment is active and is a video or audio consultation, restrict chat
+            // If appointment is active and is a video or audio lesson, restrict chat
             if (appointment.status === 'scheduled' &&
                 (appointment.type === 'video' || appointment.type === 'audio')) {
 
@@ -435,7 +435,7 @@ exports.restrictChatDuringCall = async (req, res, next) => {
                 // Check if we're currently within the appointment time
                 if (now >= appointmentTime && now <= appointmentEndTime) {
                     return res.status(403).json({
-                        message: 'Chat is restricted during active video or audio consultations. Please use the consultation interface for communication.'
+                        message: 'Chat is restricted during active video or audio lessons. Please use the lesson interface for communication.'
                     });
                 }
             }
@@ -456,7 +456,7 @@ exports.handleTextEncoding = (req, res, next) => {
     // Check if request has a body
     if (req.body) {
         // Process text fields that commonly have encoding issues
-        const fieldsToProcess = ['bio', 'reasonForVisit', 'consultationSummary', 'notes', 'text', 'comment'];
+        const fieldsToProcess = ['bio', 'reasonForVisit', 'lessonSummary', 'notes', 'text', 'comment'];
 
         for (const field of fieldsToProcess) {
             if (req.body[field] && typeof req.body[field] === 'string') {

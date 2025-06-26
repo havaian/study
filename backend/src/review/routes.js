@@ -54,7 +54,7 @@ const reviewSchema = new Schema({
         type: String,
         trim: true
     },
-    // Doctor response to review
+    // Teacher response to review
     teacherResponse: {
         text: {
             type: String,
@@ -105,7 +105,7 @@ reviewSchema.pre('save', async function (next) {
 });
 
 // Static method to get teacher's average rating
-reviewSchema.statics.getDoctorRating = async function (teacherId) {
+reviewSchema.statics.getTeacherRating = async function (teacherId) {
     const result = await this.aggregate([
         {
             $match: {

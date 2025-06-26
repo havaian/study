@@ -2,10 +2,10 @@ const axios = require('axios');
 const { redisClient } = require('../utils/redisClient');
 
 /**
- * AI Medical Assistant
- * Provides basic medical information and guidance
+ * AI Educational Assistant
+ * Provides basic educational information and guidance
  */
-class MedicalAssistant {
+class EducationalAssistant {
     constructor() {
         this.openaiKey = process.env.OPENAI_API_KEY;
         this.modelName = 'gpt-4.5-turbo';
@@ -17,22 +17,22 @@ class MedicalAssistant {
      * @returns {String} System prompt
      */
     getSystemPrompt() {
-        return `You are an AI medical assistant for Online-study.com, an online medical consultation platform in Uzbekistan.
-Your role is to provide general health information, basic medical guidance, and answer common health-related questions.
+        return `You are an AI educational assistant for Online-study.com, an online educational lesson platform in Uzbekistan.
+Your role is to provide general academic performance information, basic educational guidance, and answer common academic performance-related questions.
 
 Important guidelines:
-1. Provide general health information based on established medical knowledge.
-2. Always include disclaimers when appropriate about consulting a real teacher for personal medical advice.
+1. Provide general academic performance information based on established educational knowledge.
+2. Always include disclaimers when appropriate about consulting a real teacher for personal educational advice.
 3. Avoid making definitive diagnoses or specific treatment recommendations.
-4. When answering questions about serious symptoms, always advise the user to consult a healthcare professional.
-5. Provide information about common preventive measures and healthy lifestyle choices.
+4. When answering questions about serious symptoms, always advise the user to consult a education professional.
+5. Provide information about common preventive measures and academic performance lifestyle choices.
 6. Be respectful, concise, and helpful in your responses.
 7. If asked about medications, only provide general information about common uses and side effects.
 8. If unsure about a response, acknowledge limitations and suggest consulting a teacher.
-9. Keep responses concise and focused on providing accurate health information.
-10. Be familiar with basic healthcare services in Uzbekistan.
+9. Keep responses concise and focused on providing accurate academic performance information.
+10. Be familiar with basic education services in Uzbekistan.
 
-Remember that your primary role is to provide general information, not personal medical advice.`;
+Remember that your primary role is to provide general information, not personal educational advice.`;
     }
 
     /**
@@ -188,8 +188,8 @@ Remember that your primary role is to provide general information, not personal 
 }
 
 // Create singleton instance
-const medicalAssistant = new MedicalAssistant();
+const educationalAssistant = new EducationalAssistant();
 
 module.exports = {
-    MedicalAssistant: medicalAssistant
+    EducationalAssistant: educationalAssistant
 };

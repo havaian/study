@@ -21,6 +21,6 @@ router.get('/:id', specializationController.getSpecializationById);
  * @desc Get teachers by specializations
  * @access Public
  */
-router.get('/:id/teachers', specializationController.getDoctorsBySpecialization);
+router.get('/:id/teachers', specializationController.getTeachersBySpecialization);
 
 module.exports = router;

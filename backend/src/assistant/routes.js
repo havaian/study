@@ -5,7 +5,7 @@ const { authenticateUser } = require('../auth/index');
 
 /**
  * @route POST /api/assistant/chat
- * @desc Chat with the medical assistant
+ * @desc Chat with the educational assistant
  * @access Private (uses authenticated user ID when available)
  */
 router.post('/chat', authenticateUser, assistantController.chatWithAssistant);
@@ -25,11 +25,11 @@ router.delete('/history', authenticateUser, assistantController.clearConversatio
 router.get('/history', authenticateUser, assistantController.getChatHistory);
 
 /**
- * @route GET /api/assistant/health/:topic
- * @desc Get health information about a specific topic
+ * @route GET /api/assistant/performance/:topic
+ * @desc Get academic performance information about a specific topic
  * @access Public (tracks user ID if authenticated)
  */
-router.get('/health/:topic', assistantController.getHealthInfo);
+router.get('/performance/:topic', assistantController.getPerformanceInfo);
 
 /**
  * @route POST /api/assistant/symptoms

@@ -50,11 +50,11 @@
                             </p>
                         </div>
 
-                        <!-- Consultation Type -->
+                        <!-- Lesson Type -->
                         <div>
-                            <label class="label">Consultation Type</label>
+                            <label class="label">Lesson Type</label>
                             <div class="mt-2 grid grid-cols-3 gap-3">
-                                <button v-for="type in consultationTypes" :key="type.value" type="button"
+                                <button v-for="type in lessonTypes" :key="type.value" type="button"
                                     class="btn-secondary"
                                     :class="{ 
                                         'ring-2 ring-indigo-500': formData.type === type.value,
@@ -81,7 +81,7 @@
 
                         <!-- Fee Information -->
                         <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="text-lg font-medium text-gray-900">Consultation Fee</h3>
+                            <h3 class="text-lg font-medium text-gray-900">Lesson Fee</h3>
                             <p class="mt-1 text-gray-600">
                                 {{ formatFee() }}
                                 UZS
@@ -106,7 +106,7 @@
         </template>
 
         <div v-else class="text-center py-8">
-            <p class="text-gray-600">Doctor not found.</p>
+            <p class="text-gray-600">Teacher not found.</p>
         </div>
     </div>
 </template>
@@ -134,7 +134,7 @@ const validationErrors = reactive({
     reasonForVisit: ''
 })
 
-const consultationTypes = [
+const lessonTypes = [
     { value: 'video', label: 'Video' },
     { value: 'voice', label: 'Voice' },
     { value: 'chat', label: 'Chat' }
@@ -168,7 +168,7 @@ const formatCurrency = (amount) => {
 // Function to safely format the teacher's fee
 const formatFee = () => {
     if (!teacher.value) return '0';
-    return formatCurrency(teacher.value.consultationFee);
+    return formatCurrency(teacher.value.lessonFee);
 }
 
 // Keep the original format function for other date formatting needs
@@ -207,7 +207,7 @@ const isWithinJoinWindow = (dateTime) => {
     })
 }
 
-async function fetchDoctorProfile() {
+async function fetchTeacherProfile() {
     try {
         loading.value = true
         const response = await axios.get(`/api/users/teachers/${route.params.teacherId}`)
@@ -260,7 +260,7 @@ function validateForm() {
     }
     
     if (!formData.type) {
-        validationErrors.type = 'Please select a consultation type'
+        validationErrors.type = 'Please select a lesson type'
         isValid = false
     }
     
@@ -304,6 +304,6 @@ async function handleSubmit() {
 }
 
 onMounted(() => {
-    fetchDoctorProfile()
+    fetchTeacherProfile()
 })
 </script>

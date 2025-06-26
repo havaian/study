@@ -10,7 +10,7 @@ const formatDateTime = (date) => {
   return format(new Date(date), 'MMMM d, yyyy h:mm a');
 };
 
-exports.appointmentBookedPatient = (appointment) => {
+exports.appointmentBookedStudent = (appointment) => {
   const { teacher, dateTime, type, payment } = appointment;
 
   return {
@@ -22,21 +22,21 @@ exports.appointmentBookedPatient = (appointment) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+          <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
           <p><strong>Specialization:</strong> ${teacher.specializations.join(', ')}</p>
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
           <p><strong>Amount Paid:</strong> ${formatCurrency(payment.amount)}</p>
         </div>
         
-        <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
-        <p>You can view your appointment details and join the consultation by logging into your Online-study.com account.</p>
+        <p>Please make sure to join the lesson 5 minutes before the scheduled time.</p>
+        <p>You can view your appointment details and join the lesson by logging into your Online-study.com account.</p>
       </div>
     `
   };
 };
 
-exports.appointmentBookedDoctor = (appointment) => {
+exports.appointmentBookedTeacher = (appointment) => {
   const { student, dateTime, type } = appointment;
 
   return {
@@ -48,9 +48,9 @@ exports.appointmentBookedDoctor = (appointment) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+          <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
         </div>
         
         <p>Please log in to your Online-study.com account to view the complete appointment details.</p>
@@ -71,9 +71,9 @@ exports.appointmentBookingFailed = (data) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+          <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
           <p><strong>Reason:</strong> ${error}</p>
         </div>
         
@@ -85,7 +85,7 @@ exports.appointmentBookingFailed = (data) => {
 
 exports.appointmentReminder = (appointment) => {
   const { teacher, student, dateTime, type } = appointment;
-  const isDoctor = Boolean(teacher.email);
+  const isTeacher = Boolean(teacher.email);
 
   return {
     subject: 'Appointment Reminder - Online-study.com',
@@ -96,15 +96,15 @@ exports.appointmentReminder = (appointment) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          ${isDoctor
-        ? `<p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>`
-        : `<p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>`
+          ${isTeacher
+        ? `<p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>`
+        : `<p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>`
       }
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
         </div>
         
-        <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
+        <p>Please make sure to join the lesson 5 minutes before the scheduled time.</p>
       </div>
     `
   };
@@ -112,7 +112,7 @@ exports.appointmentReminder = (appointment) => {
 
 exports.appointmentCancelled = (appointment, cancelledBy) => {
   const { teacher, student, dateTime, type } = appointment;
-  const isDoctor = Boolean(teacher.email);
+  const isTeacher = Boolean(teacher.email);
 
   return {
     subject: 'Appointment Cancelled - Online-study.com',
@@ -123,15 +123,15 @@ exports.appointmentCancelled = (appointment, cancelledBy) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          ${isDoctor
-        ? `<p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>`
-        : `<p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>`
+          ${isTeacher
+        ? `<p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>`
+        : `<p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>`
       }
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
         </div>
         
-        ${isDoctor
+        ${isTeacher
         ? '<p>The time slot is now available for other appointments.</p>'
         : '<p>You can schedule a new appointment through our website.</p>'
       }

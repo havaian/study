@@ -55,19 +55,19 @@ const router = createRouter({
     {
       path: '/profile/student',
       name: 'student-profile',
-      component: () => import('@/views/profile/PatientProfile.vue'),
+      component: () => import('@/views/profile/StudentProfile.vue'),
       meta: {
         requiresAuth: true,
-        requiresPatient: true
+        requiresStudent: true
       }
     },
     {
       path: '/profile/teacher',
       name: 'teacher-profile',
-      component: () => import('@/views/profile/DoctorProfile.vue'),
+      component: () => import('@/views/profile/TeacherProfile.vue'),
       meta: {
         requiresAuth: true,
-        requiresDoctor: true
+        requiresTeacher: true
       }
     },
     {
@@ -78,16 +78,16 @@ const router = createRouter({
         requiresAuth: true
       }
     },
-    // Doctor routes
+    // Teacher routes
     {
       path: '/teachers',
       name: 'teacher-list',
-      component: () => import('@/views/teachers/DoctorList.vue')
+      component: () => import('@/views/teachers/TeacherList.vue')
     },
     {
       path: '/teachers/:id',
       name: 'teacher-profile-view',
-      component: () => import('@/views/teachers/DoctorProfile.vue')
+      component: () => import('@/views/teachers/TeacherProfile.vue')
     },
     // Appointment routes
     {
@@ -96,25 +96,25 @@ const router = createRouter({
       component: () => import('@/views/appointments/BookAppointment.vue'),
       meta: {
         requiresAuth: true,
-        requiresPatient: true
+        requiresStudent: true
       }
     },
     {
       path: '/appointments/student',
       name: 'student-appointments',
-      component: () => import('@/views/appointments/PatientAppointments.vue'),
+      component: () => import('@/views/appointments/StudentAppointments.vue'),
       meta: {
         requiresAuth: true,
-        requiresPatient: true
+        requiresStudent: true
       }
     },
     {
       path: '/appointments/teacher',
       name: 'teacher-appointments',
-      component: () => import('@/views/appointments/DoctorAppointments.vue'),
+      component: () => import('@/views/appointments/TeacherAppointments.vue'),
       meta: {
         requiresAuth: true,
-        requiresDoctor: true
+        requiresTeacher: true
       }
     },
     {
@@ -176,11 +176,11 @@ const router = createRouter({
         requiresAuth: true
       }
     },
-    // Consultation routes
+    // Lesson routes
     {
-      path: '/consultation/:appointmentId',
-      name: 'consultation-room',
-      component: () => import('@/views/consultations/ConsultationRoom.vue'),
+      path: '/lesson/:appointmentId',
+      name: 'lesson-room',
+      component: () => import('@/views/lessons/LessonRoom.vue'),
       meta: {
         requiresAuth: true,
         hideNavBar: true,
@@ -204,9 +204,9 @@ router.beforeEach((to, from, next) => {
     next('/login')
   } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
     next('/')
-  } else if (to.meta.requiresPatient && !authStore.isPatient) {
+  } else if (to.meta.requiresStudent && !authStore.isStudent) {
     next('/')
-  } else if (to.meta.requiresDoctor && !authStore.isDoctor) {
+  } else if (to.meta.requiresTeacher && !authStore.isTeacher) {
     next('/')
   } else {
     next()

@@ -59,15 +59,15 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Specialization:</strong> ${teacher.specializations.join(', ')}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                         ${payment && payment.amount ? `<p><strong>Amount Paid:</strong> ${formatCurrency(payment.amount)}</p>` : ''}
                     </div>
                     
-                    <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
-                    <p>You can view your appointment details and join the consultation by logging into your Online-study.com account.</p>
+                    <p>Please make sure to join the lesson 5 minutes before the scheduled time.</p>
+                    <p>You can view your appointment details and join the lesson by logging into your Online-study.com account.</p>
                 </div>
                 `
             });
@@ -83,9 +83,9 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+                        <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
                     
                     <p>Please log in to your Online-study.com account to view the complete appointment details.</p>
@@ -116,9 +116,9 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                         <p><strong>Reason:</strong> ${error}</p>
                     </div>
                     
@@ -151,12 +151,12 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
                     
-                    <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
+                    <p>Please make sure to join the lesson 5 minutes before the scheduled time.</p>
                 </div>
                 `
             });
@@ -172,12 +172,12 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+                        <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
                     
-                    <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
+                    <p>Please make sure to join the lesson 5 minutes before the scheduled time.</p>
                 </div>
                 `
             });
@@ -206,9 +206,9 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
                     
                     <p>You can schedule a new appointment through our website.</p>
@@ -227,9 +227,9 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+                        <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
                     
                     <p>The time slot is now available for other appointments.</p>
@@ -253,17 +253,17 @@ class EmailService {
             // Email to student
             await this.sendEmail({
                 to: student.email,
-                subject: 'Appointment Confirmed by Doctor - Online-study.com',
+                subject: 'Appointment Confirmed by Teacher - Online-study.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Appointment Confirmed by Doctor</h2>
+                    <h2 style="color: #4a90e2;">Appointment Confirmed by Teacher</h2>
                     <p>Your appointment has been confirmed by Dr. ${teacher.firstName} ${teacher.lastName}.</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
                     
                     <p>Your appointment is now fully scheduled. You'll receive a reminder before the appointment time.</p>
@@ -282,9 +282,9 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+                        <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
                     
                     <p>The appointment is now scheduled in your calendar. You'll receive a reminder before the appointment time.</p>
@@ -315,9 +315,9 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                         <p><strong>Payment ID:</strong> ${paymentId}</p>
                     </div>
                     
@@ -367,9 +367,9 @@ class EmailService {
                         <p><strong>Payment ID:</strong> ${payment._id}</p>
                         <p><strong>Amount:</strong> ${formatCurrency(payment.amount)}</p>
                         <p><strong>Status:</strong> ${payment.status}</p>
-                        <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
                     
                     <p>Thank you for your payment. Your appointment is now confirmed.</p>
@@ -410,9 +410,9 @@ class EmailService {
                         <h3 style="margin-top: 0;">Refund Details</h3>
                         <p><strong>Payment ID:</strong> ${payment._id}</p>
                         <p><strong>Amount:</strong> ${formatCurrency(payment.amount)}</p>
-                        <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
                     
                     <p>The refund will be processed according to your payment method's standard processing times.</p>
@@ -429,49 +429,49 @@ class EmailService {
         }
     }
 
-    // Send prescription notification
-    async sendPrescriptionNotification(appointment) {
+    // Send homework notification
+    async sendHomeworkNotification(appointment) {
         try {
             await appointment.populate('student teacher');
 
-            const { student, teacher, prescriptions } = appointment;
+            const { student, teacher, homeworks } = appointment;
 
-            // Format prescriptions for email
-            let prescriptionsHtml = '';
-            prescriptions.forEach((prescription, index) => {
-                prescriptionsHtml += `
+            // Format homeworks for email
+            let homeworksHtml = '';
+            homeworks.forEach((homework, index) => {
+                homeworksHtml += `
                 <div style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 10px;">
-                    <p><strong>Medication:</strong> ${prescription.medication}</p>
-                    <p><strong>Dosage:</strong> ${prescription.dosage}</p>
-                    <p><strong>Frequency:</strong> ${prescription.frequency}</p>
-                    <p><strong>Duration:</strong> ${prescription.duration}</p>
-                    ${prescription.instructions ? `<p><strong>Instructions:</strong> ${prescription.instructions}</p>` : ''}
+                    <p><strong>Medication:</strong> ${homework.medication}</p>
+                    <p><strong>Dosage:</strong> ${homework.dosage}</p>
+                    <p><strong>Frequency:</strong> ${homework.frequency}</p>
+                    <p><strong>Duration:</strong> ${homework.duration}</p>
+                    ${homework.instructions ? `<p><strong>Instructions:</strong> ${homework.instructions}</p>` : ''}
                 </div>
                 `;
             });
 
             await this.sendEmail({
                 to: student.email,
-                subject: 'New Prescriptions from Your Doctor - Online-study.com',
+                subject: 'New Homeworks from Your Teacher - Online-study.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">New Prescriptions</h2>
-                    <p>Dr. ${teacher.firstName} ${teacher.lastName} has prescribed the following medication(s) after your consultation:</p>
+                    <h2 style="color: #4a90e2;">New Homeworks</h2>
+                    <p>Dr. ${teacher.firstName} ${teacher.lastName} has prescribed the following medication(s) after your lesson:</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        ${prescriptionsHtml}
+                        ${homeworksHtml}
                     </div>
                     
-                    <p>You can view these prescriptions at any time by logging into your Online-study.com account.</p>
+                    <p>You can view these homeworks at any time by logging into your Online-study.com account.</p>
                     <p><strong>Note:</strong> Always follow your teacher's instructions when taking medications.</p>
                 </div>
                 `
             });
 
-            console.log('Prescription notification email sent successfully');
+            console.log('Homework notification email sent successfully');
             return true;
         } catch (error) {
-            console.error('Error sending prescription notification email:', error);
+            console.error('Error sending homework notification email:', error);
             return false;
         }
     }
@@ -493,9 +493,9 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                         <p><strong>Reason:</strong> ${reasonForVisit}</p>
                     </div>
                     
@@ -514,9 +514,9 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
+                        <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                         <p><strong>Reason:</strong> ${reasonForVisit}</p>
                     </div>
                     

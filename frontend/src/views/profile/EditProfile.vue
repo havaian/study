@@ -41,8 +41,8 @@
                         </div>
                     </div>
 
-                    <!-- Doctor-specific fields -->
-                    <template v-if="authStore.isDoctor">
+                    <!-- Teacher-specific fields -->
+                    <template v-if="authStore.isTeacher">
                         <div>
                             <h2 class="text-lg font-medium text-gray-900 mb-4">Professional Information</h2>
 
@@ -63,7 +63,7 @@
                                         </button>
                                     </div>
                                     <button type="button" @click="addSpecialization"
-                                        class="text-sm bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Another Specialization
                                     </button>
                                 </div>
@@ -88,7 +88,7 @@
                                         </div>
                                     </div>
                                     <button type="button" @click="addEducation"
-                                        class="text-sm bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Education
                                     </button>
                                 </div>
@@ -114,7 +114,7 @@
                                         </div>
                                     </div>
                                     <button type="button" @click="addCertification"
-                                        class="text-sm bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Certification
                                     </button>
                                 </div>
@@ -122,8 +122,8 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label for="consultationFee" class="label">Consultation Fee (UZS)</label>
-                                    <input id="consultationFee" v-model.number="formData.consultationFee" type="number"
+                                    <label for="lessonFee" class="label">Lesson Fee (UZS)</label>
+                                    <input id="lessonFee" v-model.number="formData.lessonFee" type="number"
                                         min="0" class="input mt-1" required />
                                 </div>
                                 <div>
@@ -164,10 +164,10 @@
                         </div>
                     </template>
 
-                    <!-- Patient-specific fields -->
+                    <!-- Student-specific fields -->
                     <template v-else>
                         <div>
-                            <h2 class="text-lg font-medium text-gray-900 mb-4">Medical Information</h2>
+                            <h2 class="text-lg font-medium text-gray-900 mb-4">Educational Information</h2>
                             <div class="space-y-4">
                                 <div>
                                     <label for="allergies" class="label">Allergies</label>
@@ -205,7 +205,7 @@
                     </template>
 
                     <div class="flex justify-end space-x-4">
-                        <router-link :to="{ name: authStore.isDoctor ? 'teacher-profile' : 'student-profile' }"
+                        <router-link :to="{ name: authStore.isTeacher ? 'teacher-profile' : 'student-profile' }"
                             class="btn-secondary">
                             Cancel
                         </router-link>
@@ -243,7 +243,7 @@ const formData = reactive({
     specializations: [],
     education: [],
     certifications: [],
-    consultationFee: 0,
+    lessonFee: 0,
     experience: 0,
     languages: [],
     bio: '',
@@ -256,7 +256,7 @@ const formData = reactive({
         { dayOfWeek: 6, isAvailable: false, startTime: '09:00', endTime: '17:00' },
         { dayOfWeek: 7, isAvailable: false, startTime: '09:00', endTime: '17:00' }
     ],
-    medicalHistory: {
+    educationalHistory: {
         allergies: [],
         chronicConditions: []
     },
@@ -335,7 +335,7 @@ async function fetchUserProfile() {
         formData.phone = user.phone
         formData.address = user.address || { street: '', city: '' }
 
-        if (authStore.isDoctor) {
+        if (authStore.isTeacher) {
             // Handle specializations properly as an array
             formData.specializations = Array.isArray(user.specializations) ? 
                 user.specializations : 
@@ -343,7 +343,7 @@ async function fetchUserProfile() {
                 
             formData.education = user.education || []
             formData.certifications = user.certifications || []
-            formData.consultationFee = user.consultationFee || 0
+            formData.lessonFee = user.lessonFee || 0
             formData.experience = user.experience || 0
             formData.languages = user.languages || []
             formData.bio = user.bio || ''
@@ -352,12 +352,12 @@ async function fetchUserProfile() {
             // Update input fields
             languagesInput.value = user.languages?.join(', ') || ''
         } else {
-            formData.medicalHistory = user.medicalHistory || { allergies: [], chronicConditions: [] }
+            formData.educationalHistory = user.educationalHistory || { allergies: [], chronicConditions: [] }
             formData.emergencyContact = user.emergencyContact || { name: '', phone: '', relationship: '' }
 
             // Update input fields
-            allergiesInput.value = user.medicalHistory?.allergies?.join(', ') || ''
-            conditionsInput.value = user.medicalHistory?.chronicConditions?.join(', ') || ''
+            allergiesInput.value = user.educationalHistory?.allergies?.join(', ') || ''
+            conditionsInput.value = user.educationalHistory?.chronicConditions?.join(', ') || ''
         }
     } catch (error) {
         console.error('Error fetching user profile:', error)
@@ -376,18 +376,18 @@ async function handleSubmit() {
             address: formData.address
         }
 
-        if (authStore.isDoctor) {
+        if (authStore.isTeacher) {
             // Ensure specializations is an array of non-empty strings
             updateData.specializations = formData.specializations.filter(Boolean)
             updateData.education = formData.education.filter(e => e.degree && e.institution && e.year)
             updateData.certifications = formData.certifications.filter(c => c.name && c.issuer && c.year)
-            updateData.consultationFee = formData.consultationFee
+            updateData.lessonFee = formData.lessonFee
             updateData.experience = formData.experience
             updateData.languages = languagesInput.value.split(',').map(lang => lang.trim()).filter(Boolean)
             updateData.bio = formData.bio
             updateData.availability = formData.availability
         } else {
-            updateData.medicalHistory = {
+            updateData.educationalHistory = {
                 allergies: allergiesInput.value.split(',').map(item => item.trim()).filter(Boolean),
                 chronicConditions: conditionsInput.value.split(',').map(item => item.trim()).filter(Boolean)
             }
@@ -395,7 +395,7 @@ async function handleSubmit() {
         }
 
         await axios.patch('/api/users/me', updateData)
-        router.push({ name: authStore.isDoctor ? 'teacher-profile' : 'student-profile' })
+        router.push({ name: authStore.isTeacher ? 'teacher-profile' : 'student-profile' })
     } catch (error) {
         console.error('Error updating profile:', error)
     } finally {
@@ -406,7 +406,7 @@ async function handleSubmit() {
 onMounted(() => {
     fetchUserProfile()
     // Fetch specializations if user is a teacher
-    if (authStore.isDoctor) {
+    if (authStore.isTeacher) {
         fetchSpecializations()
     }
 })

@@ -1,45 +1,70 @@
 <template>
-    <nav class="bg-white/95 backdrop-blur-md shadow-lg border-b border-medical-blue/10 sticky top-0 z-50">
+    <nav class="bg-white/95 backdrop-blur-md shadow-lg border-b border-educational-blue/10 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <!-- Logo and main navigation -->
                 <div class="flex items-center">
                     <!-- Logo -->
                     <router-link to="/" class="flex items-center space-x-3">
-                        <div class="bg-gradient-to-r from-medical-blue to-medical-teal rounded-xl p-2 shadow-lg">
-                            <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        <div
+                            class="bg-gradient-to-r from-educational-blue to-educational-purple rounded-xl p-2 shadow-lg">
+                            <svg width="40" height="40" viewBox="4 4 40 40" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="educationalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+
+                                <!-- Rounded rectangle background with gradient -->
+                                <rect x="4" y="4" width="40" height="40" rx="10" ry="10"
+                                    fill="url(#educationalGradient)" />
+
+                                <!-- Graduation cap icon (centered in the container) -->
+                                <g transform="translate(12, 12)">
+                                    <!-- Main cap (mortarboard) -->
+                                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        fill="none" d="M2 10l10-6 10 6-10 6-10-6z" />
+
+                                    <!-- Cap base/band -->
+                                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        fill="none" d="M6 13v4c0 2 2.686 4 6 4s6-2 6-4v-4" />
+
+                                    <!-- Tassel -->
+                                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        fill="none" d="M16 7v4" />
+                                    <circle cx="16" cy="11" r="1" fill="white" />
+                                </g>
                             </svg>
                         </div>
                         <span class="text-xl font-bold">
                             ONLINE-<span
-                                class="bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent">POLYCLINIC</span><span
-                                class="text-medical-green">.COM</span>
+                                class="bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent">STUDY</span><span
+                                class="text-educational-green">.COM</span>
                         </span>
                     </router-link>
 
                     <!-- Desktop Navigation -->
                     <div class="hidden sm:ml-8 sm:flex sm:space-x-8">
                         <router-link to="/"
-                            class="text-gray-700 hover:text-medical-blue px-3 py-2 text-sm font-medium transition-colors duration-200"
-                            :class="{ 'text-medical-blue border-b-2 border-medical-blue': $route.path === '/' }">
+                            class="text-gray-700 hover:text-educational-blue px-3 py-2 text-sm font-medium transition-colors duration-200"
+                            :class="{ 'text-educational-blue border-b-2 border-educational-blue': $route.path === '/' }">
                             Home
                         </router-link>
                         <router-link to="/teachers"
-                            class="text-gray-700 hover:text-medical-blue px-3 py-2 text-sm font-medium transition-colors duration-200"
-                            :class="{ 'text-medical-blue border-b-2 border-medical-blue': $route.path === '/teachers' }">
-                            Find Doctors
+                            class="text-gray-700 hover:text-educational-blue px-3 py-2 text-sm font-medium transition-colors duration-200"
+                            :class="{ 'text-educational-blue border-b-2 border-educational-blue': $route.path === '/teachers' }">
+                            Find Teachers
                         </router-link>
                         <template v-if="authStore.isAuthenticated">
-                            <router-link v-if="authStore.isPatient" to="/appointments/student"
-                                class="text-gray-700 hover:text-medical-blue px-3 py-2 text-sm font-medium transition-colors duration-200"
-                                :class="{ 'text-medical-blue border-b-2 border-medical-blue': $route.path.includes('/appointments/student') }">
+                            <router-link v-if="authStore.isStudent" to="/appointments/student"
+                                class="text-gray-700 hover:text-educational-blue px-3 py-2 text-sm font-medium transition-colors duration-200"
+                                :class="{ 'text-educational-blue border-b-2 border-educational-blue': $route.path.includes('/appointments/student') }">
                                 My Appointments
                             </router-link>
-                            <router-link v-if="authStore.isDoctor" to="/appointments/teacher"
-                                class="text-gray-700 hover:text-medical-blue px-3 py-2 text-sm font-medium transition-colors duration-200"
-                                :class="{ 'text-medical-blue border-b-2 border-medical-blue': $route.path.includes('/appointments/teacher') }">
+                            <router-link v-if="authStore.isTeacher" to="/appointments/teacher"
+                                class="text-gray-700 hover:text-educational-blue px-3 py-2 text-sm font-medium transition-colors duration-200"
+                                :class="{ 'text-educational-blue border-b-2 border-educational-blue': $route.path.includes('/appointments/teacher') }">
                                 My Schedule
                             </router-link>
                         </template>
@@ -49,7 +74,7 @@
                 <!-- Mobile menu button -->
                 <div class="sm:hidden flex items-center">
                     <button @click="toggleMobileMenu" type="button"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-medical-blue hover:bg-medical-blue/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-medical-blue transition-colors duration-200">
+                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-educational-blue hover:bg-educational-blue/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-educational-blue transition-colors duration-200">
                         <span class="sr-only">Open main menu</span>
                         <!-- Icon when menu is closed -->
                         <svg v-if="!showMobileMenu" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -71,11 +96,11 @@
                     <template v-if="authStore.isAuthenticated">
                         <div class="relative">
                             <button @click="toggleProfileMenu"
-                                class="flex items-center space-x-3 px-4 py-2 rounded-xl bg-gradient-to-r from-medical-blue/10 to-medical-teal/10 hover:from-medical-blue/20 hover:to-medical-teal/20 transition-all duration-200 border border-medical-blue/20">
+                                class="flex items-center space-x-3 px-4 py-2 rounded-xl bg-gradient-to-r from-educational-blue/10 to-educational-teal/10 hover:from-educational-blue/20 hover:to-educational-teal/20 transition-all duration-200 border border-educational-blue/20">
                                 <div
-                                    class="w-8 h-8 bg-gradient-to-r from-medical-blue to-medical-teal rounded-full flex items-center justify-center">
+                                    class="w-8 h-8 bg-gradient-to-r from-educational-blue to-educational-purple rounded-full flex items-center justify-center">
                                     <span class="text-white font-semibold text-sm">{{ authStore.user?.firstName?.[0]
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <span class="text-sm font-medium text-gray-700">{{ authStore.user?.firstName }}</span>
                                 <svg class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24"
@@ -85,10 +110,10 @@
                                 </svg>
                             </button>
                             <div v-if="showProfileMenu"
-                                class="absolute right-0 mt-2 w-56 rounded-xl shadow-lg bg-white/95 backdrop-blur-md ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 border border-medical-blue/10">
+                                class="absolute right-0 mt-2 w-56 rounded-xl shadow-lg bg-white/95 backdrop-blur-md ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 border border-educational-blue/10">
                                 <div class="py-1">
-                                    <router-link :to="authStore.isDoctor ? '/profile/teacher' : '/profile/student'"
-                                        class="block px-4 py-3 text-sm text-gray-700 hover:bg-medical-blue/5 hover:text-medical-blue transition-colors duration-200">
+                                    <router-link :to="authStore.isTeacher ? '/profile/teacher' : '/profile/student'"
+                                        class="block px-4 py-3 text-sm text-gray-700 hover:bg-educational-blue/5 hover:text-educational-blue transition-colors duration-200">
                                         <div class="flex items-center space-x-3">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -98,7 +123,7 @@
                                         </div>
                                     </router-link>
                                     <router-link to="/profile/edit"
-                                        class="block px-4 py-3 text-sm text-gray-700 hover:bg-medical-blue/5 hover:text-medical-blue transition-colors duration-200">
+                                        class="block px-4 py-3 text-sm text-gray-700 hover:bg-educational-blue/5 hover:text-educational-blue transition-colors duration-200">
                                         <div class="flex items-center space-x-3">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -125,10 +150,10 @@
                     </template>
                     <template v-else>
                         <router-link to="/login"
-                            class="text-medical-blue hover:text-medical-teal font-medium px-4 py-2 rounded-xl transition-colors duration-200">
+                            class="text-educational-blue hover:text-educational-teal font-medium px-4 py-2 rounded-xl transition-colors duration-200">
                             Sign In
                         </router-link>
-                        <router-link to="/register" class="btn-medical-primary text-sm">
+                        <router-link to="/register" class="btn-educational-primary text-sm">
                             Get Started
                         </router-link>
                     </template>
@@ -137,36 +162,37 @@
         </div>
 
         <!-- Mobile menu -->
-        <div v-if="showMobileMenu" class="sm:hidden bg-white/95 backdrop-blur-md border-t border-medical-blue/10">
+        <div v-if="showMobileMenu" class="sm:hidden bg-white/95 backdrop-blur-md border-t border-educational-blue/10">
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <router-link to="/"
-                    class="text-gray-700 hover:text-medical-blue block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
-                    :class="{ 'text-medical-blue bg-medical-blue/5': $route.path === '/' }" @click="closeMobileMenu">
+                    class="text-gray-700 hover:text-educational-blue block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                    :class="{ 'text-educational-blue bg-educational-blue/5': $route.path === '/' }"
+                    @click="closeMobileMenu">
                     Home
                 </router-link>
                 <router-link to="/teachers"
-                    class="text-gray-700 hover:text-medical-blue block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
-                    :class="{ 'text-medical-blue bg-medical-blue/5': $route.path === '/teachers' }"
+                    class="text-gray-700 hover:text-educational-blue block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                    :class="{ 'text-educational-blue bg-educational-blue/5': $route.path === '/teachers' }"
                     @click="closeMobileMenu">
-                    Find Doctors
+                    Find Teachers
                 </router-link>
                 <template v-if="authStore.isAuthenticated">
-                    <router-link v-if="authStore.isPatient" to="/appointments/student"
-                        class="text-gray-700 hover:text-medical-blue block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
-                        :class="{ 'text-medical-blue bg-medical-blue/5': $route.path.includes('/appointments/student') }"
+                    <router-link v-if="authStore.isStudent" to="/appointments/student"
+                        class="text-gray-700 hover:text-educational-blue block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                        :class="{ 'text-educational-blue bg-educational-blue/5': $route.path.includes('/appointments/student') }"
                         @click="closeMobileMenu">
                         My Appointments
                     </router-link>
-                    <router-link v-if="authStore.isDoctor" to="/appointments/teacher"
-                        class="text-gray-700 hover:text-medical-blue block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
-                        :class="{ 'text-medical-blue bg-medical-blue/5': $route.path.includes('/appointments/teacher') }"
+                    <router-link v-if="authStore.isTeacher" to="/appointments/teacher"
+                        class="text-gray-700 hover:text-educational-blue block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                        :class="{ 'text-educational-blue bg-educational-blue/5': $route.path.includes('/appointments/teacher') }"
                         @click="closeMobileMenu">
                         My Schedule
                     </router-link>
                     <div class="border-t border-gray-200 pt-4 pb-3">
                         <div class="flex items-center px-3 mb-3">
                             <div
-                                class="w-10 h-10 bg-gradient-to-r from-medical-blue to-medical-teal rounded-full flex items-center justify-center">
+                                class="w-10 h-10 bg-gradient-to-r from-educational-blue to-educational-purple rounded-full flex items-center justify-center">
                                 <span class="text-white font-semibold">{{ authStore.user?.firstName?.[0] }}</span>
                             </div>
                             <div class="ml-3">
@@ -175,13 +201,13 @@
                                 <div class="text-sm font-medium text-gray-500">{{ authStore.user?.email }}</div>
                             </div>
                         </div>
-                        <router-link :to="authStore.isDoctor ? '/profile/teacher' : '/profile/student'"
-                            class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-medical-blue hover:bg-medical-blue/5 transition-colors duration-200"
+                        <router-link :to="authStore.isTeacher ? '/profile/teacher' : '/profile/student'"
+                            class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-educational-blue hover:bg-educational-blue/5 transition-colors duration-200"
                             @click="closeMobileMenu">
                             My Profile
                         </router-link>
                         <router-link to="/profile/edit"
-                            class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-medical-blue hover:bg-medical-blue/5 transition-colors duration-200"
+                            class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-educational-blue hover:bg-educational-blue/5 transition-colors duration-200"
                             @click="closeMobileMenu">
                             Edit Profile
                         </router-link>
@@ -194,11 +220,11 @@
                 <template v-else>
                     <div class="border-t border-gray-200 pt-4 pb-3 space-y-2">
                         <router-link to="/login"
-                            class="block px-3 py-2 text-base font-medium text-medical-blue hover:text-medical-teal transition-colors duration-200"
+                            class="block px-3 py-2 text-base font-medium text-educational-blue hover:text-educational-teal transition-colors duration-200"
                             @click="closeMobileMenu">
                             Sign In
                         </router-link>
-                        <router-link to="/register" class="block mx-3 btn-medical-primary text-center text-sm"
+                        <router-link to="/register" class="block mx-3 btn-educational-primary text-center text-sm"
                             @click="closeMobileMenu">
                             Get Started
                         </router-link>

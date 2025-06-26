@@ -8,8 +8,8 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token'))
 
   const isAuthenticated = computed(() => !!token.value)
-  const isDoctor = computed(() => user.value?.role === 'teacher')
-  const isPatient = computed(() => user.value?.role === 'student')
+  const isTeacher = computed(() => user.value?.role === 'teacher')
+  const isStudent = computed(() => user.value?.role === 'student')
 
   async function login(email, password) {
     try {
@@ -49,8 +49,8 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     token,
     isAuthenticated,
-    isDoctor,
-    isPatient,
+    isTeacher,
+    isStudent,
     login,
     register,
     logout
