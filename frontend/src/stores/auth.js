@@ -8,14 +8,16 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token'))
 
   const isAuthenticated = computed(() => !!token.value)
-  const isDoctor = computed(() => user.value?.role === 'doctor')
-  const isPatient = computed(() => user.value?.role === 'patient')
+  const isDoctor = computed(() => user.value?.role === 'teacher')
+  const isPatient = computed(() => user.value?.role === 'student')
 
   async function login(email, password) {
     try {
       const response = await axios.post('/api/users/login', { email, password })
       token.value = response.data.token
       user.value = response.data.user
+
+      console.log(response.data);
 
       // Persist to localStorage
       localStorage.setItem('token', token.value)

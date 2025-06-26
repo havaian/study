@@ -15,7 +15,7 @@
             </p>
 
             <div class="mt-8 space-y-4">
-                <router-link :to="{ name: 'patient-appointments' }" class="btn-primary w-full justify-center">
+                <router-link :to="{ name: 'student-appointments' }" class="btn-primary w-full justify-center">
                     Return to Appointments
                 </router-link>
 

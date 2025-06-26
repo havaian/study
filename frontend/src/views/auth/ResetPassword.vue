@@ -62,7 +62,7 @@
             </form>
 
             <div class="text-sm text-center">
-                <router-link to="/login" class="font-medium text-indigo-600 hover:text-indigo-500">
+                <router-link to="/login" class="font-medium bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-500">
                     Back to login
                 </router-link>
             </div>

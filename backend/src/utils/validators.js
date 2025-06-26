@@ -44,7 +44,7 @@ exports.validateUserInput = (data) => {
                 'string.pattern.base': 'Please provide a valid phone number'
             }),
 
-        role: Joi.string().valid('patient', 'doctor').default('patient'),
+        role: Joi.string().valid('student', 'teacher').default('student'),
 
         // Common optional fields
         address: Joi.object({
@@ -56,20 +56,20 @@ exports.validateUserInput = (data) => {
         }).optional()
     };
 
-    // Define patient-specific schema
-    const patientSchema = {
+    // Define student-specific schema
+    const studentSchema = {
         // Patient-specific required fields
         dateOfBirth: Joi.date().max('now').required()
             .messages({
                 'date.base': 'Please provide a valid date of birth',
                 'date.max': 'Date of birth cannot be in the future',
-                'any.required': 'Date of birth is required for patients'
+                'any.required': 'Date of birth is required for students'
             }),
 
         gender: Joi.string().valid('male', 'female', 'other', 'prefer not to say').required()
             .messages({
                 'any.only': 'Gender must be one of: male, female, other, prefer not to say',
-                'any.required': 'Gender is required for patients'
+                'any.required': 'Gender is required for students'
             }),
 
         // Patient-specific optional fields
@@ -90,22 +90,22 @@ exports.validateUserInput = (data) => {
         }).optional(),
     };
 
-    // Define doctor-specific schema
-    const doctorSchema = {
+    // Define teacher-specific schema
+    const teacherSchema = {
         // Doctor-specific required fields
         specializations: Joi.string().trim().required()
             .messages({
-                'string.empty': 'Specialization is required for doctors'
+                'string.empty': 'Specialization is required for teachers'
             }),
 
         specializations: Joi.array().items(Joi.string().trim()).min(1).required()
             .messages({
-                'array.min': 'At least one specializations is required for doctors'
+                'array.min': 'At least one specializations is required for teachers'
             }),
 
         licenseNumber: Joi.string().trim().required()
             .messages({
-                'string.empty': 'License number is required for doctors'
+                'string.empty': 'License number is required for teachers'
             }),
 
         experience: Joi.number().integer().min(0).required()
@@ -113,14 +113,14 @@ exports.validateUserInput = (data) => {
                 'number.base': 'Experience must be a number',
                 'number.integer': 'Experience must be an integer',
                 'number.min': 'Experience cannot be negative',
-                'any.required': 'Experience is required for doctors'
+                'any.required': 'Experience is required for teachers'
             }),
 
         consultationFee: Joi.number().positive().required()
             .messages({
                 'number.base': 'Consultation fee must be a number',
                 'number.positive': 'Consultation fee must be positive',
-                'any.required': 'Consultation fee is required for doctors'
+                'any.required': 'Consultation fee is required for teachers'
             }),
 
         // Doctor-specific optional fields
@@ -159,11 +159,11 @@ exports.validateUserInput = (data) => {
 
     // Choose schema based on role
     let schemaToUse;
-    if (data.role === 'doctor') {
-        schemaToUse = { ...baseSchema, ...doctorSchema };
+    if (data.role === 'teacher') {
+        schemaToUse = { ...baseSchema, ...teacherSchema };
     } else {
         // Patient role
-        schemaToUse = { ...baseSchema, ...patientSchema };
+        schemaToUse = { ...baseSchema, ...studentSchema };
     }
 
     // Create and return schema
@@ -178,8 +178,8 @@ exports.validateUserInput = (data) => {
  */
 exports.validateAppointmentInput = (data) => {
     const schema = Joi.object({
-        // Remove patientId from validation schema completely
-        doctorId: Joi.string().required()
+        // Remove studentId from validation schema completely
+        teacherId: Joi.string().required()
             .messages({
                 'string.empty': 'Doctor ID is required',
                 'any.required': 'Doctor ID is required'
@@ -264,7 +264,7 @@ exports.validatePrescriptionInput = (data) => {
 };
 
 /**
- * Validate doctor availability input
+ * Validate teacher availability input
  * @param {Object} data Availability data for validation
  * @returns {Object} Validation result
  */

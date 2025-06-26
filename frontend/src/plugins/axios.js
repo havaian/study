@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 
-axios.defaults.baseURL = 'https://e-polyclinic.uz'; 
+axios.defaults.baseURL = 'http://localhost:3333'; 
 
 axios.interceptors.request.use(config => {
   const authStore = useAuthStore()

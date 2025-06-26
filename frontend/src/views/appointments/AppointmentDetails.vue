@@ -32,14 +32,14 @@
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Doctor</h3>
                             <div class="flex items-center space-x-4">
-                                <img :src="appointment.doctor.profilePicture || '/images/user-placeholder.jpg'"
-                                    :alt="appointment.doctor.firstName" class="h-12 w-12 rounded-full object-cover" />
+                                <img :src="appointment.teacher.profilePicture || '/images/user-placeholder.jpg'"
+                                    :alt="appointment.teacher.firstName" class="h-12 w-12 rounded-full object-cover" />
                                 <div>
                                     <p class="font-medium text-gray-900">
-                                        Dr. {{ appointment.doctor.firstName }} {{ appointment.doctor.lastName }}
+                                        Dr. {{ appointment.teacher.firstName }} {{ appointment.teacher.lastName }}
                                     </p>
                                     <div class="mt-2 flex flex-wrap gap-2">
-                                        <span v-for="spec in appointment.doctor.specializations" :key="spec"
+                                        <span v-for="spec in appointment.teacher.specializations" :key="spec"
                                             class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                                             {{ spec }}
                                         </span>
@@ -51,14 +51,14 @@
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Patient</h3>
                             <div class="flex items-center space-x-4">
-                                <img :src="appointment.patient.profilePicture || '/images/user-placeholder.jpg'"
-                                    :alt="appointment.patient.firstName" class="h-12 w-12 rounded-full object-cover" />
+                                <img :src="appointment.student.profilePicture || '/images/user-placeholder.jpg'"
+                                    :alt="appointment.student.firstName" class="h-12 w-12 rounded-full object-cover" />
                                 <div>
                                     <p class="font-medium text-gray-900">
-                                        {{ appointment.patient.firstName }} {{ appointment.patient.lastName }}
+                                        {{ appointment.student.firstName }} {{ appointment.student.lastName }}
                                     </p>
                                     <p class="text-sm text-gray-500">
-                                        Age: {{ calculateAge(appointment.patient.dateOfBirth) }}
+                                        Age: {{ calculateAge(appointment.student.dateOfBirth) }}
                                     </p>
                                 </div>
                             </div>
@@ -168,7 +168,7 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-medium text-gray-900">Chat History</h3>
                             <button @click="showChatLog = !showChatLog"
-                                class="text-sm text-indigo-600 hover:text-indigo-900">
+                                class="text-sm bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-900">
                                 {{ showChatLog ? 'Hide Chat' : 'Show Chat' }}
                             </button>
                         </div>
@@ -205,7 +205,7 @@
                         </div>
                     </div>
 
-                    <!-- Doctor-patient chat -->
+                    <!-- Doctor-student chat -->
                     <div class="mt-8" v-if="canStartChat">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Communication</h3>
                         <div class="bg-gray-50 p-4 rounded-lg">
@@ -354,8 +354,8 @@ const canStartChat = computed(() => {
     if (!appointment.value) return false
 
     const isParticipant = authStore.isDoctor ?
-        appointment.value.doctor._id === authStore.user._id :
-        appointment.value.patient._id === authStore.user._id
+        appointment.value.teacher._id === authStore.user._id :
+        appointment.value.student._id === authStore.user._id
 
     const validStatus = ['scheduled', 'completed']
     return isParticipant && validStatus.includes(appointment.value.status)
@@ -365,8 +365,8 @@ const getChatButtonText = computed(() => {
     if (!appointment.value) return ''
 
     const otherParty = authStore.isDoctor ?
-        `${appointment.value.patient.firstName} ${appointment.value.patient.lastName}` :
-        `Dr. ${appointment.value.doctor.firstName} ${appointment.value.doctor.lastName}`
+        `${appointment.value.student.firstName} ${appointment.value.student.lastName}` :
+        `Dr. ${appointment.value.teacher.firstName} ${appointment.value.teacher.lastName}`
 
     return `Chat with ${otherParty} about this appointment`
 })
@@ -392,14 +392,14 @@ async function fetchAppointment() {
 
 async function findFollowUpAppointment() {
     try {
-        // Get patient's pending-payment appointments
-        const response = await axios.get(`/api/appointments/patient/${authStore.user._id}/pending-followups`)
+        // Get student's pending-payment appointments
+        const response = await axios.get(`/api/appointments/student/${authStore.user._id}/pending-followups`)
 
         // Find follow-up for this appointment
         const followUps = response.data.appointments || []
         const followUp = followUps.find(app =>
             app.reasonForVisit.includes(`Follow-up to appointment on`) &&
-            app.doctor._id === appointment.value.doctor._id)
+            app.teacher._id === appointment.value.teacher._id)
 
         if (followUp) {
             followUpAppointment.value = followUp
@@ -455,8 +455,8 @@ async function proceedToPayment(appointmentId) {
 async function startChat() {
     try {
         const participantId = authStore.isDoctor ?
-            appointment.value.patient._id :
-            appointment.value.doctor._id
+            appointment.value.student._id :
+            appointment.value.teacher._id
 
         // Create or get existing conversation
         const response = await axios.post('/api/chat/conversations', {

@@ -36,7 +36,7 @@ router.patch('/users/:id/status', adminController.updateUserStatus);
 
 /**
  * @route PATCH /api/admin/users/:id/verify
- * @desc Manually verify a user (useful for doctors verification)
+ * @desc Manually verify a user (useful for teachers verification)
  * @access Private (Admin only)
  */
 router.patch('/users/:id/verify', adminController.verifyUser);

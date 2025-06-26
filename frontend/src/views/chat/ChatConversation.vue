@@ -4,16 +4,25 @@
             <!-- Chat Header -->
             <div class="p-4 border-b border-gray-200">
                 <div class="flex items-center">
-                    <img :src="recipientAvatar" :alt="recipientName" class="h-10 w-10 rounded-full object-cover" />
+                    <div class="relative">
+                        <img :src="recipientAvatar" :alt="recipientName" class="h-10 w-10 rounded-full object-cover" />
+                        <!-- Online Status Indicator -->
+                        <div v-if="recipientOnlineStatus.isOnline"
+                            class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full">
+                        </div>
+                        <div v-else
+                            class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full">
+                        </div>
+                    </div>
                     <div class="ml-3">
                         <h3 class="text-lg font-medium text-gray-900">{{ recipientName }}</h3>
-                        <p v-if="recipientStatus" class="text-sm text-gray-500">{{ recipientStatus }}</p>
+                        <p class="text-sm text-gray-500">{{ recipientStatus }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Messages Container -->
-            <div ref="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+            <div ref="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4" @scroll="handleScroll">
                 <template v-for="message in messages" :key="message._id">
                     <!-- Message Bubble -->
                     <div class="flex mb-4" :class="[
@@ -26,7 +35,7 @@
                         </div>
 
                         <!-- Message Content -->
-                        <div class="rounded-lg px-4 py-2 max-w-[70%] shadow" :class="[
+                        <div class="rounded-lg px-4 py-2 max-w-[70%] shadow relative" :class="[
                             message.sender._id === authStore.user._id
                                 ? 'bg-indigo-600 text-white'
                                 : 'bg-gray-100 text-gray-900'
@@ -39,9 +48,28 @@
                             <!-- Message Text -->
                             <div class="text-sm">{{ message.text }}</div>
 
-                            <!-- Timestamp -->
-                            <div class="text-xs mt-1 opacity-70 text-right">
-                                {{ formatTime(message.createdAt) }}
+                            <!-- Timestamp and Read Status -->
+                            <div class="flex items-center justify-between mt-1">
+                                <div class="text-xs opacity-70">
+                                    {{ formatTime(message.createdAt) }}
+                                </div>
+
+                                <!-- Read Status (only for sent messages) -->
+                                <div v-if="message.sender._id === authStore.user._id" class="ml-2">
+                                    <div v-if="message.isRead" class="flex items-center space-x-0.5">
+                                        <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                        </svg>
+                                        <svg class="w-4 h-4 text-gray-300 -ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <svg v-else class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
 
@@ -71,8 +99,8 @@
             <!-- Input Area -->
             <div class="p-4 border-t border-gray-200">
                 <form @submit.prevent="sendMessage" class="flex space-x-2">
-                    <input v-model="newMessage" type="text" class="input flex-1" placeholder="Type your message..."
-                        :disabled="loading || sending" />
+                    <input v-model="newMessage" @input="handleTyping" @keydown="handleKeyDown" type="text"
+                        class="input flex-1" placeholder="Type your message..." :disabled="loading || sending" />
                     <button type="submit" class="btn-primary" :disabled="loading || sending || !newMessage.trim()">
                         <svg v-if="!sending" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -94,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { format } from 'date-fns'
@@ -113,6 +141,11 @@ const socket = ref(null)
 const newMessage = ref('')
 const messagesContainer = ref(null)
 
+// Online status and read receipts
+const recipientOnlineStatus = ref({ isOnline: false, lastSeen: null })
+const typingTimeout = ref(null)
+const isUserTyping = ref(false)
+
 const userInitials = computed(() => {
     const user = authStore.user
     if (!user) return 'U'
@@ -126,7 +159,7 @@ const recipient = computed(() => {
 
 const recipientName = computed(() => {
     if (!recipient.value) return ''
-    return recipient.value.role === 'doctor' ?
+    return recipient.value.role === 'teacher' ?
         `Dr. ${recipient.value.firstName} ${recipient.value.lastName}` :
         `${recipient.value.firstName} ${recipient.value.lastName}`
 })
@@ -136,12 +169,23 @@ const recipientAvatar = computed(() => {
 })
 
 const recipientStatus = computed(() => {
-    if (!recipient.value?.isOnline) return 'Offline'
-    return 'Online'
+    if (recipientOnlineStatus.value.isOnline) {
+        return 'Online'
+    } else if (recipientOnlineStatus.value.lastSeen) {
+        const lastSeenDate = new Date(recipientOnlineStatus.value.lastSeen)
+        const now = new Date()
+        const diffMinutes = Math.floor((now - lastSeenDate) / (1000 * 60))
+
+        if (diffMinutes < 1) return 'Last seen just now'
+        if (diffMinutes < 60) return `Last seen ${diffMinutes}m ago`
+        if (diffMinutes < 1440) return `Last seen ${Math.floor(diffMinutes / 60)}h ago`
+        return `Last seen ${Math.floor(diffMinutes / 1440)}d ago`
+    }
+    return 'Offline'
 })
 
 function formatSenderLabel(sender) {
-    return sender.role === 'doctor' ?
+    return sender.role === 'teacher' ?
         `Dr. ${sender.firstName} ${sender.lastName}` :
         `${sender.firstName} ${sender.lastName}`
 }
@@ -153,6 +197,48 @@ function formatTime(timestamp) {
 function scrollToBottom() {
     if (messagesContainer.value) {
         messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+    }
+}
+
+// Handle scroll to mark messages as read
+function handleScroll() {
+    if (messagesContainer.value) {
+        const { scrollTop, scrollHeight, clientHeight } = messagesContainer.value
+        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100
+
+        if (isNearBottom && socket.value) {
+            socket.value.emit('mark-read', { conversationId: route.params.id })
+        }
+    }
+}
+
+// Handle typing indicators
+function handleTyping() {
+    if (!socket.value || !recipient.value) return
+
+    if (!isUserTyping.value) {
+        isUserTyping.value = true
+        socket.value.emit('typing', { conversationId: route.params.id })
+    }
+
+    // Clear existing timeout
+    if (typingTimeout.value) {
+        clearTimeout(typingTimeout.value)
+    }
+
+    // Set new timeout to stop typing
+    typingTimeout.value = setTimeout(() => {
+        if (isUserTyping.value) {
+            isUserTyping.value = false
+            socket.value.emit('stop-typing', { conversationId: route.params.id })
+        }
+    }, 2000)
+}
+
+function handleKeyDown(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault()
+        sendMessage()
     }
 }
 
@@ -171,72 +257,194 @@ async function fetchConversation() {
     }
 }
 
-async function sendMessage(text) {
-    if (!newMessage.value.trim() || sending.value || !recipient.value) return
+async function sendMessage() {
+    const messageText = newMessage.value.trim()
+
+    if (!messageText || sending.value || !recipient.value) {
+        console.log('Cannot send message:', {
+            messageText: !!messageText,
+            sending: sending.value,
+            recipient: !!recipient.value,
+            socketConnected: socket.value?.connected
+        })
+        return
+    }
+
+    if (!socket.value || !socket.value.connected) {
+        console.error('Socket not connected')
+        alert('Connection lost. Please refresh the page.')
+        return
+    }
 
     try {
         sending.value = true
-        socket.value.emit('new-message', {
+
+        // Stop typing indicator
+        if (isUserTyping.value) {
+            isUserTyping.value = false
+            socket.value.emit('stop-typing', { conversationId: route.params.id })
+        }
+
+        const messageData = {
             conversationId: route.params.id,
             receiverId: recipient.value._id,
-            text: newMessage.value
+            text: messageText
+        }
+
+        console.log('Sending message:', messageData)
+
+        // Add acknowledgment callback to confirm message was received by server
+        socket.value.emit('new-message', messageData, (response) => {
+            if (response && response.success) {
+                console.log('Message sent successfully')
+            } else {
+                console.error('Failed to send message:', response)
+                alert('Failed to send message. Please try again.')
+            }
         })
+
         newMessage.value = ''
         await nextTick()
         scrollToBottom()
     } catch (error) {
         console.error('Error sending message:', error)
+        alert('Error sending message. Please try again.')
     } finally {
         sending.value = false
     }
 }
 
 function initializeSocket() {
-    socket.value = io(import.meta.env.VITE_API_URL, {
-        query: { token: authStore.token },
+    const token = authStore.token
+
+    if (!token) {
+        console.error('No authentication token available')
+        return
+    }
+
+    console.log('Initializing socket connection...')
+
+    socket.value = io('http://localhost:3333', {
+        query: { token },
         path: '/socket.io/',
         transports: ['websocket', 'polling'],
         reconnection: true,
         reconnectionAttempts: 5,
-        reconnectionDelay: 1000
-    });
+        reconnectionDelay: 1000,
+        timeout: 10000,
+        forceNew: true
+    })
 
     socket.value.on('connect', () => {
-        console.log('Socket connected');
-        socket.value.emit('join-conversation', route.params.id);
-    });
+        console.log('Socket connected successfully')
+        socket.value.emit('join-conversation', route.params.id)
+    })
 
     socket.value.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
-    });
+        console.error('Socket connection error:', error)
+    })
 
-    socket.value.on('new-message', async (message) => {
-        if (message.conversation === route.params.id) {
-            messages.value.push(message);
-            await nextTick()
-            scrollToBottom()
-        }
-    });
+    socket.value.on('disconnect', (reason) => {
+        console.log('Socket disconnected:', reason)
+    })
 
     socket.value.on('error', (error) => {
-        console.error('Socket error:', error);
-    });
+        console.error('Socket error:', error)
+    })
 
+    socket.value.on('new-message', async (message) => {
+        console.log('Received new message:', message)
+        if (message.conversation === route.params.id) {
+            messages.value.push(message)
+            await nextTick()
+            scrollToBottom()
+
+            // Auto-mark as read if user is at bottom of chat
+            setTimeout(() => {
+                handleScroll()
+            }, 100)
+        }
+    })
+
+    socket.value.on('new-message-notification', (data) => {
+        console.log('Received message notification:', data)
+        // Handle notifications for messages in other conversations
+        // You could show a toast notification here
+    })
+
+    // Online status events
+    socket.value.on('conversation-participants-status', (data) => {
+        console.log('Participants status:', data)
+        if (data.conversationId === route.params.id && recipient.value) {
+            const status = data.statuses[recipient.value._id]
+            if (status) {
+                recipientOnlineStatus.value = status
+            }
+        }
+    })
+
+    socket.value.on('user-status', (data) => {
+        console.log('User status update:', data)
+        if (recipient.value && data.userId === recipient.value._id) {
+            recipientOnlineStatus.value = {
+                isOnline: data.isOnline,
+                lastSeen: data.lastSeen || recipientOnlineStatus.value.lastSeen
+            }
+        }
+    })
+
+    socket.value.on('user-joined', (data) => {
+        console.log('User joined conversation:', data)
+        if (recipient.value && data.userId === recipient.value._id) {
+            recipientOnlineStatus.value.isOnline = true
+        }
+    })
+
+    socket.value.on('user-left', (data) => {
+        console.log('User left conversation:', data)
+        if (recipient.value && data.userId === recipient.value._id) {
+            recipientOnlineStatus.value.isOnline = data.isOnline || false
+        }
+    })
+
+    // Typing events
     socket.value.on('typing', (data) => {
         if (data.userId !== authStore.user._id) {
-            isTyping.value = true;
+            isTyping.value = true
             setTimeout(() => {
-                isTyping.value = false;
-            }, 3000);
+                isTyping.value = false
+            }, 3000)
         }
-    });
+    })
 
     socket.value.on('stop-typing', (data) => {
         if (data.userId !== authStore.user._id) {
-            isTyping.value = false;
+            isTyping.value = false
         }
-    });
+    })
+
+    // Read receipts
+    socket.value.on('messages-read', (data) => {
+        console.log('Messages marked as read:', data)
+        if (data.conversationId === route.params.id) {
+            // Update read status for messages sent by current user
+            messages.value = messages.value.map(message => {
+                if (message.sender._id === authStore.user._id) {
+                    return { ...message, isRead: true }
+                }
+                return message
+            })
+        }
+    })
 }
+
+// Watch for conversation changes to update online status
+watch(() => recipient.value, (newRecipient) => {
+    if (newRecipient && socket.value) {
+        // Reset online status when switching conversations
+        recipientOnlineStatus.value = { isOnline: false, lastSeen: null }
+    }
+}, { immediate: true })
 
 onMounted(() => {
     fetchConversation()
@@ -246,7 +454,16 @@ onMounted(() => {
 onUnmounted(() => {
     if (socket.value) {
         socket.value.emit('leave-conversation', route.params.id)
+
+        if (isUserTyping.value) {
+            socket.value.emit('stop-typing', { conversationId: route.params.id })
+        }
+
         socket.value.disconnect()
+    }
+
+    if (typingTimeout.value) {
+        clearTimeout(typingTimeout.value)
     }
 })
 </script>

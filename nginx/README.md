@@ -1,6 +1,6 @@
-# Nginx Configuration Guide for E-polyclinic.uz
+# Nginx Configuration Guide for online-study.com
 
-This guide explains the Nginx setup for the E-polyclinic.uz platform.
+This guide explains the Nginx setup for the online-study.com platform.
 
 ## Overview
 
@@ -16,7 +16,7 @@ project-root/
 ├── nginx/                     # Main Nginx configs
 │   ├── nginx.conf             # Global Nginx settings
 │   ├── conf.d/                # Site configs
-│   │   └── e-polyclinic.uz.conf     # E-polyclinic.uz domain config
+│   │   └── online-study.com.conf     # online-study.com domain config
 │   └── ssl/                   # SSL certificates
 └── frontend/
     └── nginx.conf             # Frontend container Nginx config
@@ -24,7 +24,7 @@ project-root/
 
 ## How Traffic Flows
 
-1. User requests e-polyclinic.uz
+1. User requests online-study.com
 2. Main Nginx receives the request
 3. Nginx routes the request:
    - `/api/*` → Backend service
@@ -46,8 +46,8 @@ mkdir -p nginx/conf.d nginx/ssl
 # Copy main Nginx configuration
 cp nginx.conf nginx/nginx.conf
 
-# Copy e-polyclinic.uz configuration
-cp e-polyclinic.uz.conf nginx/conf.d/e-polyclinic.uz.conf
+# Copy online-study.com configuration
+cp online-study.com.conf nginx/conf.d/online-study.com.conf
 
 # Copy frontend Nginx configuration
 cp frontend-nginx.conf frontend/nginx.conf
@@ -67,9 +67,9 @@ docker-compose up -d
 
 For production, you should enable SSL:
 
-1. Get SSL certificates for e-polyclinic.uz
+1. Get SSL certificates for online-study.com
 2. Place them in `nginx/ssl/`
-3. Uncomment the HTTPS server block in `nginx/conf.d/e-polyclinic.uz.conf`
+3. Uncomment the HTTPS server block in `nginx/conf.d/online-study.com.conf`
 4. Restart Nginx:
    ```bash
    docker-compose restart nginx

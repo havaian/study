@@ -204,7 +204,7 @@ class NotificationService {
             console.log('- Subject:', subject);
 
             const mailOptions = {
-                from: `"E-polyclinic.uz" <${process.env.SMTP_FROM_EMAIL}>`,
+                from: `"Online-study.com" <${process.env.SMTP_FROM_EMAIL}>`,
                 to,
                 subject,
                 text,
@@ -322,17 +322,17 @@ class NotificationService {
 
         const emailData = {
             to: email,
-            subject: 'Verify Your Email - E-polyclinic.uz',
+            subject: 'Verify Your Email - Online-study.com',
             text: `Please verify your email by clicking on the following link: ${verificationLink}`,
             html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #4a90e2;">E-polyclinic.uz Email Verification</h2>
-          <p>Thank you for registering with E-polyclinic.uz! Please verify your email address by clicking the button below:</p>
+          <h2 style="color: #4a90e2;">Online-study.com Email Verification</h2>
+          <p>Thank you for registering with Online-study.com! Please verify your email address by clicking the button below:</p>
           <a href="${verificationLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Verify Email</a>
           <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
           <p>${verificationLink}</p>
           <p>This link will expire in 24 hours.</p>
-          <p>If you didn't create an account with E-polyclinic.uz, please ignore this email.</p>
+          <p>If you didn't create an account with Online-study.com, please ignore this email.</p>
         </div>
       `
         };
@@ -359,11 +359,11 @@ class NotificationService {
 
         const emailData = {
             to: email,
-            subject: 'Reset Your Password - E-polyclinic.uz',
+            subject: 'Reset Your Password - Online-study.com',
             text: `You requested a password reset. Please click the following link to reset your password: ${resetLink}`,
             html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #4a90e2;">E-polyclinic.uz Password Reset</h2>
+          <h2 style="color: #4a90e2;">Online-study.com Password Reset</h2>
           <p>We received a request to reset your password. Click the button below to set a new password:</p>
           <a href="${resetLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Reset Password</a>
           <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
@@ -392,9 +392,9 @@ class NotificationService {
      */
     async sendAppointmentConfirmation(appointment) {
         try {
-            await appointment.populate('patient doctor');
+            await appointment.populate('student teacher');
 
-            const { patient, doctor, dateTime, type } = appointment;
+            const { student, teacher, dateTime, type } = appointment;
             const formattedDateTime = new Date(dateTime).toLocaleString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
@@ -404,53 +404,53 @@ class NotificationService {
                 minute: '2-digit'
             });
 
-            // Email to patient
-            const patientEmailData = {
-                to: patient.email,
-                subject: 'Appointment Confirmation - E-polyclinic.uz',
-                text: `Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} has been confirmed for ${formattedDateTime}.`,
+            // Email to student
+            const studentEmailData = {
+                to: student.email,
+                subject: 'Appointment Confirmation - Online-study.com',
+                text: `Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been confirmed for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Appointment Confirmation</h2>
-            <p>Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} has been confirmed.</p>
+            <p>Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been confirmed.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Doctor:</strong> Dr. ${doctor.firstName} ${doctor.lastName} (${doctor.specializations})</p>
+              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the consultation by logging into your E-polyclinic.uz account.</p>
+            <p>You can view your appointment details and join the consultation by logging into your Online-study.com account.</p>
           </div>
         `
             };
 
-            // Email to doctor
-            const doctorEmailData = {
-                to: doctor.email,
-                subject: 'New Appointment - E-polyclinic.uz',
-                text: `You have a new appointment with ${patient.firstName} ${patient.lastName} scheduled for ${formattedDateTime}.`,
+            // Email to teacher
+            const teacherEmailData = {
+                to: teacher.email,
+                subject: 'New Appointment - Online-study.com',
+                text: `You have a new appointment with ${student.firstName} ${student.lastName} scheduled for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">New Appointment</h2>
-            <p>You have a new appointment with ${patient.firstName} ${patient.lastName}.</p>
+            <p>You have a new appointment with ${student.firstName} ${student.lastName}.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Patient:</strong> ${patient.firstName} ${patient.lastName}</p>
+              <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
-            <p>You can view appointment details and join the consultation by logging into your E-polyclinic.uz account.</p>
+            <p>You can view appointment details and join the consultation by logging into your Online-study.com account.</p>
           </div>
         `
             };
 
             // Queue emails
-            this.queueEmail(patientEmailData);
-            this.queueEmail(doctorEmailData);
+            this.queueEmail(studentEmailData);
+            this.queueEmail(teacherEmailData);
 
             // If users have Telegram accounts linked, send notifications there too
-            if (patient.telegramId) {
+            if (student.telegramId) {
                 const telegramData = {
-                    chatId: patient.telegramId,
-                    text: `✅ Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} has been confirmed for ${formattedDateTime}.`,
+                    chatId: student.telegramId,
+                    text: `✅ Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been confirmed for ${formattedDateTime}.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -458,10 +458,10 @@ class NotificationService {
                 this.queueTelegramMessage(telegramData);
             }
 
-            if (doctor.telegramId) {
+            if (teacher.telegramId) {
                 const telegramData = {
-                    chatId: doctor.telegramId,
-                    text: `📋 New appointment with ${patient.firstName} ${patient.lastName} scheduled for ${formattedDateTime}.`,
+                    chatId: teacher.telegramId,
+                    text: `📋 New appointment with ${student.firstName} ${student.lastName} scheduled for ${formattedDateTime}.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -479,9 +479,9 @@ class NotificationService {
      */
     async sendAppointmentCancellation(appointment) {
         try {
-            await appointment.populate('patient doctor');
+            await appointment.populate('student teacher');
 
-            const { patient, doctor, dateTime, type } = appointment;
+            const { student, teacher, dateTime, type } = appointment;
             const formattedDateTime = new Date(dateTime).toLocaleString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
@@ -491,52 +491,52 @@ class NotificationService {
                 minute: '2-digit'
             });
 
-            // Email to patient
-            const patientEmailData = {
-                to: patient.email,
-                subject: 'Appointment Canceled - E-polyclinic.uz',
-                text: `Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} scheduled for ${formattedDateTime} has been canceled.`,
+            // Email to student
+            const studentEmailData = {
+                to: student.email,
+                subject: 'Appointment Canceled - Online-study.com',
+                text: `Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} scheduled for ${formattedDateTime} has been canceled.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #e74c3c;">Appointment Canceled</h2>
-            <p>Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} has been canceled.</p>
+            <p>Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been canceled.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Doctor:</strong> Dr. ${doctor.firstName} ${doctor.lastName} (${doctor.specializations})</p>
+              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can schedule a new appointment by logging into your E-polyclinic.uz account.</p>
+            <p>You can schedule a new appointment by logging into your Online-study.com account.</p>
           </div>
         `
             };
 
-            // Email to doctor
-            const doctorEmailData = {
-                to: doctor.email,
-                subject: 'Appointment Canceled - E-polyclinic.uz',
-                text: `Your appointment with ${patient.firstName} ${patient.lastName} scheduled for ${formattedDateTime} has been canceled.`,
+            // Email to teacher
+            const teacherEmailData = {
+                to: teacher.email,
+                subject: 'Appointment Canceled - Online-study.com',
+                text: `Your appointment with ${student.firstName} ${student.lastName} scheduled for ${formattedDateTime} has been canceled.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #e74c3c;">Appointment Canceled</h2>
-            <p>Your appointment with ${patient.firstName} ${patient.lastName} has been canceled.</p>
+            <p>Your appointment with ${student.firstName} ${student.lastName} has been canceled.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Patient:</strong> ${patient.firstName} ${patient.lastName}</p>
+              <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
           </div>
         `
             };
 
             // Queue emails
-            this.queueEmail(patientEmailData);
-            this.queueEmail(doctorEmailData);
+            this.queueEmail(studentEmailData);
+            this.queueEmail(teacherEmailData);
 
             // If users have Telegram accounts linked, send notifications there too
-            if (patient.telegramId) {
+            if (student.telegramId) {
                 const telegramData = {
-                    chatId: patient.telegramId,
-                    text: `❌ Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} scheduled for ${formattedDateTime} has been canceled.`,
+                    chatId: student.telegramId,
+                    text: `❌ Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} scheduled for ${formattedDateTime} has been canceled.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -544,10 +544,10 @@ class NotificationService {
                 this.queueTelegramMessage(telegramData);
             }
 
-            if (doctor.telegramId) {
+            if (teacher.telegramId) {
                 const telegramData = {
-                    chatId: doctor.telegramId,
-                    text: `❌ Appointment with ${patient.firstName} ${patient.lastName} scheduled for ${formattedDateTime} has been canceled.`,
+                    chatId: teacher.telegramId,
+                    text: `❌ Appointment with ${student.firstName} ${student.lastName} scheduled for ${formattedDateTime} has been canceled.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -565,20 +565,20 @@ class NotificationService {
      */
     async sendAppointmentCompletionNotification(appointment) {
         try {
-            await appointment.populate('patient doctor');
+            await appointment.populate('student teacher');
 
-            const { patient, doctor } = appointment;
+            const { student, teacher } = appointment;
 
-            // Email to patient for feedback
-            const patientEmailData = {
-                to: patient.email,
-                subject: 'Appointment Completed - E-polyclinic.uz',
-                text: `Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} has been completed. Please leave your feedback.`,
+            // Email to student for feedback
+            const studentEmailData = {
+                to: student.email,
+                subject: 'Appointment Completed - Online-study.com',
+                text: `Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been completed. Please leave your feedback.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Appointment Completed</h2>
-            <p>Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} has been completed.</p>
-            <p>If any prescriptions were provided, you can view them in your E-polyclinic.uz account.</p>
+            <p>Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been completed.</p>
+            <p>If any prescriptions were provided, you can view them in your Online-study.com account.</p>
             <a href="${process.env.FRONTEND_URL}/appointments/feedback/${appointment._id}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Leave Feedback</a>
             <p>Your feedback helps us improve our services.</p>
           </div>
@@ -586,13 +586,13 @@ class NotificationService {
             };
 
             // Queue emails
-            this.queueEmail(patientEmailData);
+            this.queueEmail(studentEmailData);
 
-            // If patient has Telegram account linked, send notification there too
-            if (patient.telegramId) {
+            // If student has Telegram account linked, send notification there too
+            if (student.telegramId) {
                 const telegramData = {
-                    chatId: patient.telegramId,
-                    text: `✅ Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} has been completed. Any prescriptions will be available in your account. Please consider leaving feedback.`,
+                    chatId: student.telegramId,
+                    text: `✅ Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been completed. Any prescriptions will be available in your account. Please consider leaving feedback.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -610,9 +610,9 @@ class NotificationService {
      */
     async sendPrescriptionNotification(appointment) {
         try {
-            await appointment.populate('patient doctor');
+            await appointment.populate('student teacher');
 
-            const { patient, doctor, prescriptions } = appointment;
+            const { student, teacher, prescriptions } = appointment;
 
             // Format prescriptions for email
             let prescriptionsHtml = '';
@@ -628,31 +628,31 @@ class NotificationService {
         `;
             });
 
-            // Email to patient
-            const patientEmailData = {
-                to: patient.email,
-                subject: 'New Prescriptions - E-polyclinic.uz',
-                text: `Dr. ${doctor.firstName} ${doctor.lastName} has added prescriptions to your recent appointment.`,
+            // Email to student
+            const studentEmailData = {
+                to: student.email,
+                subject: 'New Prescriptions - Online-study.com',
+                text: `Dr. ${teacher.firstName} ${teacher.lastName} has added prescriptions to your recent appointment.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">New Prescriptions</h2>
-            <p>Dr. ${doctor.firstName} ${doctor.lastName} has added the following prescriptions to your recent appointment:</p>
+            <p>Dr. ${teacher.firstName} ${teacher.lastName} has added the following prescriptions to your recent appointment:</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               ${prescriptionsHtml}
             </div>
-            <p>You can view these prescriptions anytime by logging into your E-polyclinic.uz account.</p>
+            <p>You can view these prescriptions anytime by logging into your Online-study.com account.</p>
           </div>
         `
             };
 
             // Queue email
-            this.queueEmail(patientEmailData);
+            this.queueEmail(studentEmailData);
 
-            // If patient has Telegram account linked, send notification there too
-            if (patient.telegramId) {
+            // If student has Telegram account linked, send notification there too
+            if (student.telegramId) {
                 const telegramData = {
-                    chatId: patient.telegramId,
-                    text: `💊 Dr. ${doctor.firstName} ${doctor.lastName} has added prescriptions to your recent appointment. Check your email or E-polyclinic.uz account for details.`,
+                    chatId: student.telegramId,
+                    text: `💊 Dr. ${teacher.firstName} ${teacher.lastName} has added prescriptions to your recent appointment. Check your email or Online-study.com account for details.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -670,9 +670,9 @@ class NotificationService {
      */
     async sendFollowUpNotification(followUpAppointment) {
         try {
-            await followUpAppointment.populate('patient doctor');
+            await followUpAppointment.populate('student teacher');
 
-            const { patient, doctor, dateTime, type } = followUpAppointment;
+            const { student, teacher, dateTime, type } = followUpAppointment;
             const formattedDateTime = new Date(dateTime).toLocaleString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
@@ -682,53 +682,53 @@ class NotificationService {
                 minute: '2-digit'
             });
 
-            // Email to patient
-            const patientEmailData = {
-                to: patient.email,
-                subject: 'Follow-up Appointment Scheduled - E-polyclinic.uz',
-                text: `A follow-up appointment with Dr. ${doctor.firstName} ${doctor.lastName} has been scheduled for ${formattedDateTime}.`,
+            // Email to student
+            const studentEmailData = {
+                to: student.email,
+                subject: 'Follow-up Appointment Scheduled - Online-study.com',
+                text: `A follow-up appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been scheduled for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Follow-up Appointment Scheduled</h2>
-            <p>A follow-up appointment with Dr. ${doctor.firstName} ${doctor.lastName} has been scheduled.</p>
+            <p>A follow-up appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been scheduled.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Doctor:</strong> Dr. ${doctor.firstName} ${doctor.lastName} (${doctor.specializations})</p>
+              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the consultation by logging into your E-polyclinic.uz account.</p>
+            <p>You can view your appointment details and join the consultation by logging into your Online-study.com account.</p>
           </div>
         `
             };
 
-            // Email to doctor
-            const doctorEmailData = {
-                to: doctor.email,
-                subject: 'Follow-up Appointment Scheduled - E-polyclinic.uz',
-                text: `A follow-up appointment with ${patient.firstName} ${patient.lastName} has been scheduled for ${formattedDateTime}.`,
+            // Email to teacher
+            const teacherEmailData = {
+                to: teacher.email,
+                subject: 'Follow-up Appointment Scheduled - Online-study.com',
+                text: `A follow-up appointment with ${student.firstName} ${student.lastName} has been scheduled for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Follow-up Appointment Scheduled</h2>
-            <p>A follow-up appointment with ${patient.firstName} ${patient.lastName} has been scheduled.</p>
+            <p>A follow-up appointment with ${student.firstName} ${student.lastName} has been scheduled.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Patient:</strong> ${patient.firstName} ${patient.lastName}</p>
+              <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
-            <p>You can view appointment details and join the consultation by logging into your E-polyclinic.uz account.</p>
+            <p>You can view appointment details and join the consultation by logging into your Online-study.com account.</p>
           </div>
         `
             };
 
             // Queue emails
-            this.queueEmail(patientEmailData);
-            this.queueEmail(doctorEmailData);
+            this.queueEmail(studentEmailData);
+            this.queueEmail(teacherEmailData);
 
             // If users have Telegram accounts linked, send notifications there too
-            if (patient.telegramId) {
+            if (student.telegramId) {
                 const telegramData = {
-                    chatId: patient.telegramId,
-                    text: `📅 A follow-up appointment with Dr. ${doctor.firstName} ${doctor.lastName} has been scheduled for ${formattedDateTime}.`,
+                    chatId: student.telegramId,
+                    text: `📅 A follow-up appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been scheduled for ${formattedDateTime}.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -736,10 +736,10 @@ class NotificationService {
                 this.queueTelegramMessage(telegramData);
             }
 
-            if (doctor.telegramId) {
+            if (teacher.telegramId) {
                 const telegramData = {
-                    chatId: doctor.telegramId,
-                    text: `📅 Follow-up appointment with ${patient.firstName} ${patient.lastName} scheduled for ${formattedDateTime}.`,
+                    chatId: teacher.telegramId,
+                    text: `📅 Follow-up appointment with ${student.firstName} ${student.lastName} scheduled for ${formattedDateTime}.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -757,9 +757,9 @@ class NotificationService {
      */
     async sendAppointmentReminder(appointment) {
         try {
-            await appointment.populate('patient doctor');
+            await appointment.populate('student teacher');
 
-            const { patient, doctor, dateTime, type } = appointment;
+            const { student, teacher, dateTime, type } = appointment;
             const formattedDateTime = new Date(dateTime).toLocaleString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
@@ -769,53 +769,53 @@ class NotificationService {
                 minute: '2-digit'
             });
 
-            // Email to patient
-            const patientEmailData = {
-                to: patient.email,
-                subject: 'Appointment Reminder - E-polyclinic.uz',
-                text: `Reminder: Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
+            // Email to student
+            const studentEmailData = {
+                to: student.email,
+                subject: 'Appointment Reminder - Online-study.com',
+                text: `Reminder: Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Appointment Reminder</h2>
-            <p>This is a reminder that your appointment with Dr. ${doctor.firstName} ${doctor.lastName} is scheduled for tomorrow.</p>
+            <p>This is a reminder that your appointment with Dr. ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Doctor:</strong> Dr. ${doctor.firstName} ${doctor.lastName} (${doctor.specializations})</p>
+              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the consultation by logging into your E-polyclinic.uz account.</p>
+            <p>You can view your appointment details and join the consultation by logging into your Online-study.com account.</p>
           </div>
         `
             };
 
-            // Email to doctor
-            const doctorEmailData = {
-                to: doctor.email,
-                subject: 'Appointment Reminder - E-polyclinic.uz',
-                text: `Reminder: Your appointment with ${patient.firstName} ${patient.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
+            // Email to teacher
+            const teacherEmailData = {
+                to: teacher.email,
+                subject: 'Appointment Reminder - Online-study.com',
+                text: `Reminder: Your appointment with ${student.firstName} ${student.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Appointment Reminder</h2>
-            <p>This is a reminder that your appointment with ${patient.firstName} ${patient.lastName} is scheduled for tomorrow.</p>
+            <p>This is a reminder that your appointment with ${student.firstName} ${student.lastName} is scheduled for tomorrow.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Patient:</strong> ${patient.firstName} ${patient.lastName}</p>
+              <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
-            <p>You can view appointment details and join the consultation by logging into your E-polyclinic.uz account.</p>
+            <p>You can view appointment details and join the consultation by logging into your Online-study.com account.</p>
           </div>
         `
             };
 
             // Queue emails
-            this.queueEmail(patientEmailData);
-            this.queueEmail(doctorEmailData);
+            this.queueEmail(studentEmailData);
+            this.queueEmail(teacherEmailData);
 
             // If users have Telegram accounts linked, send notifications there too
-            if (patient.telegramId) {
+            if (student.telegramId) {
                 const telegramData = {
-                    chatId: patient.telegramId,
-                    text: `⏰ Reminder: Your appointment with Dr. ${doctor.firstName} ${doctor.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
+                    chatId: student.telegramId,
+                    text: `⏰ Reminder: Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -823,10 +823,10 @@ class NotificationService {
                 this.queueTelegramMessage(telegramData);
             }
 
-            if (doctor.telegramId) {
+            if (teacher.telegramId) {
                 const telegramData = {
-                    chatId: doctor.telegramId,
-                    text: `⏰ Reminder: Your appointment with ${patient.firstName} ${patient.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
+                    chatId: teacher.telegramId,
+                    text: `⏰ Reminder: Your appointment with ${student.firstName} ${student.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -844,9 +844,9 @@ class NotificationService {
      */
     async sendConsultationStartNotification(appointment) {
         try {
-            await appointment.populate('patient doctor');
+            await appointment.populate('student teacher');
 
-            const { patient, doctor, dateTime, type, _id } = appointment;
+            const { student, teacher, dateTime, type, _id } = appointment;
             const formattedTime = new Date(dateTime).toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit'
@@ -854,30 +854,30 @@ class NotificationService {
 
             const consultationLink = `${process.env.FRONTEND_URL}/consultation/${_id}`;
 
-            // Email to patient
-            const patientEmailData = {
-                to: patient.email,
-                subject: 'Your Consultation Starts Soon - E-polyclinic.uz',
-                text: `Your consultation with Dr. ${doctor.firstName} ${doctor.lastName} starts in 15 minutes.`,
+            // Email to student
+            const studentEmailData = {
+                to: student.email,
+                subject: 'Your Consultation Starts Soon - Online-study.com',
+                text: `Your consultation with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Your Consultation Starts Soon</h2>
-            <p>Your consultation with Dr. ${doctor.firstName} ${doctor.lastName} starts in 15 minutes at ${formattedTime}.</p>
+            <p>Your consultation with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes at ${formattedTime}.</p>
             <a href="${consultationLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Join Consultation</a>
             <p>Please ensure your device has a working camera and microphone for a video consultation.</p>
           </div>
         `
             };
 
-            // Email to doctor
-            const doctorEmailData = {
-                to: doctor.email,
-                subject: 'Consultation Starts Soon - E-polyclinic.uz',
-                text: `Your consultation with ${patient.firstName} ${patient.lastName} starts in 15 minutes.`,
+            // Email to teacher
+            const teacherEmailData = {
+                to: teacher.email,
+                subject: 'Consultation Starts Soon - Online-study.com',
+                text: `Your consultation with ${student.firstName} ${student.lastName} starts in 15 minutes.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Consultation Starts Soon</h2>
-            <p>Your consultation with ${patient.firstName} ${patient.lastName} starts in 15 minutes at ${formattedTime}.</p>
+            <p>Your consultation with ${student.firstName} ${student.lastName} starts in 15 minutes at ${formattedTime}.</p>
             <a href="${consultationLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Join Consultation</a>
             <p>Please ensure your device has a working camera and microphone for a video consultation.</p>
           </div>
@@ -885,14 +885,14 @@ class NotificationService {
             };
 
             // Queue emails
-            this.queueEmail(patientEmailData);
-            this.queueEmail(doctorEmailData);
+            this.queueEmail(studentEmailData);
+            this.queueEmail(teacherEmailData);
 
             // If users have Telegram accounts linked, send notifications there too
-            if (patient.telegramId) {
+            if (student.telegramId) {
                 const telegramData = {
-                    chatId: patient.telegramId,
-                    text: `🔔 Your consultation with Dr. ${doctor.firstName} ${doctor.lastName} starts in 15 minutes. Click here to join: ${consultationLink}`,
+                    chatId: student.telegramId,
+                    text: `🔔 Your consultation with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes. Click here to join: ${consultationLink}`,
                     options: {
                         parse_mode: 'HTML',
                         disable_web_page_preview: false
@@ -901,10 +901,10 @@ class NotificationService {
                 this.queueTelegramMessage(telegramData);
             }
 
-            if (doctor.telegramId) {
+            if (teacher.telegramId) {
                 const telegramData = {
-                    chatId: doctor.telegramId,
-                    text: `🔔 Your consultation with ${patient.firstName} ${patient.lastName} starts in 15 minutes. Click here to join: ${consultationLink}`,
+                    chatId: teacher.telegramId,
+                    text: `🔔 Your consultation with ${student.firstName} ${student.lastName} starts in 15 minutes. Click here to join: ${consultationLink}`,
                     options: {
                         parse_mode: 'HTML',
                         disable_web_page_preview: false
@@ -924,23 +924,23 @@ class NotificationService {
      */
     async sendPaymentSuccessEmail(paymentId, appointment) {
         try {
-            const { patient, doctor } = appointment;
+            const { student, teacher } = appointment;
             const formattedDate = new Date(appointment.dateTime).toLocaleString();
 
             const emailData = {
-                to: patient.email,
-                subject: 'Payment Successful - E-polyclinic.uz',
+                to: student.email,
+                subject: 'Payment Successful - Online-study.com',
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Payment Successful</h2>
             <p>Your payment for the appointment has been processed successfully.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <p><strong>Doctor:</strong> Dr. ${doctor.firstName} ${doctor.lastName}</p>
+              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
               <p><strong>Date & Time:</strong> ${formattedDate}</p>
               <p><strong>Type:</strong> ${appointment.type}</p>
               <p><strong>Payment ID:</strong> ${paymentId}</p>
             </div>
-            <p>You can view your appointment details in your E-polyclinic.uz account.</p>
+            <p>You can view your appointment details in your Online-study.com account.</p>
           </div>
         `
             };
@@ -952,34 +952,34 @@ class NotificationService {
     }
 
     /**
-     * Send doctor appointment email
+     * Send teacher appointment email
      * @param {Object} appointment Appointment object
      */
     async sendDoctorAppointmentEmail(appointment) {
         try {
-            const { patient, doctor, dateTime } = appointment;
+            const { student, teacher, dateTime } = appointment;
             const formattedDate = new Date(dateTime).toLocaleString();
 
             const emailData = {
-                to: doctor.email,
-                subject: 'New Appointment Confirmed - E-polyclinic.uz',
+                to: teacher.email,
+                subject: 'New Appointment Confirmed - Online-study.com',
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">New Appointment Confirmed</h2>
             <p>A new appointment has been scheduled and payment has been received.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <p><strong>Patient:</strong> ${patient.firstName} ${patient.lastName}</p>
+              <p><strong>Patient:</strong> ${student.firstName} ${student.lastName}</p>
               <p><strong>Date & Time:</strong> ${formattedDate}</p>
               <p><strong>Type:</strong> ${appointment.type}</p>
             </div>
-            <p>Please log in to your E-polyclinic.uz account to view the appointment details.</p>
+            <p>Please log in to your Online-study.com account to view the appointment details.</p>
           </div>
         `
             };
 
             await this.queueEmail(emailData);
         } catch (error) {
-            console.error('Error sending doctor appointment email:', error);
+            console.error('Error sending teacher appointment email:', error);
         }
     }
 
@@ -990,18 +990,18 @@ class NotificationService {
      */
     async sendPaymentFailureEmail(paymentId, appointment) {
         try {
-            const { patient, doctor } = appointment;
+            const { student, teacher } = appointment;
             const formattedDate = new Date(appointment.dateTime).toLocaleString();
 
             const emailData = {
-                to: patient.email,
-                subject: 'Payment Failed - E-polyclinic.uz',
+                to: student.email,
+                subject: 'Payment Failed - Online-study.com',
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #e74c3c;">Payment Failed</h2>
             <p>We were unable to process your payment for the following appointment:</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <p><strong>Doctor:</strong> Dr. ${doctor.firstName} ${doctor.lastName}</p>
+              <p><strong>Doctor:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
               <p><strong>Date & Time:</strong> ${formattedDate}</p>
               <p><strong>Type:</strong> ${appointment.type}</p>
             </div>
@@ -1025,33 +1025,33 @@ class NotificationService {
      * @param {Object} document - Document object
      * @param {Object} recipient - User to notify
      */
-    static async sendDocumentUploadNotification(appointment, document, recipient) {
+    async sendDocumentUploadNotification(appointment, document, recipient) {
         const documentNotification = require('./documentNotification');
         return documentNotification.sendDocumentUploadNotification(appointment, document, recipient);
     }
 
     /**
      * Send appointment booking confirmation
-     * @param {Object} appointment - Appointment object with populated patient and doctor
+     * @param {Object} appointment - Appointment object with populated student and teacher
      */
-    static async sendAppointmentBookedEmails(appointment) {
+    async sendAppointmentBookedEmails(appointment) {
         return emailService.sendAppointmentBookedEmails(appointment);
     }
 
     /**
      * Send appointment cancellation notification
-     * @param {Object} appointment - Appointment object with populated patient and doctor
-     * @param {String} cancelledBy - Who cancelled the appointment ('patient', 'doctor', 'system')
+     * @param {Object} appointment - Appointment object with populated student and teacher
+     * @param {String} cancelledBy - Who cancelled the appointment ('student', 'teacher', 'system')
      */
-    static async sendAppointmentCancellationNotification(appointment, cancelledBy) {
+    async sendAppointmentCancellationNotification(appointment, cancelledBy) {
         return emailService.sendAppointmentCancelledEmails(appointment, cancelledBy);
     }
 
     /**
      * Send appointment confirmation notification
-     * @param {Object} appointment - Appointment object with populated patient and doctor
+     * @param {Object} appointment - Appointment object with populated student and teacher
      */
-    static async sendAppointmentConfirmedNotification(appointment) {
+    async sendAppointmentConfirmedNotification(appointment) {
         return emailService.sendAppointmentConfirmedEmails(appointment);
     }
 
@@ -1060,7 +1060,7 @@ class NotificationService {
      * @param {String} paymentId - Payment ID
      * @param {Object} appointment - Appointment object
      */
-    static async sendPaymentSuccessEmail(paymentId, appointment) {
+    async sendPaymentSuccessEmail(paymentId, appointment) {
         return emailService.sendPaymentSuccessEmail(paymentId, appointment);
     }
 
@@ -1068,7 +1068,7 @@ class NotificationService {
      * Send payment confirmation
      * @param {String} paymentId - Payment ID
      */
-    static async sendPaymentConfirmation(paymentId) {
+    async sendPaymentConfirmation(paymentId) {
         return emailService.sendPaymentConfirmation(paymentId);
     }
 
@@ -1076,39 +1076,39 @@ class NotificationService {
      * Send payment refund notification
      * @param {Object} payment - Payment object
      */
-    static async sendPaymentRefundNotification(payment) {
+    async sendPaymentRefundNotification(payment) {
         return emailService.sendPaymentRefundNotification(payment);
     }
 
     /**
      * Send appointment reminder emails
-     * @param {Object} appointment - Appointment object with populated patient and doctor
+     * @param {Object} appointment - Appointment object with populated student and teacher
      */
-    static async sendAppointmentReminderEmails(appointment) {
+    async sendAppointmentReminderEmails(appointment) {
         return emailService.sendAppointmentReminderEmails(appointment);
     }
 
     /**
      * Send prescription notification
-     * @param {Object} appointment - Appointment object with populated patient and doctor
+     * @param {Object} appointment - Appointment object with populated student and teacher
      */
-    static async sendPrescriptionNotification(appointment) {
+    async sendPrescriptionNotification(appointment) {
         return emailService.sendPrescriptionNotification(appointment);
     }
 
     /**
      * Send follow-up notification
-     * @param {Object} appointment - Appointment object with populated patient and doctor
+     * @param {Object} appointment - Appointment object with populated student and teacher
      */
-    static async sendFollowUpNotification(appointment) {
+    async sendFollowUpNotification(appointment) {
         return emailService.sendFollowUpNotification(appointment);
     }
 
     /**
      * Send consultation completed notification
-     * @param {Object} appointment - Appointment object with populated patient and doctor
+     * @param {Object} appointment - Appointment object with populated student and teacher
      */
-    static async sendConsultationCompletedNotification(appointment) {
+    async sendConsultationCompletedNotification(appointment) {
         return consultationNotification.sendConsultationCompletedNotification(appointment);
     }
 }

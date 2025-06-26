@@ -130,21 +130,21 @@ If you already have a working Mailcow server and want to add another domain:
 
 ### 1. DNS Configuration for the New Domain
 
-For the new domain (e.g., e-polyclinic.uz), add these DNS records pointing to the existing mail server (e.g., mail.students.uz):
+For the new domain (e.g., online-study.com), add these DNS records pointing to the existing mail server (e.g., mail.students.com):
 
 ```
 @ A [EXISTING-SERVER-IP]
 www A [EXISTING-SERVER-IP]
 
 # Mail configuration
-mail.e-polyclinic.uz MX 10 mail.students.uz
-autoconfig.mail.e-polyclinic.uz CNAME mail.students.uz
-autodiscover.mail.e-polyclinic.uz CNAME mail.students.uz
-autodiscover.e-polyclinic.uz CNAME mail.students.uz
+mail.online-study.com MX 10 mail.students.com
+autoconfig.mail.online-study.com CNAME mail.students.com
+autodiscover.mail.online-study.com CNAME mail.students.com
+autodiscover.online-study.com CNAME mail.students.com
 
 # Email authentication
-e-polyclinic.uz TXT v=spf1 +a +mx +ip4:[EXISTING-SERVER-IP] -all
-_dmarc.mail.e-polyclinic.uz TXT v=DMARC1; p=none; rua=mailto:dmarc-reports@e-polyclinic.uz
+online-study.com TXT v=spf1 +a +mx +ip4:[EXISTING-SERVER-IP] -all
+_dmarc.mail.online-study.com TXT v=DMARC1; p=none; rua=mailto:dmarc-reports@online-study.com
 ```
 
 ### 2. Add the Domain in Mailcow Admin Panel
@@ -152,10 +152,10 @@ _dmarc.mail.e-polyclinic.uz TXT v=DMARC1; p=none; rua=mailto:dmarc-reports@e-pol
 1. Log in to the existing Mailcow admin panel
 2. Go to "Mail Setup" → "Domains"
 3. Click "Add domain"
-4. Enter the domain name (e.g., `mail.e-polyclinic.uz`)
+4. Enter the domain name (e.g., `mail.online-study.com`)
 5. Configure any domain-specific settings
 
-Note: The domain added here will be what appears after the @ symbol in email addresses (user@mail.e-polyclinic.uz).
+Note: The domain added here will be what appears after the @ symbol in email addresses (user@mail.online-study.com).
 
 ### 3. Configure DKIM for the New Domain
 
@@ -164,7 +164,7 @@ After adding the domain:
 1. In the Mailcow admin panel, go to "Configuration" → "Configuration & Details"
 2. Find "ARC/DKIM keys" and locate the newly added domain
 3. Copy the DKIM public key (the long string starting with "v=DKIM1...")
-4. Add this as a TXT record for `dkim._domainkey.mail.e-polyclinic.uz`
+4. Add this as a TXT record for `dkim._domainkey.mail.online-study.com`
 
 ### 4. Create Email Accounts for the New Domain
 
@@ -358,7 +358,7 @@ sudo ufw allow 443/tcp   # HTTPS
 When setting up your domains in Mailcow:
 
 1. The domain name added in Mailcow admin panel determines the domain for email addresses (e.g., if `mail.example.com` is added as the domain, emails will be user@mail.example.com).
-2. In this setup, `mail.e-polyclinic.uz` is added as the domain in Mailcow.
+2. In this setup, `mail.online-study.com` is added as the domain in Mailcow.
 3. This differs from the standard recommendation but will work as long as DNS records are configured accordingly.
 4. Email addresses will be created as `user@example.com`, not as `user@mail.example.com`.
 5. The MX record must point to your mail server (e.g., `mail.example.com`), not directly to an IP address.

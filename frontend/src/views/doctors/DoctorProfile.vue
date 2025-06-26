@@ -3,24 +3,24 @@
         <div v-if="loading" class="text-center py-8">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent">
             </div>
-            <p class="mt-2 text-gray-600">Loading doctor profile...</p>
+            <p class="mt-2 text-gray-600">Loading teacher profile...</p>
         </div>
 
-        <template v-else-if="doctor">
+        <template v-else-if="teacher">
             <div class="bg-white shadow rounded-lg overflow-hidden">
                 <!-- Header -->
                 <div class="p-6 sm:p-8 border-b border-gray-200">
                     <div class="flex flex-col sm:flex-row items-center sm:items-start">
-                        <img :src="doctor.profilePicture || 'https://via.placeholder.com/200'" :alt="doctor.firstName"
+                        <img :src="teacher.profilePicture || ''" :alt="teacher.firstName"
                             class="h-32 w-32 rounded-full object-cover" />
                         <div class="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left">
                             <h1 class="text-2xl font-bold text-gray-900">
-                                Dr. {{ doctor.firstName }} {{ doctor.lastName }}
+                                Dr. {{ teacher.firstName }} {{ teacher.lastName }}
                             </h1>
 
                             <!-- Specializations as tags -->
                             <div class="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
-                                <span v-for="spec in doctor.specializations" :key="spec"
+                                <span v-for="spec in teacher.specializations" :key="spec"
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                                     {{ spec }}
                                 </span>
@@ -29,9 +29,9 @@
                             <div class="mt-3 flex flex-wrap gap-2 justify-center sm:justify-start">
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-                                    {{ doctor.experience }} years experience
+                                    {{ teacher.experience }} years experience
                                 </span>
-                                <span v-for="lang in doctor.languages" :key="lang"
+                                <span v-for="lang in teacher.languages" :key="lang"
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
                                     {{ lang }}
                                 </span>
@@ -50,7 +50,7 @@
 
                         <div class="mt-4 sm:mt-0 sm:ml-auto">
                             <router-link v-if="authStore.isPatient"
-                                :to="{ name: 'book-appointment', params: { doctorId: doctor._id } }"
+                                :to="{ name: 'book-appointment', params: { teacherId: teacher._id } }"
                                 class="btn-primary">
                                 Book Appointment
                             </router-link>
@@ -66,20 +66,20 @@
 
                         <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Education</h3>
                         <ul class="space-y-2">
-                            <li v-for="edu in doctor.education" :key="edu.degree" class="text-gray-600">
+                            <li v-for="edu in teacher.education" :key="edu.degree" class="text-gray-600">
                                 {{ edu.degree }} - {{ edu.institution }} ({{ edu.year }})
                             </li>
-                            <li v-if="!doctor.education || doctor.education.length === 0" class="text-gray-500">
+                            <li v-if="!teacher.education || teacher.education.length === 0" class="text-gray-500">
                                 No education information provided.
                             </li>
                         </ul>
 
                         <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Certification</h3>
                         <ul class="space-y-2">
-                            <li v-for="cert in doctor.certifications" :key="cert.issuer" class="text-gray-600">
+                            <li v-for="cert in teacher.certifications" :key="cert.issuer" class="text-gray-600">
                                 {{ cert.issuer }} - {{ cert.name }} ({{ cert.year }})
                             </li>
-                            <li v-if="!doctor.certifications || doctor.certifications.length === 0"
+                            <li v-if="!teacher.certifications || teacher.certifications.length === 0"
                                 class="text-gray-500">
                                 No certification information provided.
                             </li>
@@ -139,18 +139,18 @@
                                     </div>
                                     <p class="mt-1 text-gray-900">{{ review.comment }}</p>
                                     <p class="mt-1 text-sm text-gray-500">
-                                        {{ review.patient.firstName }} {{ review.patient.lastName }} •
+                                        {{ review.student.firstName }} {{ review.student.lastName }} •
                                         {{ formatDate(review.createdAt) }}
                                     </p>
                                 </div>
                             </div>
-                            <div v-if="review.doctorResponse" class="mt-4 ml-6 p-4 bg-gray-50 rounded-lg">
+                            <div v-if="review.teacherResponse" class="mt-4 ml-6 p-4 bg-gray-50 rounded-lg">
                                 <p class="text-sm text-gray-900">
                                     <span class="font-medium">Doctor's response:</span>
-                                    {{ review.doctorResponse.text }}
+                                    {{ review.teacherResponse.text }}
                                 </p>
                                 <p class="mt-1 text-xs text-gray-500">
-                                    {{ formatDate(review.doctorResponse.respondedAt) }}
+                                    {{ formatDate(review.teacherResponse.respondedAt) }}
                                 </p>
                             </div>
                         </div>
@@ -175,29 +175,29 @@ import axios from 'axios'
 const route = useRoute()
 const authStore = useAuthStore()
 
-const doctor = ref(null)
+const teacher = ref(null)
 const reviews = ref([])
 const loading = ref(true)
 const hasUpcomingAppointment = ref(false)
 
 const availableDays = computed(() => {
-    if (!doctor.value?.availability) return []
-    return doctor.value.availability.filter(day => day.isAvailable)
+    if (!teacher.value?.availability) return []
+    return teacher.value.availability.filter(day => day.isAvailable)
 })
 
 // Computed property for decoded bio
 const decodedBio = computed(() => {
-    if (!doctor.value?.bio) return 'No bio provided.'
+    if (!teacher.value?.bio) return 'No bio provided.'
 
     // Create a temporary DOM element to decode HTML entities
     const textarea = document.createElement('textarea')
-    textarea.innerHTML = doctor.value.bio
+    textarea.innerHTML = teacher.value.bio
     return textarea.value
 })
 
 // Computed property for formatted consultation fee
 const formatConsultationFee = computed(() => {
-    const fee = doctor.value?.consultationFee
+    const fee = teacher.value?.consultationFee
 
     if (!fee) return 'Consultation fee not specified'
 
@@ -215,7 +215,7 @@ const formatConsultationFee = computed(() => {
 
 // Computed property for formatted address
 const formattedAddress = computed(() => {
-    const address = doctor.value?.address
+    const address = teacher.value?.address
 
     if (!address) return 'Address not provided'
 
@@ -242,19 +242,19 @@ const formatDate = (date) => {
 async function fetchDoctorProfile() {
     try {
         loading.value = true
-        const response = await axios.get(`/api/users/doctors/${route.params.id}`)
-        doctor.value = response.data.doctor
+        const response = await axios.get(`/api/users/teachers/${route.params.id}`)
+        teacher.value = response.data.teacher
 
         // Fetch reviews
         try {
-            const reviewsResponse = await axios.get(`/api/reviews/doctor/${route.params.id}`)
+            const reviewsResponse = await axios.get(`/api/reviews/teacher/${route.params.id}`)
             reviews.value = reviewsResponse.data.reviews
         } catch (reviewError) {
             console.error('Error fetching reviews:', reviewError)
             reviews.value = []
         }
     } catch (error) {
-        console.error('Error fetching doctor profile:', error)
+        console.error('Error fetching teacher profile:', error)
     } finally {
         loading.value = false
     }
@@ -264,8 +264,8 @@ async function checkUpcomingAppointments() {
     if (!authStore.isAuthenticated || !authStore.isPatient) return
 
     try {
-        const response = await axios.get(`/api/appointments/patient/${authStore.user._id}`, {
-            params: { status: 'scheduled', doctorId: doctor.value._id }
+        const response = await axios.get(`/api/appointments/student/${authStore.user._id}`, {
+            params: { status: 'scheduled', teacherId: teacher.value._id }
         })
         hasUpcomingAppointment.value = response.data.appointments.length > 0
     } catch (error) {
@@ -276,7 +276,7 @@ async function checkUpcomingAppointments() {
 async function startChat() {
     try {
         const response = await axios.post('/api/chat/conversations', {
-            participantId: doctor.value._id
+            participantId: teacher.value._id
         })
 
         router.push({

@@ -11,7 +11,7 @@
         <!-- Profile Header -->
         <div class="p-6 sm:p-8 border-b border-gray-200">
           <div class="flex flex-col sm:flex-row items-center sm:items-start">
-            <img :src="user.profilePicture || 'https://via.placeholder.com/150'" :alt="user.firstName"
+            <img :src="user.profilePicture || ''" :alt="user.firstName"
               class="h-32 w-32 rounded-full object-cover" />
             <div class="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left flex-1">
               <h1 class="text-2xl font-bold text-gray-900">
@@ -203,7 +203,7 @@ async function fetchUserProfile() {
   try {
     loading.value = true
     const response = await axios.get('/api/users/me')
-    user.value = response.data.user
+    user.value = response.data
   } catch (error) {
     console.error('Error fetching user profile:', error)
   } finally {
@@ -211,7 +211,7 @@ async function fetchUserProfile() {
   }
 }
 
-onMounted(() => {
-  fetchUserProfile()
+onMounted(async () => {
+  await fetchUserProfile()
 })
 </script>

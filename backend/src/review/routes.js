@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const reviewSchema = new Schema({
-    patient: {
+    student: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    doctor: {
+    teacher: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
@@ -55,7 +55,7 @@ const reviewSchema = new Schema({
         trim: true
     },
     // Doctor response to review
-    doctorResponse: {
+    teacherResponse: {
         text: {
             type: String,
             trim: true
@@ -77,19 +77,19 @@ const reviewSchema = new Schema({
     timestamps: true
 });
 
-// Ensure a patient can only leave one review per appointment
-reviewSchema.index({ patient: 1, appointment: 1 }, { unique: true });
+// Ensure a student can only leave one review per appointment
+reviewSchema.index({ student: 1, appointment: 1 }, { unique: true });
 
 // Add indexes for frequent queries
-reviewSchema.index({ doctor: 1 });
+reviewSchema.index({ teacher: 1 });
 reviewSchema.index({ isApproved: 1 });
 reviewSchema.index({ rating: 1 });
 
-// Prevent patients from reviewing their own appointments multiple times
+// Prevent students from reviewing their own appointments multiple times
 reviewSchema.pre('save', async function (next) {
     if (this.isNew) {
         const existingReview = await this.constructor.findOne({
-            patient: this.patient,
+            student: this.student,
             appointment: this.appointment
         });
 
@@ -104,18 +104,18 @@ reviewSchema.pre('save', async function (next) {
     next();
 });
 
-// Static method to get doctor's average rating
-reviewSchema.statics.getDoctorRating = async function (doctorId) {
+// Static method to get teacher's average rating
+reviewSchema.statics.getDoctorRating = async function (teacherId) {
     const result = await this.aggregate([
         {
             $match: {
-                doctor: mongoose.Types.ObjectId(doctorId),
+                teacher: mongoose.Types.ObjectId(teacherId),
                 isApproved: true
             }
         },
         {
             $group: {
-                _id: '$doctor',
+                _id: '$teacher',
                 averageRating: { $avg: '$rating' },
                 communicationRating: { $avg: '$communicationRating' },
                 professionalismRating: { $avg: '$professionalismRating' },
@@ -134,13 +134,13 @@ reviewSchema.statics.getDoctorRating = async function (doctorId) {
     };
 };
 
-// Static method to get recent reviews for a doctor
-reviewSchema.statics.getRecentReviews = async function (doctorId, limit = 5) {
+// Static method to get recent reviews for a teacher
+reviewSchema.statics.getRecentReviews = async function (teacherId, limit = 5) {
     return this.find({
-        doctor: doctorId,
+        teacher: teacherId,
         isApproved: true
     })
-        .populate('patient', 'firstName lastName profilePicture')
+        .populate('student', 'firstName lastName profilePicture')
         .sort({ createdAt: -1 })
         .limit(limit);
 };

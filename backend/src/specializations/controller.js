@@ -12,11 +12,11 @@ exports.getActiveSpecializations = async (req, res) => {
             .sort({ name: 1 })
             .select('name description icon');
 
-        // Get count of active doctors for each specializations
+        // Get count of active teachers for each specializations
         const specializationsWithDoctorCount = await Promise.all(
             specializations.map(async (spec) => {
-                const doctorCount = await User.countDocuments({
-                    role: 'doctor',
+                const teacherCount = await User.countDocuments({
+                    role: 'teacher',
                     specializations: spec.name,
                     isActive: true,
                     isVerified: true
@@ -24,7 +24,7 @@ exports.getActiveSpecializations = async (req, res) => {
 
                 return {
                     ...spec.toObject(),
-                    doctorCount
+                    teacherCount
                 };
             })
         );
@@ -60,9 +60,9 @@ exports.getSpecializationById = async (req, res) => {
             return res.status(404).json({ message: 'Specialization is not active' });
         }
 
-        // Get count of active doctors for this specializations
-        const doctorCount = await User.countDocuments({
-            role: 'doctor',
+        // Get count of active teachers for this specializations
+        const teacherCount = await User.countDocuments({
+            role: 'teacher',
             specializations: specializations.name,
             isActive: true,
             isVerified: true
@@ -71,7 +71,7 @@ exports.getSpecializationById = async (req, res) => {
         res.status(200).json({
             specializations: {
                 ...specializations.toObject(),
-                doctorCount
+                teacherCount
             }
         });
     } catch (error) {
@@ -84,7 +84,7 @@ exports.getSpecializationById = async (req, res) => {
 };
 
 /**
- * Get doctors by specializations
+ * Get teachers by specializations
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
@@ -103,11 +103,11 @@ exports.getDoctorsBySpecialization = async (req, res) => {
             return res.status(404).json({ message: 'Specialization is not active' });
         }
 
-        // Query for doctors with this specializations
+        // Query for teachers with this specializations
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
-        const doctors = await User.find({
-            role: 'doctor',
+        const teachers = await User.find({
+            role: 'teacher',
             specializations: specializations.name,
             isActive: true,
             isVerified: true
@@ -118,7 +118,7 @@ exports.getDoctorsBySpecialization = async (req, res) => {
             .sort({ experience: -1 });
 
         const total = await User.countDocuments({
-            role: 'doctor',
+            role: 'teacher',
             specializations: specializations.name,
             isActive: true,
             isVerified: true
@@ -131,7 +131,7 @@ exports.getDoctorsBySpecialization = async (req, res) => {
                 description: specializations.description,
                 icon: specializations.icon
             },
-            doctors,
+            teachers,
             pagination: {
                 total,
                 page: parseInt(page),
@@ -140,9 +140,9 @@ exports.getDoctorsBySpecialization = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error fetching doctors by specializations:', error);
+        console.error('Error fetching teachers by specializations:', error);
         res.status(500).json({
-            message: 'An error occurred while fetching doctors',
+            message: 'An error occurred while fetching teachers',
             error: error.message
         });
     }

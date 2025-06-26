@@ -63,7 +63,7 @@
                                         </button>
                                     </div>
                                     <button type="button" @click="addSpecialization"
-                                        class="text-sm text-indigo-600 hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Another Specialization
                                     </button>
                                 </div>
@@ -88,7 +88,7 @@
                                         </div>
                                     </div>
                                     <button type="button" @click="addEducation"
-                                        class="text-sm text-indigo-600 hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Education
                                     </button>
                                 </div>
@@ -114,7 +114,7 @@
                                         </div>
                                     </div>
                                     <button type="button" @click="addCertification"
-                                        class="text-sm text-indigo-600 hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Certification
                                     </button>
                                 </div>
@@ -205,7 +205,7 @@
                     </template>
 
                     <div class="flex justify-end space-x-4">
-                        <router-link :to="{ name: authStore.isDoctor ? 'doctor-profile' : 'patient-profile' }"
+                        <router-link :to="{ name: authStore.isDoctor ? 'teacher-profile' : 'student-profile' }"
                             class="btn-secondary">
                             Cancel
                         </router-link>
@@ -395,7 +395,7 @@ async function handleSubmit() {
         }
 
         await axios.patch('/api/users/me', updateData)
-        router.push({ name: authStore.isDoctor ? 'doctor-profile' : 'patient-profile' })
+        router.push({ name: authStore.isDoctor ? 'teacher-profile' : 'student-profile' })
     } catch (error) {
         console.error('Error updating profile:', error)
     } finally {
@@ -405,7 +405,7 @@ async function handleSubmit() {
 
 onMounted(() => {
     fetchUserProfile()
-    // Fetch specializations if user is a doctor
+    // Fetch specializations if user is a teacher
     if (authStore.isDoctor) {
         fetchSpecializations()
     }

@@ -18,12 +18,12 @@ const chatMessageSchema = new Schema({
 });
 
 const appointmentSchema = new Schema({
-    patient: {
+    student: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    doctor: {
+    teacher: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
@@ -55,8 +55,8 @@ const appointmentSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['pending-payment', 'pending-doctor-confirmation', 'scheduled', 'completed', 'canceled', 'no-show'],
-        default: 'pending-doctor-confirmation'
+        enum: ['pending-payment', 'pending-teacher-confirmation', 'scheduled', 'completed', 'canceled', 'no-show'],
+        default: 'pending-teacher-confirmation'
     },
     type: {
         type: String,
@@ -106,7 +106,7 @@ const appointmentSchema = new Schema({
         fileType: String,
         uploadedBy: {
             type: String,
-            enum: ['patient', 'doctor']
+            enum: ['student', 'teacher']
         },
         uploadedAt: {
             type: Date,
@@ -116,7 +116,7 @@ const appointmentSchema = new Schema({
     cancellationReason: {
         type: String
     },
-    doctorConfirmationExpires: {
+    teacherConfirmationExpires: {
         type: Date
     },
     createdAt: {
@@ -132,10 +132,10 @@ const appointmentSchema = new Schema({
 });
 
 // Index for efficient queries
-appointmentSchema.index({ patient: 1, dateTime: -1 });
-appointmentSchema.index({ doctor: 1, dateTime: -1 });
+appointmentSchema.index({ student: 1, dateTime: -1 });
+appointmentSchema.index({ teacher: 1, dateTime: -1 });
 appointmentSchema.index({ status: 1 });
-appointmentSchema.index({ doctorConfirmationExpires: 1 }, { expireAfterSeconds: 0 }); // For TTL index
+appointmentSchema.index({ teacherConfirmationExpires: 1 }, { expireAfterSeconds: 0 }); // For TTL index
 
 // Middleware to update the updatedAt field
 appointmentSchema.pre('save', function (next) {
@@ -167,62 +167,62 @@ appointmentSchema.methods.complete = function (summary) {
 };
 
 appointmentSchema.methods.confirmDoctor = function () {
-    if (this.status === 'pending-doctor-confirmation') {
+    if (this.status === 'pending-teacher-confirmation') {
         this.status = 'scheduled';
     }
     return this.save();
 };
 
 // Static methods
-appointmentSchema.statics.findUpcomingForPatient = function (patientId) {
+appointmentSchema.statics.findUpcomingForPatient = function (studentId) {
     return this.find({
-        patient: patientId,
+        student: studentId,
         dateTime: { $gte: new Date() },
         status: 'scheduled'
-    }).sort({ dateTime: 1 }).populate('doctor');
+    }).sort({ dateTime: 1 }).populate('teacher');
 };
 
-appointmentSchema.statics.findUpcomingForDoctor = function (doctorId) {
+appointmentSchema.statics.findUpcomingForDoctor = function (teacherId) {
     return this.find({
-        doctor: doctorId,
+        teacher: teacherId,
         dateTime: { $gte: new Date() },
         status: 'scheduled'
-    }).sort({ dateTime: 1 }).populate('patient');
+    }).sort({ dateTime: 1 }).populate('student');
 };
 
-// Add method to find pending-payment follow-ups for a patient
-appointmentSchema.statics.findPendingFollowUpsForPatient = function (patientId) {
+// Add method to find pending-payment follow-ups for a student
+appointmentSchema.statics.findPendingFollowUpsForPatient = function (studentId) {
     return this.find({
-        patient: patientId,
+        student: studentId,
         status: 'pending-payment'
-    }).sort({ dateTime: 1 }).populate('doctor');
+    }).sort({ dateTime: 1 }).populate('teacher');
 };
 
-// Find appointments pending doctor confirmation
-appointmentSchema.statics.findPendingDoctorConfirmation = function (doctorId) {
+// Find appointments pending teacher confirmation
+appointmentSchema.statics.findPendingDoctorConfirmation = function (teacherId) {
     return this.find({
-        doctor: doctorId,
-        status: 'pending-doctor-confirmation',
-        doctorConfirmationExpires: { $gt: new Date() }
-    }).sort({ doctorConfirmationExpires: 1 }).populate('patient');
+        teacher: teacherId,
+        status: 'pending-teacher-confirmation',
+        teacherConfirmationExpires: { $gt: new Date() }
+    }).sort({ teacherConfirmationExpires: 1 }).populate('student');
 };
 
-// Find expired doctor confirmation appointments
+// Find expired teacher confirmation appointments
 appointmentSchema.statics.findExpiredDoctorConfirmation = function () {
     return this.find({
-        status: 'pending-doctor-confirmation',
-        doctorConfirmationExpires: { $lte: new Date() }
-    }).populate('patient').populate('doctor');
+        status: 'pending-teacher-confirmation',
+        teacherConfirmationExpires: { $lte: new Date() }
+    }).populate('student').populate('teacher');
 };
 
 // Find appointments for calendar view
 appointmentSchema.statics.findForCalendar = function (userId, userRole, startDate, endDate) {
     const query = {};
 
-    if (userRole === 'patient') {
-        query.patient = userId;
-    } else if (userRole === 'doctor') {
-        query.doctor = userId;
+    if (userRole === 'student') {
+        query.student = userId;
+    } else if (userRole === 'teacher') {
+        query.teacher = userId;
     }
 
     if (startDate && endDate) {
@@ -234,7 +234,7 @@ appointmentSchema.statics.findForCalendar = function (userId, userRole, startDat
 
     return this.find(query)
         .sort({ dateTime: 1 })
-        .populate(userRole === 'patient' ? 'doctor' : 'patient');
+        .populate(userRole === 'student' ? 'teacher' : 'student');
 };
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);

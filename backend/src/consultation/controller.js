@@ -30,16 +30,16 @@ class ConsultationController {
 
             // Find appointment
             const appointment = await Appointment.findById(appointmentId)
-                .populate('doctor', 'firstName lastName profilePicture specializations email')
-                .populate('patient', 'firstName lastName profilePicture dateOfBirth email');
+                .populate('teacher', 'firstName lastName profilePicture specializations email')
+                .populate('student', 'firstName lastName profilePicture dateOfBirth email');
 
             if (!appointment) {
                 return res.status(404).json({ message: 'Appointment not found' });
             }
 
             // Check if user is involved in the appointment
-            const isDoctor = req.user.role === 'doctor' && appointment.doctor._id.toString() === userId.toString();
-            const isPatient = req.user.role === 'patient' && appointment.patient._id.toString() === userId.toString();
+            const isDoctor = req.user.role === 'teacher' && appointment.teacher._id.toString() === userId.toString();
+            const isPatient = req.user.role === 'student' && appointment.student._id.toString() === userId.toString();
 
             if (!isDoctor && !isPatient) {
                 return res.status(403).json({ message: 'You are not authorized to join this consultation' });
@@ -80,11 +80,11 @@ class ConsultationController {
             const userInfo = {
                 id: userId,
                 name: isDoctor ?
-                    `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}` :
-                    `${appointment.patient.firstName} ${appointment.patient.lastName}`,
-                avatar: isDoctor ? appointment.doctor.profilePicture : appointment.patient.profilePicture,
-                email: isDoctor ? appointment.doctor.email : appointment.patient.email,
-                role: isDoctor ? 'doctor' : 'patient'
+                    `Dr. ${appointment.teacher.firstName} ${appointment.teacher.lastName}` :
+                    `${appointment.student.firstName} ${appointment.student.lastName}`,
+                avatar: isDoctor ? appointment.teacher.profilePicture : appointment.student.profilePicture,
+                email: isDoctor ? appointment.teacher.email : appointment.student.email,
+                role: isDoctor ? 'teacher' : 'student'
             };
 
             // Generate Jitsi configuration
@@ -114,8 +114,8 @@ class ConsultationController {
             jitsiConfig.jwt = JitsiUtils.generateJitsiToken(jitsiConfig.roomName, userInfo, {
                 maxParticipants: 2,
                 allowedParticipants: [
-                    appointment.doctor._id.toString(),
-                    appointment.patient._id.toString()
+                    appointment.teacher._id.toString(),
+                    appointment.student._id.toString()
                 ]
             });
 
@@ -125,22 +125,22 @@ class ConsultationController {
                 consultation: {
                     appointmentId: appointment._id,
                     type: appointment.type,
-                    doctor: {
-                        id: appointment.doctor._id,
-                        name: `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`,
-                        profilePicture: appointment.doctor.profilePicture,
-                        specializations: appointment.doctor.specializations
+                    teacher: {
+                        id: appointment.teacher._id,
+                        name: `Dr. ${appointment.teacher.firstName} ${appointment.teacher.lastName}`,
+                        profilePicture: appointment.teacher.profilePicture,
+                        specializations: appointment.teacher.specializations
                     },
-                    patient: {
-                        id: appointment.patient._id,
-                        name: `${appointment.patient.firstName} ${appointment.patient.lastName}`,
-                        profilePicture: appointment.patient.profilePicture,
-                        dateOfBirth: appointment.patient.dateOfBirth
+                    student: {
+                        id: appointment.student._id,
+                        name: `${appointment.student.firstName} ${appointment.student.lastName}`,
+                        profilePicture: appointment.student.profilePicture,
+                        dateOfBirth: appointment.student.dateOfBirth
                     },
                     dateTime: appointment.dateTime,
                     endTime: appointment.endTime,
                     reasonForVisit: appointment.reasonForVisit,
-                    userRole: isDoctor ? 'doctor' : 'patient',
+                    userRole: isDoctor ? 'teacher' : 'student',
                     jitsi: jitsiConfig
                 }
             });
@@ -151,7 +151,7 @@ class ConsultationController {
     };
 
     /**
-     * End a consultation (doctor only)
+     * End a consultation (teacher only)
      * @param {Object} req - Express request object
      * @param {Object} res - Express response object
      */
@@ -171,14 +171,14 @@ class ConsultationController {
                 return res.status(404).json({ message: 'Appointment not found' });
             }
 
-            // Only doctor or admin can end consultation
-            if (req.user.role !== 'doctor' && req.user.role !== 'admin') {
-                return res.status(403).json({ message: 'Only doctors can end consultations' });
+            // Only teacher or admin can end consultation
+            if (req.user.role !== 'teacher' && req.user.role !== 'admin') {
+                return res.status(403).json({ message: 'Only teachers can end consultations' });
             }
 
             // Doctor must be assigned to the appointment
-            if (req.user.role === 'doctor' && appointment.doctor.toString() !== req.user.id) {
-                return res.status(403).json({ message: 'You are not the doctor for this appointment' });
+            if (req.user.role === 'teacher' && appointment.teacher.toString() !== req.user.id) {
+                return res.status(403).json({ message: 'You are not the teacher for this appointment' });
             }
 
             // Update appointment status
@@ -234,14 +234,14 @@ class ConsultationController {
                 return res.status(404).json({ message: 'Appointment not found' });
             }
 
-            // Only doctor or admin can add prescriptions
-            if (req.user.role !== 'doctor' && req.user.role !== 'admin') {
-                return res.status(403).json({ message: 'Only doctors can add prescriptions' });
+            // Only teacher or admin can add prescriptions
+            if (req.user.role !== 'teacher' && req.user.role !== 'admin') {
+                return res.status(403).json({ message: 'Only teachers can add prescriptions' });
             }
 
             // Doctor must be assigned to the appointment
-            if (req.user.role === 'doctor' && appointment.doctor.toString() !== req.user.id) {
-                return res.status(403).json({ message: 'You are not the doctor for this appointment' });
+            if (req.user.role === 'teacher' && appointment.teacher.toString() !== req.user.id) {
+                return res.status(403).json({ message: 'You are not the teacher for this appointment' });
             }
 
             // Validate prescription data
@@ -297,21 +297,21 @@ class ConsultationController {
 
             // Find the original appointment
             const originalAppointment = await Appointment.findById(appointmentId)
-                .populate('doctor', 'firstName lastName consultationFee')
-                .populate('patient', 'firstName lastName');
+                .populate('teacher', 'firstName lastName consultationFee')
+                .populate('student', 'firstName lastName');
 
             if (!originalAppointment) {
                 return res.status(404).json({ message: 'Original appointment not found' });
             }
 
-            // Only doctor or admin can create follow-up
-            if (req.user.role !== 'doctor' && req.user.role !== 'admin') {
-                return res.status(403).json({ message: 'Only doctors can create follow-up appointments' });
+            // Only teacher or admin can create follow-up
+            if (req.user.role !== 'teacher' && req.user.role !== 'admin') {
+                return res.status(403).json({ message: 'Only teachers can create follow-up appointments' });
             }
 
             // Doctor must be assigned to the appointment
-            if (req.user.role === 'doctor' && originalAppointment.doctor._id.toString() !== req.user.id) {
-                return res.status(403).json({ message: 'You are not the doctor for this appointment' });
+            if (req.user.role === 'teacher' && originalAppointment.teacher._id.toString() !== req.user.id.toString()) {
+                return res.status(403).json({ message: 'You are not the teacher for this appointment' });
             }
 
             // Update original appointment with follow-up recommendation
@@ -324,21 +324,21 @@ class ConsultationController {
 
             // Create new follow-up appointment with 'pending-payment' status
             const followUpAppointment = new Appointment({
-                patient: originalAppointment.patient._id,
-                doctor: originalAppointment.doctor._id,
+                student: originalAppointment.student._id,
+                teacher: originalAppointment.teacher._id,
                 dateTime: followUpDateObj,
                 type: originalAppointment.type,
                 reasonForVisit: `Follow-up to appointment on ${new Date(originalAppointment.dateTime).toLocaleDateString()} - ${notes || 'No notes provided'}`,
                 status: 'pending-payment', // Special status for follow-ups pending payment
                 payment: {
-                    amount: originalAppointment.doctor.consultationFee,
+                    amount: originalAppointment.teacher.consultationFee,
                     status: 'pending'
                 }
             });
 
             await followUpAppointment.save();
 
-            // Notify patient about follow-up
+            // Notify student about follow-up
             await NotificationService.sendFollowUpNotification(followUpAppointment);
 
             res.status(201).json({
@@ -409,8 +409,8 @@ class ConsultationController {
             }
 
             // Check if user is involved in the appointment
-            const isDoctor = req.user.role === 'doctor' && appointment.doctor.toString() === req.user.id;
-            const isPatient = req.user.role === 'patient' && appointment.patient.toString() === req.user.id;
+            const isDoctor = req.user.role === 'teacher' && appointment.teacher.toString() === req.user.id;
+            const isPatient = req.user.role === 'student' && appointment.student.toString() === req.user.id;
 
             if (!isDoctor && !isPatient && req.user.role !== 'admin') {
                 return res.status(403).json({ message: 'You are not authorized to save chat logs for this appointment' });
@@ -469,12 +469,12 @@ class ConsultationController {
             };
 
             // Check if both participants have left
-            const doctorId = appointment.doctor.toString();
-            const patientId = appointment.patient.toString();
+            const teacherId = appointment.teacher.toString();
+            const studentId = appointment.student.toString();
 
             const bothParticipantsLeft =
-                appointment.participantStatus[doctorId]?.status === 'left' &&
-                appointment.participantStatus[patientId]?.status === 'left';
+                appointment.participantStatus[teacherId]?.status === 'left' &&
+                appointment.participantStatus[studentId]?.status === 'left';
 
             // If both have left and at least 10 minutes have passed since appointment start time
             const appointmentStartTime = new Date(appointment.dateTime);
@@ -518,19 +518,19 @@ class ConsultationController {
         try {
             const { id } = req.params;
             const { consultationSummary, prescriptions, followUp } = req.body;
-            const doctorId = req.user.id;
+            const teacherId = req.user.id;
 
             // Find the appointment
             const appointment = await Appointment.findById(id)
-                .populate('patient', 'firstName lastName email telegramId')
-                .populate('doctor', 'firstName lastName email telegramId');
+                .populate('student', 'firstName lastName email telegramId')
+                .populate('teacher', 'firstName lastName email telegramId');
 
             if (!appointment) {
                 return res.status(404).json({ message: 'Appointment not found' });
             }
 
-            // Verify doctor is assigned to this appointment
-            if (appointment.doctor._id.toString() !== doctorId) {
+            // Verify teacher is assigned to this appointment
+            if (appointment.teacher._id.toString() !== teacherId.toString()) {
                 return res.status(403).json({ message: 'You are not authorized to update this consultation' });
             }
 
@@ -588,8 +588,8 @@ class ConsultationController {
 
                     // Create a new appointment for the follow-up with pending-payment status
                     const followUpAppointment = new Appointment({
-                        patient: appointment.patient._id,
-                        doctor: appointment.doctor._id,
+                        student: appointment.student._id,
+                        teacher: appointment.teacher._id,
                         dateTime: followUpDateObj,
                         endTime: endTime,
                         duration: duration,
@@ -597,7 +597,7 @@ class ConsultationController {
                         reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
                         status: 'pending-payment',
                         payment: {
-                            amount: appointment.doctor.consultationFee,
+                            amount: appointment.teacher.consultationFee,
                             status: 'pending'
                         }
                     });

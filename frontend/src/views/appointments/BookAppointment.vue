@@ -6,14 +6,14 @@
             <p class="mt-2 text-gray-600">Loading...</p>
         </div>
 
-        <template v-else-if="doctor">
+        <template v-else-if="teacher">
             <div class="bg-white shadow rounded-lg overflow-hidden">
                 <div class="p-6">
                     <h1 class="text-2xl font-bold text-gray-900">
-                        Book Appointment with Dr. {{ doctor.firstName }} {{ doctor.lastName }}
+                        Book Appointment with Dr. {{ teacher.firstName }} {{ teacher.lastName }}
                     </h1>
                     <div class="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
-                        <span v-for="spec in doctor.specializations" :key="spec"
+                        <span v-for="spec in teacher.specializations" :key="spec"
                             class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                             {{ spec }}
                         </span>
@@ -122,7 +122,7 @@ const route = useRoute()
 const router = useRouter()
 const paymentStore = usePaymentStore()
 
-const doctor = ref(null)
+const teacher = ref(null)
 const loading = ref(true)
 const submitting = ref(false)
 const error = ref('')
@@ -165,10 +165,10 @@ const formatCurrency = (amount) => {
     return new Intl.NumberFormat('uz-UZ').format(numAmount);
 }
 
-// Function to safely format the doctor's fee
+// Function to safely format the teacher's fee
 const formatFee = () => {
-    if (!doctor.value) return '0';
-    return formatCurrency(doctor.value.consultationFee);
+    if (!teacher.value) return '0';
+    return formatCurrency(teacher.value.consultationFee);
 }
 
 // Keep the original format function for other date formatting needs
@@ -210,11 +210,11 @@ const isWithinJoinWindow = (dateTime) => {
 async function fetchDoctorProfile() {
     try {
         loading.value = true
-        const response = await axios.get(`/api/users/doctors/${route.params.doctorId}`)
-        // Assign the doctor property from the response data
-        doctor.value = response.data.doctor;
+        const response = await axios.get(`/api/users/teachers/${route.params.teacherId}`)
+        // Assign the teacher property from the response data
+        teacher.value = response.data.teacher;
     } catch (error) {
-        console.error('Error fetching doctor profile:', error)
+        console.error('Error fetching teacher profile:', error)
     } finally {
         loading.value = false
     }
@@ -222,7 +222,7 @@ async function fetchDoctorProfile() {
 
 async function fetchAvailableSlots() {
     try {
-        const response = await axios.get(`/api/appointments/availability/${route.params.doctorId}`, {
+        const response = await axios.get(`/api/appointments/availability/${route.params.teacherId}`, {
             params: { date: formData.date }
         })        
         // Process the slots - don't modify the original time strings
@@ -281,9 +281,9 @@ async function handleSubmit() {
         submitting.value = true
         error.value = ''
 
-        // Create appointment (patientId will be automatically set from auth token in backend)
+        // Create appointment (studentId will be automatically set from auth token in backend)
         const appointmentData = {
-            doctorId: route.params.doctorId,
+            teacherId: route.params.teacherId,
             dateTime: formData.time, // Send the original time string from the backend
             type: formData.type,
             reasonForVisit: formData.reasonForVisit

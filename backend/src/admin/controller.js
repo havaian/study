@@ -99,11 +99,11 @@ exports.getUserById = async (req, res) => {
         // Get additional statistics if needed
         let stats = {};
 
-        if (user.role === 'doctor') {
+        if (user.role === 'teacher') {
             // Doctor stats (appointments, ratings, etc.)
-            const appointmentCount = await Appointment.countDocuments({ doctor: id });
-            const completedAppointments = await Appointment.countDocuments({ doctor: id, status: 'completed' });
-            const canceledAppointments = await Appointment.countDocuments({ doctor: id, status: 'canceled' });
+            const appointmentCount = await Appointment.countDocuments({ teacher: id });
+            const completedAppointments = await Appointment.countDocuments({ teacher: id, status: 'completed' });
+            const canceledAppointments = await Appointment.countDocuments({ teacher: id, status: 'canceled' });
 
             stats = {
                 appointmentCount,
@@ -111,12 +111,12 @@ exports.getUserById = async (req, res) => {
                 canceledAppointments,
                 completionRate: appointmentCount > 0 ? (completedAppointments / appointmentCount) * 100 : 0
             };
-        } else if (user.role === 'patient') {
+        } else if (user.role === 'student') {
             // Patient stats (appointments, payments, etc.)
-            const appointmentCount = await Appointment.countDocuments({ patient: id });
-            const completedAppointments = await Appointment.countDocuments({ patient: id, status: 'completed' });
-            const paymentCount = await Payment.countDocuments({ patient: id });
-            const successfulPayments = await Payment.countDocuments({ patient: id, status: 'succeeded' });
+            const appointmentCount = await Appointment.countDocuments({ student: id });
+            const completedAppointments = await Appointment.countDocuments({ student: id, status: 'completed' });
+            const paymentCount = await Payment.countDocuments({ student: id });
+            const successfulPayments = await Payment.countDocuments({ student: id, status: 'succeeded' });
 
             stats = {
                 appointmentCount,
@@ -173,12 +173,12 @@ exports.updateUser = async (req, res) => {
         if (phone) user.phone = phone;
 
         // Admin can change role (but be careful with this)
-        if (role && ['patient', 'doctor', 'admin'].includes(role)) {
+        if (role && ['student', 'teacher', 'admin'].includes(role)) {
             user.role = role;
         }
 
         // Doctor-specific fields
-        if (user.role === 'doctor') {
+        if (user.role === 'teacher') {
             if (specializations) user.specializations = specializations;
             if (experience !== undefined) user.experience = experience;
             if (consultationFee) user.consultationFee = consultationFee;
@@ -241,7 +241,7 @@ exports.updateUserStatus = async (req, res) => {
 };
 
 /**
- * Manually verify a user (useful for doctors verification)
+ * Manually verify a user (useful for teachers verification)
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
@@ -288,8 +288,8 @@ exports.getAllAppointments = async (req, res) => {
             type,
             startDate,
             endDate,
-            patientId,
-            doctorId,
+            studentId,
+            teacherId,
             sortBy = 'dateTime',
             sortOrder = 'desc',
             page = 1,
@@ -319,12 +319,12 @@ exports.getAllAppointments = async (req, res) => {
             }
         }
 
-        if (patientId) {
-            query.patient = patientId;
+        if (studentId) {
+            query.student = studentId;
         }
 
-        if (doctorId) {
-            query.doctor = doctorId;
+        if (teacherId) {
+            query.teacher = teacherId;
         }
 
         // Execute query with pagination
@@ -335,8 +335,8 @@ exports.getAllAppointments = async (req, res) => {
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const appointments = await Appointment.find(query)
-            .populate('patient', 'firstName lastName email phone')
-            .populate('doctor', 'firstName lastName specializations')
+            .populate('student', 'firstName lastName email phone')
+            .populate('teacher', 'firstName lastName specializations')
             .sort(sortOptions)
             .skip(skip)
             .limit(parseInt(limit));
@@ -371,8 +371,8 @@ exports.getAppointmentById = async (req, res) => {
         const { id } = req.params;
 
         const appointment = await Appointment.findById(id)
-            .populate('patient', 'firstName lastName email phone dateOfBirth gender')
-            .populate('doctor', 'firstName lastName email phone specializations experience');
+            .populate('student', 'firstName lastName email phone dateOfBirth gender')
+            .populate('teacher', 'firstName lastName email phone specializations experience');
 
         if (!appointment) {
             return res.status(404).json({ message: 'Appointment not found' });
@@ -452,8 +452,8 @@ exports.getAllPayments = async (req, res) => {
             status,
             startDate,
             endDate,
-            patientId,
-            doctorId,
+            studentId,
+            teacherId,
             minAmount,
             maxAmount,
             sortBy = 'createdAt',
@@ -481,12 +481,12 @@ exports.getAllPayments = async (req, res) => {
             }
         }
 
-        if (patientId) {
-            query.patient = patientId;
+        if (studentId) {
+            query.student = studentId;
         }
 
-        if (doctorId) {
-            query.doctor = doctorId;
+        if (teacherId) {
+            query.teacher = teacherId;
         }
 
         if (minAmount || maxAmount) {
@@ -509,8 +509,8 @@ exports.getAllPayments = async (req, res) => {
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const payments = await Payment.find(query)
-            .populate('patient', 'firstName lastName email')
-            .populate('doctor', 'firstName lastName specializations')
+            .populate('student', 'firstName lastName email')
+            .populate('teacher', 'firstName lastName specializations')
             .populate('appointment', 'dateTime type status')
             .sort(sortOptions)
             .skip(skip)
@@ -573,8 +573,8 @@ exports.getDashboardStats = async (req, res) => {
 
         // User stats
         const totalUsers = await User.countDocuments();
-        const totalPatients = await User.countDocuments({ role: 'patient' });
-        const totalDoctors = await User.countDocuments({ role: 'doctor' });
+        const totalPatients = await User.countDocuments({ role: 'student' });
+        const totalDoctors = await User.countDocuments({ role: 'teacher' });
         const newUsersToday = await User.countDocuments({ createdAt: { $gte: today } });
 
         // Appointment stats
@@ -679,8 +679,8 @@ exports.getDashboardStats = async (req, res) => {
         res.status(200).json({
             users: {
                 total: totalUsers,
-                patients: totalPatients,
-                doctors: totalDoctors,
+                students: totalPatients,
+                teachers: totalDoctors,
                 newToday: newUsersToday
             },
             appointments: {
@@ -848,20 +848,20 @@ exports.getAllSpecializations = async (req, res) => {
 
         // Get stats for each specializations
         const specializationsWithStats = await Promise.all(specializations.map(async (spec) => {
-            const doctorCount = await User.countDocuments({
-                role: 'doctor',
+            const teacherCount = await User.countDocuments({
+                role: 'teacher',
                 specializations: spec.name,
                 isActive: true,
                 isVerified: true
             });
 
             const appointmentCount = await Appointment.countDocuments({
-                doctor: { $in: await User.find({ specializations: spec.name }).distinct('_id') }
+                teacher: { $in: await User.find({ specializations: spec.name }).distinct('_id') }
             });
 
             return {
                 ...spec.toObject(),
-                doctorCount,
+                teacherCount,
                 appointmentCount
             };
         }));
@@ -946,14 +946,14 @@ exports.deleteSpecialization = async (req, res) => {
         }
 
         // Check if specializations is in use
-        const doctorsUsingSpecialization = await User.countDocuments({
+        const teachersUsingSpecialization = await User.countDocuments({
             specializations: specializations.name
         });
 
-        if (doctorsUsingSpecialization > 0) {
+        if (teachersUsingSpecialization > 0) {
             return res.status(400).json({
-                message: 'Cannot delete specializations that is in use by doctors',
-                doctorsCount: doctorsUsingSpecialization
+                message: 'Cannot delete specializations that is in use by teachers',
+                teachersCount: teachersUsingSpecialization
             });
         }
 

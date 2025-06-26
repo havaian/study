@@ -3,14 +3,14 @@ const { validateUserInput } = require('../utils/validators');
 const { NotificationService } = require('../notification');
 const crypto = require('crypto');
 
-// Register a new user (patient or doctor)
+// Register a new user (student or teacher)
 exports.registerUser = async (req, res) => {
     try {
         // First, we need to preprocess the data to prevent validation issues with role-specific fields
         const userData = { ...req.body };
         
-        // If the user is a patient, explicitly remove all doctor-specific fields before validation
-        if (userData.role === 'patient' || !userData.role) {
+        // If the user is a student, explicitly remove all teacher-specific fields before validation
+        if (userData.role === 'student' || !userData.role) {
             delete userData.specializations;
             delete userData.specializations;
             delete userData.licenseNumber;
@@ -47,13 +47,13 @@ exports.registerUser = async (req, res) => {
             firstName,
             lastName,
             phone,
-            role: role || 'patient',
+            role: role || 'student',
             verificationToken,
             isVerified: false
         });
 
         // Add role-specific fields
-        if (role === 'doctor') {
+        if (role === 'teacher') {
             // Handle specializations (array)
             if (userData.specializations) {
                 user.specializations = userData.specializations;
@@ -80,7 +80,7 @@ exports.registerUser = async (req, res) => {
                 { dayOfWeek: 7, isAvailable: false, startTime: '00:00', endTime: '00:00' }
             ];
         }
-        else if (role === 'patient' || !role) {
+        else if (role === 'student' || !role) {
             const { dateOfBirth, gender, medicalHistory } = userData;
 
             user.dateOfBirth = dateOfBirth;
@@ -90,7 +90,7 @@ exports.registerUser = async (req, res) => {
                 user.medicalHistory = medicalHistory;
             }
             
-            // Explicitly ensure doctor-specific fields are unset for patients
+            // Explicitly ensure teacher-specific fields are unset for students
             user.specializations = undefined;
             user.licenseNumber = undefined;
             user.experience = undefined;
@@ -163,16 +163,19 @@ exports.loginUser = async (req, res) => {
 
         // Check if user exists and password is correct
         if (!user || !(await user.matchPassword(password))) {
+            console.log('Invalid credentials');
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
         // Check if user is verified
         if (!user.isVerified) {
+            console.log('Please verify your email first');
             return res.status(401).json({ message: 'Please verify your email first' });
         }
 
         // Check if user is active
         if (!user.isActive) {
+            console.log('Your account has been deactivated. Please contact support.');
             return res.status(401).json({ message: 'Your account has been deactivated. Please contact support.' });
         }
 
@@ -196,13 +199,14 @@ exports.loginUser = async (req, res) => {
 // Get current user profile
 exports.getCurrentUser = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.user.id).select('-password -resetPasswordToken -resetPasswordExpire -verificationToken -jwtSecret');
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(200).json({ user: user.getPublicProfile() });
+        // res.status(200).json({ user: user.getPublicProfile() });
+        res.status(200).json(user);
     } catch (error) {
         console.error('Error fetching current user:', error);
         res.status(500).json({ message: 'An error occurred while fetching user profile' });
@@ -359,7 +363,7 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
-// Get all doctors (with optional filters)
+// Get all teachers (with optional filters)
 exports.getDoctors = async (req, res) => {
     try {
         const {
@@ -374,7 +378,7 @@ exports.getDoctors = async (req, res) => {
             limit = 10
         } = req.query;
 
-        const query = { role: 'doctor', isActive: true, isVerified: true };
+        const query = { role: 'teacher', isActive: true, isVerified: true };
 
         // Apply filters
         if (specializations) {
@@ -414,7 +418,7 @@ exports.getDoctors = async (req, res) => {
         // Execute query with pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
-        const doctors = await User.find(query)
+        const teachers = await User.find(query)
             .select('-password -verificationToken -resetPasswordToken -resetPasswordExpire')
             .skip(skip)
             .limit(parseInt(limit))
@@ -423,7 +427,7 @@ exports.getDoctors = async (req, res) => {
         const total = await User.countDocuments(query);
 
         res.status(200).json({
-            doctors,
+            teachers,
             pagination: {
                 total,
                 page: parseInt(page),
@@ -432,31 +436,31 @@ exports.getDoctors = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error fetching doctors:', error);
-        res.status(500).json({ message: 'An error occurred while fetching doctors' });
+        console.error('Error fetching teachers:', error);
+        res.status(500).json({ message: 'An error occurred while fetching teachers' });
     }
 };
 
-// Get doctor by ID
+// Get teacher by ID
 exports.getDoctorById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const doctor = await User.findOne({
+        const teacher = await User.findOne({
             _id: id,
-            role: 'doctor',
+            role: 'teacher',
             isActive: true,
             isVerified: true
         }).select('-password -verificationToken -resetPasswordToken -resetPasswordExpire');
 
-        if (!doctor) {
+        if (!teacher) {
             return res.status(404).json({ message: 'Doctor not found' });
         }
 
-        res.status(200).json({ doctor });
+        res.status(200).json({ teacher });
     } catch (error) {
-        console.error('Error fetching doctor details:', error);
-        res.status(500).json({ message: 'An error occurred while fetching doctor details' });
+        console.error('Error fetching teacher details:', error);
+        res.status(500).json({ message: 'An error occurred while fetching teacher details' });
     }
 };
 
@@ -508,19 +512,19 @@ exports.deactivateAccount = async (req, res) => {
     }
 };
 
-// Get doctor's availability slots
+// Get teacher's availability slots
 exports.getDoctorAvailability = async (req, res) => {
     try {
-        const { doctorId } = req.params;
+        const { teacherId } = req.params;
         const { date } = req.query;
 
         if (!date) {
             return res.status(400).json({ message: 'Date parameter is required' });
         }
 
-        // Get doctor's working hours
-        const doctor = await User.findById(doctorId);
-        if (!doctor || doctor.role !== 'doctor') {
+        // Get teacher's working hours
+        const teacher = await User.findById(teacherId);
+        if (!teacher || teacher.role !== 'teacher') {
             return res.status(404).json({ message: 'Doctor not found' });
         }
 
@@ -529,7 +533,7 @@ exports.getDoctorAvailability = async (req, res) => {
         const dayOfWeek = requestedDate.getDay(); // 0 is Sunday, 1 is Monday, etc.
         const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Convert to 0-based (Monday = 0, Sunday = 6)
 
-        const dayAvailability = doctor.availability.find(a => a.dayOfWeek === dayIndex);
+        const dayAvailability = teacher.availability.find(a => a.dayOfWeek === dayIndex);
         if (!dayAvailability || !dayAvailability.isAvailable) {
             return res.status(200).json({
                 message: 'Doctor is not available on this day',
@@ -539,7 +543,7 @@ exports.getDoctorAvailability = async (req, res) => {
 
         let availableSlots = [];
 
-        // Check if the doctor has time slots defined
+        // Check if the teacher has time slots defined
         if (Array.isArray(dayAvailability.timeSlots) && dayAvailability.timeSlots.length > 0) {
             // For each time slot, generate available appointment slots
             for (const timeSlot of dayAvailability.timeSlots) {
@@ -547,7 +551,7 @@ exports.getDoctorAvailability = async (req, res) => {
                     requestedDate,
                     timeSlot.startTime,
                     timeSlot.endTime,
-                    doctorId
+                    teacherId
                 );
                 availableSlots = [...availableSlots, ...slots];
             }
@@ -557,7 +561,7 @@ exports.getDoctorAvailability = async (req, res) => {
                 requestedDate,
                 dayAvailability.startTime,
                 dayAvailability.endTime,
-                doctorId
+                teacherId
             );
         }
 
@@ -568,13 +572,13 @@ exports.getDoctorAvailability = async (req, res) => {
                 { start: dayAvailability.startTime, end: dayAvailability.endTime }
         });
     } catch (error) {
-        console.error('Error fetching doctor availability:', error);
-        res.status(500).json({ message: 'An error occurred while fetching doctor availability' });
+        console.error('Error fetching teacher availability:', error);
+        res.status(500).json({ message: 'An error occurred while fetching teacher availability' });
     }
 };
 
 // Helper function to generate time slots
-async function generateTimeSlots(date, startTimeStr, endTimeStr, doctorId) {
+async function generateTimeSlots(date, startTimeStr, endTimeStr, teacherId) {
     // Parse start and end times
     const [startHour, startMinute] = startTimeStr.split(':').map(Number);
     const [endHour, endMinute] = endTimeStr.split(':').map(Number);
@@ -605,12 +609,12 @@ async function generateTimeSlots(date, startTimeStr, endTimeStr, doctorId) {
 
     // Remove slots that already have appointments
     const bookedAppointments = await Appointment.find({
-        doctor: doctorId,
+        teacher: teacherId,
         dateTime: {
             $gte: new Date(date.setHours(0, 0, 0, 0)),
             $lt: new Date(date.setHours(23, 59, 59, 999))
         },
-        status: { $in: ['scheduled', 'pending-doctor-confirmation'] }
+        status: { $in: ['scheduled', 'pending-teacher-confirmation'] }
     });
 
     // Check for conflicts with each potential slot

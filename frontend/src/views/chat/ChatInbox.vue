@@ -68,7 +68,7 @@ function getOtherParticipant(conversation) {
 
 function formatParticipantName(participant) {
     if (!participant) return 'Unknown'
-    return participant.role === 'doctor' ?
+    return participant.role === 'teacher' ?
         `Dr. ${participant.firstName} ${participant.lastName}` :
         `${participant.firstName} ${participant.lastName}`
 }

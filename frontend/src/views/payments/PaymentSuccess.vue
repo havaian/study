@@ -28,7 +28,7 @@
                             View Appointment Details
                         </router-link>
 
-                        <router-link :to="{ name: 'patient-appointments' }" class="btn-secondary w-full justify-center">
+                        <router-link :to="{ name: 'student-appointments' }" class="btn-secondary w-full justify-center">
                             View All Appointments
                         </router-link>
                     </div>
@@ -50,7 +50,7 @@
                     </p>
 
                     <div class="mt-8">
-                        <router-link :to="{ name: 'patient-appointments' }" class="btn-primary w-full justify-center">
+                        <router-link :to="{ name: 'student-appointments' }" class="btn-primary w-full justify-center">
                             Return to Appointments
                         </router-link>
                     </div>

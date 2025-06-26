@@ -53,8 +53,8 @@ const router = createRouter({
     },
     // Profile routes
     {
-      path: '/profile',
-      name: 'patient-profile',
+      path: '/profile/student',
+      name: 'student-profile',
       component: () => import('@/views/profile/PatientProfile.vue'),
       meta: {
         requiresAuth: true,
@@ -62,8 +62,8 @@ const router = createRouter({
       }
     },
     {
-      path: '/doctor-profile',
-      name: 'doctor-profile',
+      path: '/profile/teacher',
+      name: 'teacher-profile',
       component: () => import('@/views/profile/DoctorProfile.vue'),
       meta: {
         requiresAuth: true,
@@ -80,18 +80,18 @@ const router = createRouter({
     },
     // Doctor routes
     {
-      path: '/doctors',
-      name: 'doctor-list',
-      component: () => import('@/views/doctors/DoctorList.vue')
+      path: '/teachers',
+      name: 'teacher-list',
+      component: () => import('@/views/teachers/DoctorList.vue')
     },
     {
-      path: '/doctors/:id',
-      name: 'doctor-profile-view',
-      component: () => import('@/views/doctors/DoctorProfile.vue')
+      path: '/teachers/:id',
+      name: 'teacher-profile-view',
+      component: () => import('@/views/teachers/DoctorProfile.vue')
     },
     // Appointment routes
     {
-      path: '/appointments/book/:doctorId',
+      path: '/appointments/book/:teacherId',
       name: 'book-appointment',
       component: () => import('@/views/appointments/BookAppointment.vue'),
       meta: {
@@ -100,8 +100,8 @@ const router = createRouter({
       }
     },
     {
-      path: '/appointments/patient',
-      name: 'patient-appointments',
+      path: '/appointments/student',
+      name: 'student-appointments',
       component: () => import('@/views/appointments/PatientAppointments.vue'),
       meta: {
         requiresAuth: true,
@@ -109,8 +109,8 @@ const router = createRouter({
       }
     },
     {
-      path: '/appointments/doctor',
-      name: 'doctor-appointments',
+      path: '/appointments/teacher',
+      name: 'teacher-appointments',
       component: () => import('@/views/appointments/DoctorAppointments.vue'),
       meta: {
         requiresAuth: true,

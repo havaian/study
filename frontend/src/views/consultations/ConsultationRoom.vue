@@ -6,8 +6,8 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <h1 class="text-xl font-bold text-gray-900">
-                            Consultation with {{ consultation?.patient?.name ||
-                                consultation?.doctor?.name }}
+                            Consultation with {{ consultation?.student?.name ||
+                                consultation?.teacher?.name }}
                         </h1>
                         <span class="ml-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" :class="{
                             'bg-green-100 text-green-800': isConnected,
@@ -78,7 +78,7 @@
                             <div class="flex justify-between items-center mb-2">
                                 <h4 class="text-lg font-medium text-gray-900">Prescriptions</h4>
                                 <button type="button" @click="addPrescription"
-                                    class="text-sm text-indigo-600 hover:text-indigo-900">
+                                    class="text-sm bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  hover:text-indigo-900">
                                     + Add Prescription
                                 </button>
                             </div>
@@ -145,7 +145,7 @@
                         <div class="mb-6">
                             <div class="flex items-center mb-2">
                                 <input id="followUpRecommended" v-model="postConsultationData.followUp.recommended"
-                                    type="checkbox" class="h-4 w-4 text-indigo-600 rounded" />
+                                    type="checkbox" class="h-4 w-4 bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent  rounded" />
                                 <label for="followUpRecommended" class="ml-2 block text-sm font-medium text-gray-700">
                                     Recommend Follow-up Appointment
                                 </label>
@@ -208,7 +208,7 @@
                     <h3 class="text-lg font-medium text-gray-900 text-center">Follow-up Appointment Created</h3>
                     <p class="mt-2 text-sm text-gray-500 text-center">
                         A follow-up appointment has been created and is now pending payment.
-                        The patient will need to pay to confirm the appointment.
+                        The student will need to pay to confirm the appointment.
                     </p>
                     <div class="mt-4 flex justify-center">
                         <button @click="returnToAppointments" class="btn-primary">
@@ -335,7 +335,7 @@ async function initializeJitsi() {
 
         api.value.on('videoConferenceLeft', () => {
             if (isDoctor.value) {
-                // If doctor hasn't completed the form yet, show it
+                // If teacher hasn't completed the form yet, show it
                 if (!showPostConsultationForm.value) {
                     showPostConsultationForm.value = true
                 }
@@ -447,13 +447,13 @@ async function submitPostConsultationForm() {
 
 function skipPostConsultation() {
     // Just end the consultation without saving any data
-    router.push({ name: 'doctor-appointments' })
+    router.push({ name: 'teacher-appointments' })
 }
 
 function returnToAppointments() {
     router.push(isDoctor.value ?
-        { name: 'doctor-appointments' } :
-        { name: 'patient-appointments' }
+        { name: 'teacher-appointments' } :
+        { name: 'student-appointments' }
     )
 }
 

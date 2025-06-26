@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const Schema = mongoose.Schema;
 
-// Time slot schema for doctor availability
+// Time slot schema for teacher availability
 const timeSlotSchema = new Schema({
     startTime: {
         type: String, // Format: "HH:MM"
@@ -48,17 +48,17 @@ const userSchema = new Schema({
     },
     role: {
         type: String,
-        enum: ['patient', 'doctor', 'admin'],
-        default: 'patient'
+        enum: ['student', 'teacher', 'admin'],
+        default: 'student'
     },
     dateOfBirth: {
         type: Date,
-        required: function () { return this.role === 'patient'; }
+        required: function () { return this.role === 'student'; }
     },
     gender: {
         type: String,
         enum: ['male', 'female', 'other', 'prefer not to say'],
-        required: function () { return this.role === 'patient'; }
+        required: function () { return this.role === 'student'; }
     },
     profilePicture: {
         type: String,
@@ -74,16 +74,16 @@ const userSchema = new Schema({
     // Doctor-specific fields
     specializations: [{
         type: String,
-        required: function () { return this.role === 'doctor'; }
+        required: function () { return this.role === 'teacher'; }
     }],
     licenseNumber: {
         type: String,
-        required: function () { return this.role === 'doctor'; }
+        required: function () { return this.role === 'teacher'; }
     },
     experience: {
         type: Number,
         default: 0,
-        required: function () { return this.role === 'doctor'; }
+        required: function () { return this.role === 'teacher'; }
     },
     education: [{
         degree: String,
@@ -114,7 +114,7 @@ const userSchema = new Schema({
     }],
     consultationFee: {
         type: Number,
-        required: function () { return this.role === 'doctor'; }
+        required: function () { return this.role === 'teacher'; }
     },
     // Patient-specific fields
     medicalHistory: {
@@ -187,7 +187,7 @@ userSchema.virtual('fullName').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 
-// Add indexes for searching doctors - removed the duplicate email index
+// Add indexes for searching teachers - removed the duplicate email index
 userSchema.index({ specializations: 1 });
 userSchema.index({ 'address.city': 1 });
 userSchema.index({ firstName: 'text', lastName: 'text', specializations: 'text' });
@@ -262,7 +262,7 @@ userSchema.methods.generatePasswordResetToken = function () {
     return resetToken;
 };
 
-// Method to get doctor's basic public profile
+// Method to get teacher's basic public profile
 userSchema.methods.getPublicProfile = function () {
     const user = this.toObject();
 
@@ -276,10 +276,10 @@ userSchema.methods.getPublicProfile = function () {
     return user;
 };
 
-// Static method to find available doctors by specializations
+// Static method to find available teachers by specializations
 userSchema.statics.findAvailableDoctors = function (specializations) {
     return this.find({
-        role: 'doctor',
+        role: 'teacher',
         isActive: true,
         isVerified: true,
         specializations: specializations || { $exists: true }

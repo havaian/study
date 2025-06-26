@@ -13,46 +13,46 @@ const upload = require('../utils/multerConfig');
 router.post(
     '/',
     authenticateUser,
-    authorizeRoles(['patient', 'admin']),
+    authorizeRoles(['student', 'admin']),
     appointmentController.createAppointment
 );
 
 /**
- * @route GET /api/appointments/patient/:patientId
- * @desc Get all appointments for a patient
+ * @route GET /api/appointments/student/:studentId
+ * @desc Get all appointments for a student
  * @access Private (Patient must be the owner or Admin)
  */
 router.get(
-    '/patient/:patientId',
+    '/student/:studentId',
     authenticateUser,
-    authorizeRoles(['patient', 'admin']),
-    ensureOwnership('patientId'),
+    authorizeRoles(['student', 'admin']),
+    ensureOwnership('studentId'),
     appointmentController.getPatientAppointments
 );
 
 /**
- * @route GET /api/appointments/patient/:patientId/pending-followups
- * @desc Get pending follow-up appointments for a patient
+ * @route GET /api/appointments/student/:studentId/pending-followups
+ * @desc Get pending follow-up appointments for a student
  * @access Private (Patient must be the owner or Admin)
  */
 router.get(
-    '/patient/:patientId/pending-followups',
+    '/student/:studentId/pending-followups',
     authenticateUser,
-    authorizeRoles(['patient', 'admin']),
-    ensureOwnership('patientId'),
+    authorizeRoles(['student', 'admin']),
+    ensureOwnership('studentId'),
     appointmentController.getPendingFollowUps
 );
 
 /**
- * @route GET /api/appointments/doctor/:doctorId
- * @desc Get all appointments for a doctor
+ * @route GET /api/appointments/teacher/:teacherId
+ * @desc Get all appointments for a teacher
  * @access Private (Doctor must be the owner or Admin)
  */
 router.get(
-    '/doctor/:doctorId',
+    '/teacher/:teacherId',
     authenticateUser,
-    authorizeRoles(['doctor', 'admin']),
-    ensureOwnership('doctorId'),
+    authorizeRoles(['teacher', 'admin']),
+    ensureOwnership('teacherId'),
     appointmentController.getDoctorAppointments
 );
 
@@ -97,7 +97,7 @@ router.patch(
 router.post(
     '/:id/confirm',
     authenticateUser,
-    authorizeRoles(['doctor']),
+    authorizeRoles(['teacher']),
     appointmentController.confirmAppointment
 );
 
@@ -109,7 +109,7 @@ router.post(
 router.patch(
     '/:id/prescriptions',
     authenticateUser,
-    authorizeRoles(['doctor']),
+    authorizeRoles(['teacher']),
     appointmentController.updatePrescriptions
 );
 
@@ -143,30 +143,30 @@ router.get(
 router.post(
     '/:id/follow-up',
     authenticateUser,
-    authorizeRoles(['doctor']),
+    authorizeRoles(['teacher']),
     appointmentController.scheduleFollowUp
 );
 
 /**
- * @route GET /api/appointments/availability/:doctorId
- * @desc Get doctor's availability slots
+ * @route GET /api/appointments/availability/:teacherId
+ * @desc Get teacher's availability slots
  * @access Public (no authentication needed for viewing availability)
  */
 router.get(
-    '/availability/:doctorId',
+    '/availability/:teacherId',
     appointmentController.getDoctorAvailability
 );
 
 /**
- * @route GET /api/appointments/pending-confirmation/doctor/:doctorId
- * @desc Get appointments pending doctor confirmation
+ * @route GET /api/appointments/pending-confirmation/teacher/:teacherId
+ * @desc Get appointments pending teacher confirmation
  * @access Private (Doctor must be the owner or Admin)
  */
 router.get(
-    '/pending-confirmation/doctor/:doctorId',
+    '/pending-confirmation/teacher/:teacherId',
     authenticateUser,
-    authorizeRoles(['doctor', 'admin']),
-    ensureOwnership('doctorId'),
+    authorizeRoles(['teacher', 'admin']),
+    ensureOwnership('teacherId'),
     appointmentController.getPendingConfirmations
 );
 
@@ -178,7 +178,7 @@ router.get(
 router.patch(
     '/:id/consultation-results',
     authenticateUser,
-    authorizeRoles(['doctor']),
+    authorizeRoles(['teacher']),
     appointmentController.updateConsultationResults
 );
 

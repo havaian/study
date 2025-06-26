@@ -38,15 +38,15 @@
                         <div class="p-6">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-4">
-                                    <img :src="appointment.doctor.profilePicture || '/images/user-placeholder.jpg'"
-                                        :alt="appointment.doctor.firstName"
+                                    <img :src="appointment.teacher.profilePicture || '/images/user-placeholder.jpg'"
+                                        :alt="appointment.teacher.firstName"
                                         class="h-12 w-12 rounded-full object-cover" />
                                     <div>
                                         <h3 class="text-lg font-medium text-gray-900">
-                                            Dr. {{ appointment.doctor.firstName }} {{ appointment.doctor.lastName }}
+                                            Dr. {{ appointment.teacher.firstName }} {{ appointment.teacher.lastName }}
                                         </h3>
                                         <div class="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
-                                            <span v-for="spec in appointment.doctor.specializations" :key="spec"
+                                            <span v-for="spec in appointment.teacher.specializations" :key="spec"
                                                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                                                 {{ spec }}
                                             </span>
@@ -149,7 +149,7 @@ async function fetchAppointments() {
             ...filters
         }
 
-        const response = await axios.get(`/api/appointments/patient/${authStore.user._id}`, { params })
+        const response = await axios.get(`/api/appointments/student/${authStore.user._id}`, { params })
         appointments.value = response.data.appointments
         totalPages.value = Math.ceil(response.data.pagination.total / response.data.pagination.limit)
     } catch (error) {

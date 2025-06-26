@@ -44,7 +44,7 @@ const specializations = [
 const adminUser = {
     firstName: 'Admin',
     lastName: 'User',
-    email: 'admin@e-polyclinic.uz',
+    email: 'admin@online-study.com',
     password: 'Admin123!',
     phone: '+998901234567',
     role: 'admin',
@@ -56,10 +56,10 @@ const sampleDoctors = [
     {
         firstName: 'John',
         lastName: 'Smith',
-        email: 'john.smith@e-polyclinic.uz',
+        email: 'john.smith@online-study.com',
         password: 'Doctor123!',
         phone: '+998901234568',
-        role: 'doctor',
+        role: 'teacher',
         specializations: ['Cardiology'],
         licenseNumber: 'MD12345',
         experience: 15,
@@ -81,10 +81,10 @@ const sampleDoctors = [
     {
         firstName: 'Sarah',
         lastName: 'Johnson',
-        email: 'sarah.johnson@e-polyclinic.uz',
+        email: 'sarah.johnson@online-study.com',
         password: 'Doctor123!',
         phone: '+998901234569',
-        role: 'doctor',
+        role: 'teacher',
         specializations: ['Pediatrics'],
         licenseNumber: 'MD54321',
         experience: 10,
@@ -111,7 +111,7 @@ const samplePatient = {
     email: 'jane.doe@gmail.com',
     password: 'Patient123!',
     phone: '+998901234570',
-    role: 'patient',
+    role: 'student',
     dateOfBirth: new Date('1990-01-15'),
     gender: 'female',
     isActive: true,
@@ -158,32 +158,32 @@ async function seedDatabase() {
         const admin = await User.create(adminUser);
         console.log('✅ [db seed] Admin user created');
 
-        console.log('👨‍⚕️ [db seed] Creating doctor accounts...');
+        console.log('👨‍⚕️ [db seed] Creating teacher accounts...');
         
-        // Create doctor accounts
-        for (const doctor of sampleDoctors) {
+        // Create teacher accounts
+        for (const teacher of sampleDoctors) {
             // Hash password
-            doctor.password = await bcrypt.hash(doctor.password, salt);
+            teacher.password = await bcrypt.hash(teacher.password, salt);
             
-            // Create doctor
-            const createdDoctor = await User.create(doctor);
-            console.log(`✅ [db seed] Created doctor: ${createdDoctor.firstName} ${createdDoctor.lastName}`);
+            // Create teacher
+            const createdDoctor = await User.create(teacher);
+            console.log(`✅ [db seed] Created teacher: ${createdDoctor.firstName} ${createdDoctor.lastName}`);
         }
 
-        console.log('👩‍🦰 [db seed] Creating patient account...');
+        console.log('👩‍🦰 [db seed] Creating student account...');
         
-        // Hash patient password
+        // Hash student password
         samplePatient.password = await bcrypt.hash(samplePatient.password, salt);
         
-        // Create patient
-        const patient = await User.create(samplePatient);
+        // Create student
+        const student = await User.create(samplePatient);
         console.log('✅ [db seed] Patient account created');
 
         console.log('\n🎉 [db seed] Database seeded successfully!');
         console.log('\n📝 [db seed] Login credentials:');
-        console.log('[db seed] Admin: admin@e-polyclinic.uz / Admin123!');
-        console.log('[db seed] Doctor 1: john.smith@e-polyclinic.uz / Doctor123!');
-        console.log('[db seed] Doctor 2: sarah.johnson@e-polyclinic.uz / Doctor123!');
+        console.log('[db seed] Admin: admin@online-study.com / Admin123!');
+        console.log('[db seed] Doctor 1: john.smith@online-study.com / Doctor123!');
+        console.log('[db seed] Doctor 2: sarah.johnson@online-study.com / Doctor123!');
         console.log('[db seed] Patient: jane.doe@gmail.com / Patient123!');
 
     } catch (error) {

@@ -5,7 +5,7 @@ const { authenticateUser, authorizeRoles, preventDoctorRegistration, ensureTerms
 
 /**
  * @route POST /api/users/register
- * @desc Register a new user (patient or doctor)
+ * @desc Register a new user (student or teacher)
  * @access Public
  */
 router.post('/register', preventDoctorRegistration, ensureTermsAccepted, userController.registerUser);
@@ -60,18 +60,18 @@ router.post('/forgot-password', userController.forgotPassword);
 router.post('/reset-password/:token', userController.resetPassword);
 
 /**
- * @route GET /api/users/doctors
- * @desc Get all doctors with optional filters
+ * @route GET /api/users/teachers
+ * @desc Get all teachers with optional filters
  * @access Public
  */
-router.get('/doctors', userController.getDoctors);
+router.get('/teachers', userController.getDoctors);
 
 /**
- * @route GET /api/users/doctors/:id
- * @desc Get doctor by ID
+ * @route GET /api/users/teachers/:id
+ * @desc Get teacher by ID
  * @access Public
  */
-router.get('/doctors/:id', userController.getDoctorById);
+router.get('/teachers/:id', userController.getDoctorById);
 
 /**
  * @route POST /api/users/link-telegram

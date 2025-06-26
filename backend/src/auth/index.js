@@ -174,7 +174,7 @@ exports.ensureOwnership = (paramIdField) => {
 
 /**
  * Middleware to handle appointment access
- * Only the involved patient, doctor, or an admin can access appointment details
+ * Only the involved student, teacher, or an admin can access appointment details
  */
 exports.ensureAppointmentAccess = async (req, res, next) => {
     try {
@@ -195,8 +195,8 @@ exports.ensureAppointmentAccess = async (req, res, next) => {
 
         // Check if user is involved in the appointment
         const userId = req.user.id.toString();
-        const isDoctor = req.user.role === 'doctor' && appointment.doctor.toString() === userId;
-        const isPatient = req.user.role === 'patient' && appointment.patient.toString() === userId;
+        const isDoctor = req.user.role === 'teacher' && appointment.teacher.toString() === userId;
+        const isPatient = req.user.role === 'student' && appointment.student.toString() === userId;
 
         if (!isDoctor && !isPatient) {
             return res.status(403).json({
@@ -358,37 +358,19 @@ async function logContentViolation(userId, matches, content) {
 }
 
 /**
- * Middleware to check if a user is a doctor and registered by admin
- * Only admin can register doctors - rejects direct doctor registrations
+ * Middleware to check if a user is a teacher and registered by admin
+ * Only admin can register teachers - rejects direct teacher registrations
  */
 exports.preventDoctorRegistration = (req, res, next) => {
-    // If user is trying to register as a doctor
-    if (req.body.role === 'doctor') {
-        // Only allow if the request is from an admin
-        if (!req.user || req.user.role !== 'admin') {
-            return res.status(403).json({
-                message: 'Doctor registration is only available through administrators. Please contact the clinic to register as a doctor.'
-            });
-        }
-    }
-
-    next();
-};
-
-/**
- * Middleware to check if a user is a doctor and registered by admin
- * Only admin can register doctors - rejects direct doctor registrations
- */
-exports.preventDoctorRegistration = (req, res, next) => {
-    // If user is trying to register as a doctor
-    if (req.body.role === 'doctor') {
-        // Only allow if the request is from an admin
-        if (!req.user || req.user.role !== 'admin') {
-            return res.status(403).json({
-                message: 'Doctor registration is only available through administrators. Please contact the clinic to register as a doctor.'
-            });
-        }
-    }
+    // // If user is trying to register as a teacher
+    // if (req.body.role === 'teacher') {
+    //     // Only allow if the request is from an admin
+    //     if (!req.user || req.user.role !== 'admin') {
+    //         return res.status(403).json({
+    //             message: 'Doctor registration is only available through administrators. Please contact the clinic to register as a teacher.'
+    //         });
+    //     }
+    // }
 
     next();
 };
@@ -397,17 +379,17 @@ exports.preventDoctorRegistration = (req, res, next) => {
  * Middleware to ensure terms are accepted during registration
  */
 exports.ensureTermsAccepted = (req, res, next) => {
-    // If it's a registration request
-    if (req.path.includes('/register') && req.method === 'POST') {
-        // Check if terms and privacy policy are accepted
-        const { termsAccepted, privacyPolicyAccepted } = req.body;
+    // // If it's a registration request
+    // if (req.path.includes('/register') && req.method === 'POST') {
+    //     // Check if terms and privacy policy are accepted
+    //     const { termsAccepted, privacyPolicyAccepted } = req.body;
 
-        if (!termsAccepted || !privacyPolicyAccepted) {
-            return res.status(400).json({
-                message: 'You must accept the Terms of Service and Privacy Policy to register.'
-            });
-        }
-    }
+    //     if (!termsAccepted || !privacyPolicyAccepted) {
+    //         return res.status(400).json({
+    //             message: 'You must accept the Terms of Service and Privacy Policy to register.'
+    //         });
+    //     }
+    // }
 
     next();
 };

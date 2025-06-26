@@ -25,7 +25,7 @@ const initializeCronJobs = () => {
     scheduleJwtSecretRotation();
     console.log('✅ JWT secret rotation job scheduled');
 
-    console.log('All cron jobs initialized successfully');
+    console.log('✅ Cron jobs initialized successfully');
 };
 
 module.exports = initializeCronJobs;

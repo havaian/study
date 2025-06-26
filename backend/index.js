@@ -207,74 +207,74 @@ app.use((req, res, next) => {
 
 // Response middleware to decode HTML entities in specific fields
 app.use((req, res, next) => {
-    // Save the original res.json function
-    const originalJson = res.json;
+    // // Save the original res.json function
+    // const originalJson = res.json;
 
-    // Override the res.json function
-    res.json = function (data) {
-        // If data is an object and not null, process it
-        if (data && typeof data === 'object') {
-            data = decodeHtmlEntitiesInObject(data);
-        }
+    // // Override the res.json function
+    // res.json = function (data) {
+    //     // If data is an object and not null, process it
+    //     if (data && typeof data === 'object') {
+    //         data = decodeHtmlEntitiesInObject(data);
+    //     }
 
-        // Call the original json function with processed data
-        return originalJson.call(this, data);
-    };
+    //     // Call the original json function with processed data
+    //     return originalJson.call(this, data);
+    // };
 
-    // Function to decode HTML entities in strings
-    function decodeHtmlEntities(str) {
-        if (typeof str !== 'string') return str;
+    // // Function to decode HTML entities in strings
+    // function decodeHtmlEntities(str) {
+    //     if (typeof str !== 'string') return str;
 
-        return str
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"')
-            .replace(/&#x27;/g, "'")
-            .replace(/&#x2F;/g, '/')
-            .replace(/&amp;/g, '&');
-    }
+    //     return str
+    //         .replace(/&lt;/g, '<')
+    //         .replace(/&gt;/g, '>')
+    //         .replace(/&quot;/g, '"')
+    //         .replace(/&#x27;/g, "'")
+    //         .replace(/&#x2F;/g, '/')
+    //         .replace(/&amp;/g, '&');
+    // }
 
-    // Function to process objects and decode HTML entities
-    function decodeHtmlEntitiesInObject(obj) {
-        if (!obj) return obj;
+    // // Function to process objects and decode HTML entities
+    // function decodeHtmlEntitiesInObject(obj) {
+    //     if (!obj) return obj;
 
-        // Handle different types
-        if (typeof obj === 'string') {
-            return decodeHtmlEntities(obj);
-        }
+    //     // Handle different types
+    //     if (typeof obj === 'string') {
+    //         return decodeHtmlEntities(obj);
+    //     }
 
-        if (Array.isArray(obj)) {
-            return obj.map(item => decodeHtmlEntitiesInObject(item));
-        }
+    //     if (Array.isArray(obj)) {
+    //         return obj.map(item => decodeHtmlEntitiesInObject(item));
+    //     }
 
-        if (typeof obj === 'object') {
-            const result = {};
+    //     if (typeof obj === 'object') {
+    //         const result = {};
 
-            // These fields should have HTML entities decoded
-            const fieldsToProcess = [
-                'bio', 'reasonForVisit', 'consultationSummary',
-                'notes', 'text', 'comment', 'message'
-            ];
+    //         // These fields should have HTML entities decoded
+    //         const fieldsToProcess = [
+    //             'bio', 'reasonForVisit', 'consultationSummary',
+    //             'notes', 'text', 'comment', 'message'
+    //         ];
 
-            // Process each property
-            for (const key in obj) {
-                if (Object.hasOwnProperty.call(obj, key)) {
-                    // If this is a field we should decode, or it's an object that might contain such fields
-                    if (fieldsToProcess.includes(key) && typeof obj[key] === 'string') {
-                        result[key] = decodeHtmlEntities(obj[key]);
-                    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-                        result[key] = decodeHtmlEntitiesInObject(obj[key]);
-                    } else {
-                        result[key] = obj[key];
-                    }
-                }
-            }
+    //         // Process each property
+    //         for (const key in obj) {
+    //             if (Object.hasOwnProperty.call(obj, key)) {
+    //                 // If this is a field we should decode, or it's an object that might contain such fields
+    //                 if (fieldsToProcess.includes(key) && typeof obj[key] === 'string') {
+    //                     result[key] = decodeHtmlEntities(obj[key]);
+    //                 } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+    //                     result[key] = decodeHtmlEntitiesInObject(obj[key]);
+    //                 } else {
+    //                     result[key] = obj[key];
+    //                 }
+    //             }
+    //         }
 
-            return result;
-        }
+    //         return result;
+    //     }
 
-        return obj;
-    }
+    //     return obj;
+    // }
 
     next();
 });
@@ -374,5 +374,7 @@ process.on('uncaughtException', err => {
     // Close server & exit process
     process.exit(1);
 });
+
+// require('./seed');
 
 module.exports = { app, server, io };

@@ -1,180 +1,230 @@
 <template>
   <div>
-    <!-- Hero Section -->
-    <div class="relative bg-indigo-600">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <div class="text-center">
-          <h1 class="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
-            <span class="block">Professional Healthcare</span>
-            <span class="block text-indigo-200">At Your Fingertips</span>
+    <!-- Hero Section with New Medical Design -->
+    <div class="relative min-h-screen medical-gradient overflow-hidden">
+      <!-- Floating Medical Icons -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute top-20 left-10 float-medical opacity-20">
+          <svg class="h-16 w-16 text-medical-blue" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M19 8h-2v3h-3v2h3v3h2v-3h3v-2h-3V8zM4 6h5v2h2V6h2V4h-2V1H9v3H4c-1.1 0-2 .9-2 2v15c0 1.1.9 2 2 2h8.31c-.37-.64-.62-1.37-.78-2.16H4V6z" />
+          </svg>
+        </div>
+        <div class="absolute top-32 right-20 float-medical opacity-15" style="animation-delay: -1s;">
+          <svg class="h-20 w-20 text-medical-green" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+            <path d="M2 12h3l2-6 2 12 2-9 2 6 2-3h7"/>
+          </svg>
+        </div>
+        <div class="absolute bottom-32 left-32 float-medical opacity-10" style="animation-delay: -2s;">
+          <svg class="h-12 w-12 text-medical-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">
+        <!-- Logo Section -->
+        <div class="mb-12 slide-in">
+          <div class="flex items-center justify-center mb-8">
+            <div class="relative">
+              <div class="float-medical bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-2xl glow-effect">
+                <svg class="h-16 w-16 text-medical-blue" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-3">
+            ONLINE-<span
+              class="bg-gradient-to-r from-medical-blue to-medical-teal bg-clip-text text-transparent">POLYCLINIC</span><span
+              class="text-medical-green">.COM</span>
           </h1>
-          <p class="mt-3 max-w-md mx-auto text-base text-indigo-200 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-            Connect with qualified doctors online for consultations, prescriptions, and medical advice from the comfort
+          <p class="text-xl text-gray-700 font-medium">Your Health, Our Digital Care</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="mb-16">
+          <div class="inline-flex items-center bg-white/80 backdrop-blur-sm rounded-full px-6 py-2 mb-6 shadow-lg">
+            <div class="bg-medical-green rounded-full w-3 h-3 mr-3 pulse-animation"></div>
+            <span class="text-sm font-semibold text-gray-700">Professional Healthcare Platform</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
+            Professional Healthcare
+            <span class="bg-gradient-to-r from-medical-blue to-medical-green bg-clip-text text-transparent">
+              At Your Fingertips
+            </span>
+          </h2>
+          <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-8">
+            Connect with qualified teachers online for consultations, prescriptions, and medical advice from the comfort
             of your home.
           </p>
-          <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-            <div class="rounded-md shadow">
-              <router-link to="/doctors"
-                class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 md:py-4 md:text-lg md:px-10">
-                Find a Doctor
-              </router-link>
-            </div>
-            <div class="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-              <router-link to="/register"
-                class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 md:py-4 md:text-lg md:px-10">
-                Register Now
-              </router-link>
-            </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+            <router-link to="/teachers"
+              class="px-8 py-4 bg-gradient-to-r from-medical-blue to-medical-teal text-white font-semibold rounded-2xl hover:from-medical-teal hover:to-medical-blue focus:ring-4 focus:ring-medical-blue/30 transition-all shadow-lg glow-effect">
+              Find a Doctor
+            </router-link>
+            <router-link to="/register"
+              class="px-8 py-4 bg-white/90 backdrop-blur-sm text-medical-blue font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-medical-blue/30 transition-all shadow-lg border-2 border-medical-blue/20">
+              Register Now
+            </router-link>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Features Section -->
-    <div class="py-12 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center">
-          <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Features</h2>
-          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+    <div class="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-base text-medical-blue font-semibold tracking-wide uppercase mb-2">Features</h2>
+          <h3 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
             Better Healthcare Solution
-          </p>
-          <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+          </h3>
+          <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
             Experience healthcare reimagined with our comprehensive online medical consultation platform.
           </p>
         </div>
 
-        <div class="mt-10">
-          <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-            <div class="relative">
-              <dt>
-                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                </div>
-                <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Video Consultations</p>
-              </dt>
-              <dd class="mt-2 ml-16 text-base text-gray-500">
-                Connect with doctors face-to-face through secure video calls for personalized medical advice.
-              </dd>
+        <!-- Feature Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
+            <div class="bg-gradient-to-r from-medical-blue to-sky-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+              <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
             </div>
+            <h4 class="font-bold text-gray-800 mb-3 text-lg">Video Consultations</h4>
+            <p class="text-sm text-gray-600">High-quality video calls with certified healthcare professionals</p>
+          </div>
 
-            <div class="relative">
-              <dt>
-                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Easy Scheduling</p>
-              </dt>
-              <dd class="mt-2 ml-16 text-base text-gray-500">
-                Book appointments at your convenience with our easy-to-use scheduling system.
-              </dd>
+          <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
+            <div class="bg-gradient-to-r from-medical-green to-emerald-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+              <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
             </div>
+            <h4 class="font-bold text-gray-800 mb-3 text-lg">AI Diagnostics</h4>
+            <p class="text-sm text-gray-600">Smart symptom analysis and preliminary diagnosis</p>
+          </div>
 
-            <div class="relative">
-              <dt>
-                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </div>
-                <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Secure Platform</p>
-              </dt>
-              <dd class="mt-2 ml-16 text-base text-gray-500">
-                Your health information is protected with enterprise-grade security and encryption.
-              </dd>
+          <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
+            <div class="bg-gradient-to-r from-medical-teal to-cyan-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+              <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
             </div>
+            <h4 class="font-bold text-gray-800 mb-3 text-lg">Digital Prescriptions</h4>
+            <p class="text-sm text-gray-600">Electronic prescriptions sent directly to pharmacies</p>
+          </div>
 
-            <div class="relative">
-              <dt>
-                <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                  </svg>
-                </div>
-                <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Digital Prescriptions</p>
-              </dt>
-              <dd class="mt-2 ml-16 text-base text-gray-500">
-                Receive and manage your prescriptions digitally through our secure platform.
-              </dd>
+          <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
+            <div class="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+              <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 00-2-2z" />
+              </svg>
+            </div>
+            <h4 class="font-bold text-gray-800 mb-3 text-lg">Health Monitoring</h4>
+            <p class="text-sm text-gray-600">Track vitals and receive personalized health insights</p>
+          </div>
+        </div>
+
+        <!-- Trust Indicators -->
+        <div class="bg-white/50 backdrop-blur-sm rounded-2xl p-8 mt-16">
+          <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">Trusted Healthcare Technology</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div>
+              <div class="text-2xl font-bold text-medical-blue mb-1">24/7</div>
+              <div class="text-sm text-gray-600">Available</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-medical-green mb-1">500+</div>
+              <div class="text-sm text-gray-600">Certified Doctors</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-medical-teal mb-1">15min</div>
+              <div class="text-sm text-gray-600">Average Wait Time</div>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-purple-600 mb-1">HIPAA</div>
+              <div class="text-sm text-gray-600">Compliant</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Specializations Section -->
-    <div class="bg-gray-50 py-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center">
-          <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Specializations</h2>
-          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            Expert Care in Every Field
-          </p>
+    <!-- How It Works Section -->
+    <div class="py-20 bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-base text-medical-blue font-semibold tracking-wide uppercase mb-2">How It Works</h2>
+          <h3 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
+            Simple Steps to Better Health
+          </h3>
         </div>
 
-        <div class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <div v-for="specializations in specializations" :key="specializations.id"
-            class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-              <div class="flex items-center">
-                <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
-                  <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                </div>
-                <div class="ml-5">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    {{ specializations.name }}
-                  </h3>
-                  <div class="mt-2">
-                    <p class="text-sm text-gray-500">
-                      {{ specializations.doctorCount }} Doctors Available
-                    </p>
-                  </div>
-                </div>
-              </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div
+              class="bg-gradient-to-r from-medical-blue to-sky-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <span class="text-white font-bold text-xl">1</span>
             </div>
-            <div class="bg-gray-50 px-4 py-4 sm:px-6">
-              <div class="text-sm">
-                <router-link :to="{ name: 'doctor-list', query: { specializations: specializations.name } }"
-                  class="font-medium text-indigo-600 hover:text-indigo-500">
-                  View Doctors <span aria-hidden="true">&rarr;</span>
-                </router-link>
-              </div>
+            <h4 class="text-xl font-bold text-gray-800 mb-4">Choose a Doctor</h4>
+            <p class="text-gray-600">Browse our network of qualified healthcare professionals and select the right
+              specialist for your needs.</p>
+          </div>
+
+          <div class="text-center">
+            <div
+              class="bg-gradient-to-r from-medical-green to-emerald-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <span class="text-white font-bold text-xl">2</span>
             </div>
+            <h4 class="text-xl font-bold text-gray-800 mb-4">Book Appointment</h4>
+            <p class="text-gray-600">Schedule your consultation at a convenient time that works for both you and your
+              chosen teacher.</p>
+          </div>
+
+          <div class="text-center">
+            <div
+              class="bg-gradient-to-r from-medical-teal to-cyan-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <span class="text-white font-bold text-xl">3</span>
+            </div>
+            <h4 class="text-xl font-bold text-gray-800 mb-4">Get Treatment</h4>
+            <p class="text-gray-600">Join your secure video consultation and receive professional medical care from the
+              comfort of your home.</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- CTA Section -->
-    <div class="bg-indigo-50">
-      <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
-        <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-          <span class="block">Ready to get started?</span>
-          <span class="block text-indigo-600">Join our platform today.</span>
+    <!-- Call to Action Section -->
+    <div class="py-20 medical-gradient">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
+          Ready to Experience the Future of Healthcare?
         </h2>
-        <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
-          <div class="inline-flex rounded-md shadow">
-            <router-link to="/register"
-              class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-              Get started
-            </router-link>
-          </div>
-          <div class="ml-3 inline-flex rounded-md shadow">
-            <router-link to="/doctors"
-              class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50">
-              Find Doctors
-            </router-link>
-          </div>
+        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+          Join thousands of students who have already discovered the convenience and quality of online medical
+          consultations.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+          <router-link to="/register"
+            class="px-8 py-4 bg-gradient-to-r from-medical-blue to-medical-teal text-white font-semibold rounded-2xl hover:from-medical-teal hover:to-medical-blue focus:ring-4 focus:ring-medical-blue/30 transition-all shadow-lg glow-effect">
+            Get Started Today
+          </router-link>
+          <router-link to="/teachers"
+            class="px-8 py-4 bg-white/90 backdrop-blur-sm text-medical-blue font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-medical-blue/30 transition-all shadow-lg border-2 border-medical-blue/20">
+            Browse Doctors
+          </router-link>
         </div>
       </div>
     </div>
@@ -182,21 +232,80 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+// No additional imports needed as this is just updating the template
+</script>
 
-const specializations = ref([])
+<style scoped>
+.medical-gradient {
+  background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 25%, #f0f9ff 50%, #e0f2fe 75%, #f0f9ff 100%);
+}
 
-async function fetchSpecializations() {
-  try {
-    const response = await axios.get('/api/specializations')
-    specializations.value = response.data.specializations
-  } catch (error) {
-    console.error('Error fetching specializations:', error)
+.pulse-animation {
+  animation: pulse 3s linear infinite;
+}
+
+.float-medical {
+  animation: floatMedical 4s linear infinite;
+}
+
+@keyframes floatMedical {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  25% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+
+  50% {
+    transform: translateY(-15px) rotate(0deg);
+  }
+
+  75% {
+    transform: translateY(-10px) rotate(-1deg);
   }
 }
 
-onMounted(() => {
-  fetchSpecializations()
-})
-</script>
+.slide-in {
+  animation: slideIn 1.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.glow-effect {
+  box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+</style>

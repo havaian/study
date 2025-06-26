@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "b9c8215d-b04b-4d8c-bef9-cc76924ab4c5",
-    "name": "E-Polyclinics API",
-    "description": "API collection for the E-Polyclinics online medical consultation platform",
+    "name": "Online-study API",
+    "description": "API collection for the Online-study online medical consultation platform",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "28198332"
   },
@@ -21,14 +21,14 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/admin/users?role=doctor&isActive=true&page=1&limit=20",
+              "raw": "{{baseUrl}}/api/admin/users?role=teacher&isActive=true&page=1&limit=20",
               "host": ["{{baseUrl}}"],
               "path": ["api", "admin", "users"],
               "query": [
                 {
                   "key": "role",
-                  "value": "doctor",
-                  "description": "Filter by role (patient, doctor, admin)"
+                  "value": "teacher",
+                  "description": "Filter by role (student, teacher, admin)"
                 },
                 {
                   "key": "isActive",
@@ -125,7 +125,7 @@
                 }
               ]
             },
-            "description": "Manually verify a user (useful for doctors verification)"
+            "description": "Manually verify a user (useful for teachers verification)"
           },
           "response": []
         },
@@ -305,7 +305,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"patientId\": \"patient_id_here\",\n    \"doctorId\": \"doctor_id_here\",\n    \"dateTime\": \"2025-01-30T14:00:00.000Z\",\n    \"type\": \"video\",\n    \"reasonForVisit\": \"Regular check-up\"\n}"
+              "raw": "{\n    \"studentId\": \"student_id_here\",\n    \"teacherId\": \"teacher_id_here\",\n    \"dateTime\": \"2025-01-30T14:00:00.000Z\",\n    \"type\": \"video\",\n    \"reasonForVisit\": \"Regular check-up\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/appointments",
@@ -327,9 +327,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/appointments/patient/:patientId?status=scheduled&limit=10&skip=0",
+              "raw": "{{baseUrl}}/api/appointments/student/:studentId?status=scheduled&limit=10&skip=0",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "appointments", "patient", ":patientId"],
+              "path": ["api", "appointments", "student", ":studentId"],
               "query": [
                 {
                   "key": "status",
@@ -349,12 +349,12 @@
               ],
               "variable": [
                 {
-                  "key": "patientId",
-                  "value": "patient_id_here"
+                  "key": "studentId",
+                  "value": "student_id_here"
                 }
               ]
             },
-            "description": "Get all appointments for a patient"
+            "description": "Get all appointments for a student"
           },
           "response": []
         },
@@ -369,9 +369,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/appointments/doctor/:doctorId?status=scheduled&date=2025-01-30&limit=10&skip=0",
+              "raw": "{{baseUrl}}/api/appointments/teacher/:teacherId?status=scheduled&date=2025-01-30&limit=10&skip=0",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "appointments", "doctor", ":doctorId"],
+              "path": ["api", "appointments", "teacher", ":teacherId"],
               "query": [
                 {
                   "key": "status",
@@ -396,12 +396,12 @@
               ],
               "variable": [
                 {
-                  "key": "doctorId",
-                  "value": "doctor_id_here"
+                  "key": "teacherId",
+                  "value": "teacher_id_here"
                 }
               ]
             },
-            "description": "Get all appointments for a doctor"
+            "description": "Get all appointments for a teacher"
           },
           "response": []
         },
@@ -535,9 +535,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/appointments/availability/:doctorId?date=2025-01-30",
+              "raw": "{{baseUrl}}/api/appointments/availability/:teacherId?date=2025-01-30",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "appointments", "availability", ":doctorId"],
+              "path": ["api", "appointments", "availability", ":teacherId"],
               "query": [
                 {
                   "key": "date",
@@ -547,12 +547,12 @@
               ],
               "variable": [
                 {
-                  "key": "doctorId",
-                  "value": "doctor_id_here"
+                  "key": "teacherId",
+                  "value": "teacher_id_here"
                 }
               ]
             },
-            "description": "Get doctor's availability slots"
+            "description": "Get teacher's availability slots"
           },
           "response": []
         }
@@ -573,14 +573,14 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"patient@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+998901234567\",\n    \"role\": \"patient\",\n    \"dateOfBirth\": \"1990-01-01\",\n    \"gender\": \"male\"\n}"
+              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"student@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+998901234567\",\n    \"role\": \"student\",\n    \"dateOfBirth\": \"1990-01-01\",\n    \"gender\": \"male\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/users/register",
               "host": ["{{baseUrl}}"],
               "path": ["api", "users", "register"]
             },
-            "description": "Register a new user (patient or doctor)"
+            "description": "Register a new user (student or teacher)"
           },
           "response": []
         },
@@ -596,14 +596,14 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"patient@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+998901234567\",\n    \"role\": \"patient\",\n    \"dateOfBirth\": \"1990-01-01\",\n    \"gender\": \"male\"\n}"
+              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"student@example.com\",\n    \"password\": \"Password123!\",\n    \"phone\": \"+998901234567\",\n    \"role\": \"student\",\n    \"dateOfBirth\": \"1990-01-01\",\n    \"gender\": \"male\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/users/register",
               "host": ["{{baseUrl}}"],
               "path": ["api", "users", "register"]
             },
-            "description": "Register a new user (patient or doctor)"
+            "description": "Register a new user (student or teacher)"
           },
           "response": []
         },
@@ -761,7 +761,7 @@
                 }
               ]
             },
-            "description": "End a consultation session (doctor only)"
+            "description": "End a consultation session (teacher only)"
           },
           "response": []
         },
@@ -903,9 +903,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/payments/patient/:patientId?status=succeeded&limit=10&skip=0",
+              "raw": "{{baseUrl}}/api/payments/student/:studentId?status=succeeded&limit=10&skip=0",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "payments", "patient", ":patientId"],
+              "path": ["api", "payments", "student", ":studentId"],
               "query": [
                 {
                   "key": "status",
@@ -925,12 +925,12 @@
               ],
               "variable": [
                 {
-                  "key": "patientId",
-                  "value": "patient_id_here"
+                  "key": "studentId",
+                  "value": "student_id_here"
                 }
               ]
             },
-            "description": "Get all payments for a patient"
+            "description": "Get all payments for a student"
           },
           "response": []
         },
@@ -945,9 +945,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/payments/doctor/:doctorId?status=succeeded&limit=10&skip=0",
+              "raw": "{{baseUrl}}/api/payments/teacher/:teacherId?status=succeeded&limit=10&skip=0",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "payments", "doctor", ":doctorId"],
+              "path": ["api", "payments", "teacher", ":teacherId"],
               "query": [
                 {
                   "key": "status",
@@ -967,12 +967,12 @@
               ],
               "variable": [
                 {
-                  "key": "doctorId",
-                  "value": "doctor_id_here"
+                  "key": "teacherId",
+                  "value": "teacher_id_here"
                 }
               ]
             },
-            "description": "Get all payments for a doctor"
+            "description": "Get all payments for a teacher"
           },
           "response": []
         }
@@ -1014,9 +1014,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/reviews/doctor/:doctorId?page=1&limit=10",
+              "raw": "{{baseUrl}}/api/reviews/teacher/:teacherId?page=1&limit=10",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "reviews", "doctor", ":doctorId"],
+              "path": ["api", "reviews", "teacher", ":teacherId"],
               "query": [
                 {
                   "key": "page",
@@ -1029,12 +1029,12 @@
               ],
               "variable": [
                 {
-                  "key": "doctorId",
-                  "value": "doctor_id_here"
+                  "key": "teacherId",
+                  "value": "teacher_id_here"
                 }
               ]
             },
-            "description": "Get reviews for a specific doctor"
+            "description": "Get reviews for a specific teacher"
           },
           "response": []
         },
@@ -1044,17 +1044,17 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/reviews/doctor/:doctorId/summary",
+              "raw": "{{baseUrl}}/api/reviews/teacher/:teacherId/summary",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "reviews", "doctor", ":doctorId", "summary"],
+              "path": ["api", "reviews", "teacher", ":teacherId", "summary"],
               "variable": [
                 {
-                  "key": "doctorId",
-                  "value": "doctor_id_here"
+                  "key": "teacherId",
+                  "value": "teacher_id_here"
                 }
               ]
             },
-            "description": "Get summary of a doctor's ratings"
+            "description": "Get summary of a teacher's ratings"
           },
           "response": []
         },
@@ -1087,7 +1087,7 @@
                 }
               ]
             },
-            "description": "Add doctor's response to a review"
+            "description": "Add teacher's response to a review"
           },
           "response": []
         }
@@ -1147,7 +1147,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/specializations/:id/doctors?page=1&limit=10",
+              "raw": "{{baseUrl}}/api/specializations/:id/teachers?page=1&limit=10",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -1155,7 +1155,7 @@
                 "api",
                 "specializations",
                 ":id",
-                "doctors"
+                "teachers"
               ],
               "query": [
                 {
@@ -1176,7 +1176,7 @@
                 }
               ]
             },
-            "description": "Get doctors for a specific specializations"
+            "description": "Get teachers for a specific specializations"
           },
           "response": []
         }
@@ -1382,9 +1382,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/users/doctors?specializations=Cardiology&page=1&limit=10",
+              "raw": "{{baseUrl}}/api/users/teachers?specializations=Cardiology&page=1&limit=10",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "doctors"],
+              "path": ["api", "users", "teachers"],
               "query": [
                 {
                   "key": "specializations",
@@ -1439,7 +1439,7 @@
                 }
               ]
             },
-            "description": "Get all doctors with optional filters"
+            "description": "Get all teachers with optional filters"
           },
           "response": []
         },
@@ -1449,17 +1449,17 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/users/doctors/:id",
+              "raw": "{{baseUrl}}/api/users/teachers/:id",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "doctors", ":id"],
+              "path": ["api", "users", "teachers", ":id"],
               "variable": [
                 {
                   "key": "id",
-                  "value": "doctor_id_here"
+                  "value": "teacher_id_here"
                 }
               ]
             },
-            "description": "Get doctor by ID"
+            "description": "Get teacher by ID"
           },
           "response": []
         },
