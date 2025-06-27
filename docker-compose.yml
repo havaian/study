@@ -4,7 +4,7 @@ services:
   # MongoDB service
   mongodb:
     image: mongo:latest
-    container_name: mongodb
+    container_name: ${PROJECT_NAME}-mongodb
     restart: always
     ports:
       - "${MONGODB_EXPOSE}:${MONGODB_PORT}"
@@ -42,7 +42,7 @@ services:
   # RabbitMQ for message broker
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
+    container_name: ${PROJECT_NAME}-rabbitmq
     restart: always
     ports:
       - "${RABBITMQ_EXPOSE_1}:${RABBITMQ_PORT_1}"
@@ -67,7 +67,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: study_backend
+    container_name: ${PROJECT_NAME}-backend
     restart: always
     depends_on:
       mongodb:
@@ -107,7 +107,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    container_name: study_frontend_prod
+    container_name: ${PROJECT_NAME}-frontend
     restart: always
     depends_on:
       backend:
@@ -132,7 +132,7 @@ services:
   # # Monitoring with Prometheus
   # prometheus:
   #   image: prom/prometheus:latest
-  #   container_name: prometheus
+  #   container_name: ${PROJECT_NAME}-prometheus
   #   restart: always
   #   ports:
   #     - "${PROMETHEUS_EXPOSE}:${PROMETHEUS_PORT}"
@@ -151,7 +151,7 @@ services:
   # # Visualization with Grafana
   # grafana:
   #   image: grafana/grafana:latest
-  #   container_name: grafana
+  #   container_name: ${PROJECT_NAME}-grafana
   #   restart: always
   #   ports:
   #     - "${GRAFANA_EXPOSE}:${GRAFANA_PORT}"
@@ -175,7 +175,7 @@ services:
   # # Loki for log aggregation
   # loki:
   #   image: grafana/loki:latest
-  #   container_name: loki
+  #   container_name: ${PROJECT_NAME}-loki
   #   restart: always
   #   ports:
   #     - "${LOKI_EXPOSE}:${LOKI_PORT}"
@@ -197,10 +197,10 @@ volumes:
   rabbitmq_data:
   backend_logs:
   frontend_logs:
-  prometheus_data:
-  grafana_data:
-  loki_data:
-  nginx_logs:
+  # prometheus_data:
+  # grafana_data:
+  # loki_data:
+  # nginx_logs:
 
 networks:
   study_net:
