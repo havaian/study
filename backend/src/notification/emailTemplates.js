@@ -22,7 +22,7 @@ exports.appointmentBookedStudent = (appointment) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+          <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
           <p><strong>Specialization:</strong> ${teacher.specializations.join(', ')}</p>
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
           <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
@@ -71,7 +71,7 @@ exports.appointmentBookingFailed = (data) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+          <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
           <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
           <p><strong>Reason:</strong> ${error}</p>
@@ -98,7 +98,7 @@ exports.appointmentReminder = (appointment) => {
           <h3 style="margin-top: 0;">Appointment Details</h3>
           ${isTeacher
         ? `<p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>`
-        : `<p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>`
+        : `<p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>`
       }
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
           <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
@@ -125,7 +125,7 @@ exports.appointmentCancelled = (appointment, cancelledBy) => {
           <h3 style="margin-top: 0;">Appointment Details</h3>
           ${isTeacher
         ? `<p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>`
-        : `<p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>`
+        : `<p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>`
       }
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
           <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>

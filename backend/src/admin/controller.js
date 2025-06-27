@@ -409,7 +409,7 @@ exports.updateAppointment = async (req, res) => {
             dateTime,
             type,
             status,
-            reasonForVisit,
+            shortDescription,
             lessonSummary
         } = req.body;
 
@@ -423,7 +423,7 @@ exports.updateAppointment = async (req, res) => {
         if (dateTime) appointment.dateTime = new Date(dateTime);
         if (type) appointment.type = type;
         if (status) appointment.status = status;
-        if (reasonForVisit) appointment.reasonForVisit = reasonForVisit;
+        if (shortDescription) appointment.shortDescription = shortDescription;
         if (lessonSummary) appointment.lessonSummary = lessonSummary;
 
         await appointment.save();

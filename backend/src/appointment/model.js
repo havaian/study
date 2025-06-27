@@ -63,7 +63,7 @@ const appointmentSchema = new Schema({
         enum: ['video', 'audio', 'chat'],
         required: true
     },
-    reasonForVisit: {
+    shortDescription: {
         type: String,
         required: true
     },

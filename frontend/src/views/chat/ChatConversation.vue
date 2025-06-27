@@ -160,7 +160,7 @@ const recipient = computed(() => {
 const recipientName = computed(() => {
     if (!recipient.value) return ''
     return recipient.value.role === 'teacher' ?
-        `Dr. ${recipient.value.firstName} ${recipient.value.lastName}` :
+        `${recipient.value.firstName} ${recipient.value.lastName}` :
         `${recipient.value.firstName} ${recipient.value.lastName}`
 })
 
@@ -186,7 +186,7 @@ const recipientStatus = computed(() => {
 
 function formatSenderLabel(sender) {
     return sender.role === 'teacher' ?
-        `Dr. ${sender.firstName} ${sender.lastName}` :
+        `${sender.firstName} ${sender.lastName}` :
         `${sender.firstName} ${sender.lastName}`
 }
 

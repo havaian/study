@@ -52,7 +52,7 @@ exports.createCheckoutSession = async (req, res) => {
                     price_data: {
                         currency: currency.toLowerCase(),
                         product_data: {
-                            name: `Educational Lesson with Dr. ${appointment.teacher.firstName} ${appointment.teacher.lastName}`,
+                            name: `Educational Lesson with ${appointment.teacher.firstName} ${appointment.teacher.lastName}`,
                             description: `${appointment.teacher.specializations} - ${appointmentDate}`
                         },
                         unit_amount: amount * 100, // Stripe uses smallest currency unit

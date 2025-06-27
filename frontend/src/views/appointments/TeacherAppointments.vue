@@ -119,8 +119,8 @@
                                             appointment.type.slice(1) }}</p>
                                     </div>
                                     <div class="md:col-span-2">
-                                        <p class="text-sm text-gray-500">Reason for Visit</p>
-                                        <p class="text-gray-900">{{ appointment.reasonForVisit }}</p>
+                                        <p class="text-sm text-gray-500">Short description</p>
+                                        <p class="text-gray-900">{{ appointment.shortDescription }}</p>
                                     </div>
                                 </div>
 

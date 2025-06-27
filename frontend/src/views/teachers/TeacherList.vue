@@ -13,7 +13,7 @@
             <label for="specializations" class="label">Specialization</label>
             <select id="specializations" v-model="filters.specializations" class="input mt-1" @change="handleSearch">
               <option value="">All Specializations</option>
-              <option v-for="spec in specializations" :key="spec" :value="spec">
+              <option v-for="spec in availableSpecializations" :key="spec" :value="spec">
                 {{ spec }}
               </option>
             </select>
@@ -51,7 +51,7 @@
                     class="h-16 w-16 rounded-full object-cover" />
                   <div>
                     <h3 class="text-lg font-medium text-gray-900">
-                      Dr. {{ teacher.firstName }} {{ teacher.lastName }}
+                      {{ teacher.firstName }} {{ teacher.lastName }}
                     </h3>
                     <div class="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
                       <span v-for="spec in teacher.specializations" :key="spec"
@@ -107,20 +107,8 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const specializations = [
-  'Cardiology',
-  'Dermatology',
-  'Endocrinology',
-  'Family Medicine',
-  'Gastroenterology',
-  'Neurology',
-  'Obstetrics & Gynecology',
-  'Ophthalmology',
-  'Pediatrics',
-  'Psychiatry',
-  'Pulmonology',
-  'Urology'
-]
+const specializations = []
+const availableSpecializations = ref([])
 
 const cities = [
   'Tashkent',
@@ -174,7 +162,19 @@ function handlePageChange(page) {
   fetchTeachers()
 }
 
+async function fetchSpecializations() {
+  try {
+    const response = await axios.get('/api/specializations')
+    availableSpecializations.value = response.data.specializations.map(s => s.name)
+  } catch (error) {
+    console.error('Error fetching specializations:', error)
+    // Set some defaults in case API call fails
+    availableSpecializations.value = []
+  }
+}
+
 onMounted(() => {
   fetchTeachers()
+  fetchSpecializations()
 })
 </script>

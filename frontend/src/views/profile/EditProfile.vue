@@ -301,18 +301,7 @@ async function fetchSpecializations() {
     } catch (error) {
         console.error('Error fetching specializations:', error)
         // Set some defaults in case API call fails
-        availableSpecializations.value = [
-            'Cardiology',
-            'Dermatology',
-            'Endocrinology',
-            'Family Medicine',
-            'Gastroenterology',
-            'Neurology',
-            'Obstetrics & Gynecology',
-            'Ophthalmology',
-            'Pediatrics',
-            'Psychiatry'
-        ]
+        availableSpecializations.value = []
     }
 }
 

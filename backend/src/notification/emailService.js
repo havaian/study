@@ -55,11 +55,11 @@ class EmailService {
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Confirmed</h2>
-                    <p>Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been successfully booked.</p>
+                    <p>Your appointment with ${teacher.firstName} ${teacher.lastName} has been successfully booked.</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Specialization:</strong> ${teacher.specializations.join(', ')}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
@@ -116,7 +116,7 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                         <p><strong>Reason:</strong> ${error}</p>
@@ -151,7 +151,7 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
@@ -206,7 +206,7 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
@@ -257,11 +257,11 @@ class EmailService {
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Confirmed by Teacher</h2>
-                    <p>Your appointment has been confirmed by Dr. ${teacher.firstName} ${teacher.lastName}.</p>
+                    <p>Your appointment has been confirmed by ${teacher.firstName} ${teacher.lastName}.</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
@@ -315,7 +315,7 @@ class EmailService {
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                         <p><strong>Payment ID:</strong> ${paymentId}</p>
@@ -367,7 +367,7 @@ class EmailService {
                         <p><strong>Payment ID:</strong> ${payment._id}</p>
                         <p><strong>Amount:</strong> ${formatCurrency(payment.amount)}</p>
                         <p><strong>Status:</strong> ${payment.status}</p>
-                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
@@ -410,7 +410,7 @@ class EmailService {
                         <h3 style="margin-top: 0;">Refund Details</h3>
                         <p><strong>Payment ID:</strong> ${payment._id}</p>
                         <p><strong>Amount:</strong> ${formatCurrency(payment.amount)}</p>
-                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
@@ -456,7 +456,7 @@ class EmailService {
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">New Homeworks</h2>
-                    <p>Dr. ${teacher.firstName} ${teacher.lastName} has prescribed the following medication(s) after your lesson:</p>
+                    <p>${teacher.firstName} ${teacher.lastName} has prescribed the following medication(s) after your lesson:</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         ${homeworksHtml}
@@ -481,7 +481,7 @@ class EmailService {
         try {
             await followUpAppointment.populate('student teacher');
 
-            const { student, teacher, dateTime, type, reasonForVisit } = followUpAppointment;
+            const { student, teacher, dateTime, type, shortDescription } = followUpAppointment;
 
             await this.sendEmail({
                 to: student.email,
@@ -489,14 +489,14 @@ class EmailService {
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Follow-up Appointment</h2>
-                    <p>Dr. ${teacher.firstName} ${teacher.lastName} has recommended a follow-up appointment:</p>
+                    <p>${teacher.firstName} ${teacher.lastName} has recommended a follow-up appointment:</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+                        <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
-                        <p><strong>Reason:</strong> ${reasonForVisit}</p>
+                        <p><strong>Reason:</strong> ${shortDescription}</p>
                     </div>
                     
                     <p>This appointment requires payment confirmation. Please log in to your Online-study.com account to confirm and complete payment for this follow-up appointment.</p>
@@ -517,7 +517,7 @@ class EmailService {
                         <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
-                        <p><strong>Reason:</strong> ${reasonForVisit}</p>
+                        <p><strong>Reason:</strong> ${shortDescription}</p>
                     </div>
                     
                     <p>The student has been notified and needs to confirm the appointment by completing payment.</p>

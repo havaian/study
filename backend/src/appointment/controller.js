@@ -10,7 +10,7 @@ exports.createAppointment = async (req, res) => {
     try {
         const studentId = req.user.id;
 
-        const { teacherId, dateTime, type, reasonForVisit, notes, duration = 30 } = req.body;
+        const { teacherId, dateTime, type, shortDescription, notes, duration = 30 } = req.body;
 
         // Validate duration is a multiple of 15 minutes
         if (duration % 15 !== 0 || duration < 15 || duration > 120) {
@@ -23,7 +23,7 @@ exports.createAppointment = async (req, res) => {
             teacherId,
             dateTime,
             type,
-            reasonForVisit,
+            shortDescription,
             notes
         };
 
@@ -164,7 +164,7 @@ exports.createAppointment = async (req, res) => {
             endTime: endTime,
             duration: duration,
             type,
-            reasonForVisit,
+            shortDescription,
             notes: notes || '',
             status: 'pending-teacher-confirmation',
             teacherConfirmationExpires: calculateTeacherConfirmationDeadline(teacher, appointmentDate)
@@ -567,7 +567,7 @@ exports.scheduleFollowUp = async (req, res) => {
             endTime: endTime,
             duration: duration,
             type: appointment.type,
-            reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${notes || 'No notes provided'}`,
+            shortDescription: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${notes || 'No notes provided'}`,
             status: 'pending-payment',
             payment: {
                 amount: appointment.teacher.lessonFee,
@@ -598,7 +598,7 @@ exports.getPendingFollowUps = async (req, res) => {
         const appointments = await Appointment.find({
             student: studentId,
             status: 'pending-payment',
-            reasonForVisit: { $regex: 'Follow-up to appointment on', $options: 'i' }
+            shortDescription: { $regex: 'Follow-up to appointment on', $options: 'i' }
         })
             .populate('teacher', 'firstName lastName specializations profilePicture email')
             .sort({ dateTime: 1 });
@@ -923,7 +923,7 @@ exports.updateLessonResults = async (req, res) => {
                     endTime: endTime,
                     duration: duration,
                     type: appointment.type,
-                    reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
+                    shortDescription: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
                     status: 'pending-payment',
                     payment: {
                         amount: appointment.teacher.lessonFee,
@@ -1096,7 +1096,7 @@ exports.getCalendarAppointments = async (req, res) => {
                 id: appointment._id,
                 title: userRole === 'teacher'
                     ? `${appointment.student.firstName} ${appointment.student.lastName}`
-                    : `Dr. ${appointment.teacher.firstName} ${appointment.teacher.lastName}`,
+                    : `${appointment.teacher.firstName} ${appointment.teacher.lastName}`,
                 start: appointment.dateTime,
                 end: appointment.endTime,
                 backgroundColor: eventColor,
@@ -1104,7 +1104,7 @@ exports.getCalendarAppointments = async (req, res) => {
                 extendedProps: {
                     status: appointment.status,
                     type: appointment.type,
-                    reasonForVisit: appointment.reasonForVisit,
+                    shortDescription: appointment.shortDescription,
                     appointmentId: appointment._id
                 }
             };

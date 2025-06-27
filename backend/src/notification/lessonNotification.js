@@ -22,13 +22,13 @@ exports.sendLessonCompletedNotification = async (appointment) => {
         await emailService.sendEmail({
             to: student.email,
             subject: 'Your Lesson Has Ended - Online-study',
-            text: `Your lesson with Dr. ${teacher.firstName} ${teacher.lastName} has ended. 
+            text: `Your lesson with ${teacher.firstName} ${teacher.lastName} has ended. 
             If you need to schedule a follow-up appointment, please visit our website.`,
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h2 style="color: #4a90e2;">Lesson Ended</h2>
               <p>Dear ${student.firstName} ${student.lastName},</p>
-              <p>Your lesson with Dr. ${teacher.firstName} ${teacher.lastName} has ended.</p>
+              <p>Your lesson with ${teacher.firstName} ${teacher.lastName} has ended.</p>
               <p><strong>Date:</strong> ${new Date(appointment.dateTime).toLocaleDateString()}</p>
               <p><strong>Time:</strong> ${new Date(appointment.dateTime).toLocaleTimeString()} - ${new Date(appointment.endTime).toLocaleTimeString()}</p>
               <p>If you need to schedule a follow-up appointment, please visit our website.</p>
@@ -46,7 +46,7 @@ exports.sendLessonCompletedNotification = async (appointment) => {
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h2 style="color: #4a90e2;">Lesson Completed</h2>
-              <p>Dear Dr. ${teacher.firstName} ${teacher.lastName},</p>
+              <p>Dear ${teacher.firstName} ${teacher.lastName},</p>
               <p>Your lesson with ${student.firstName} ${student.lastName} has ended.</p>
               <p><strong>Date:</strong> ${new Date(appointment.dateTime).toLocaleDateString()}</p>
               <p><strong>Time:</strong> ${new Date(appointment.dateTime).toLocaleTimeString()} - ${new Date(appointment.endTime).toLocaleTimeString()}</p>
@@ -62,7 +62,7 @@ exports.sendLessonCompletedNotification = async (appointment) => {
             if (telegramBot) {
                 await telegramBot.telegram.sendMessage(
                     student.telegramId,
-                    `Your lesson with Dr. ${teacher.firstName} ${teacher.lastName} has ended.`
+                    `Your lesson with ${teacher.firstName} ${teacher.lastName} has ended.`
                 );
             }
         }

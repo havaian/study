@@ -80,7 +80,7 @@ class LessonController {
             const userInfo = {
                 id: userId,
                 name: isTeacher ?
-                    `Dr. ${appointment.teacher.firstName} ${appointment.teacher.lastName}` :
+                    `${appointment.teacher.firstName} ${appointment.teacher.lastName}` :
                     `${appointment.student.firstName} ${appointment.student.lastName}`,
                 avatar: isTeacher ? appointment.teacher.profilePicture : appointment.student.profilePicture,
                 email: isTeacher ? appointment.teacher.email : appointment.student.email,
@@ -127,7 +127,7 @@ class LessonController {
                     type: appointment.type,
                     teacher: {
                         id: appointment.teacher._id,
-                        name: `Dr. ${appointment.teacher.firstName} ${appointment.teacher.lastName}`,
+                        name: `${appointment.teacher.firstName} ${appointment.teacher.lastName}`,
                         profilePicture: appointment.teacher.profilePicture,
                         specializations: appointment.teacher.specializations
                     },
@@ -139,7 +139,7 @@ class LessonController {
                     },
                     dateTime: appointment.dateTime,
                     endTime: appointment.endTime,
-                    reasonForVisit: appointment.reasonForVisit,
+                    shortDescription: appointment.shortDescription,
                     userRole: isTeacher ? 'teacher' : 'student',
                     jitsi: jitsiConfig
                 }
@@ -328,7 +328,7 @@ class LessonController {
                 teacher: originalAppointment.teacher._id,
                 dateTime: followUpDateObj,
                 type: originalAppointment.type,
-                reasonForVisit: `Follow-up to appointment on ${new Date(originalAppointment.dateTime).toLocaleDateString()} - ${notes || 'No notes provided'}`,
+                shortDescription: `Follow-up to appointment on ${new Date(originalAppointment.dateTime).toLocaleDateString()} - ${notes || 'No notes provided'}`,
                 status: 'pending-payment', // Special status for follow-ups pending payment
                 payment: {
                     amount: originalAppointment.teacher.lessonFee,
@@ -594,7 +594,7 @@ class LessonController {
                         endTime: endTime,
                         duration: duration,
                         type: appointment.type,
-                        reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
+                        shortDescription: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
                         status: 'pending-payment',
                         payment: {
                             amount: appointment.teacher.lessonFee,

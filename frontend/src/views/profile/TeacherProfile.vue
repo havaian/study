@@ -15,7 +15,7 @@
               class="h-32 w-32 rounded-full object-cover" />
             <div class="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left flex-1">
               <h1 class="text-2xl font-bold text-gray-900">
-                Dr. {{ user.firstName }} {{ user.lastName }}
+                {{ user.firstName }} {{ user.lastName }}
               </h1>
 
               <!-- Specializations as tags -->

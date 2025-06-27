@@ -456,7 +456,7 @@ exports.handleTextEncoding = (req, res, next) => {
     // Check if request has a body
     if (req.body) {
         // Process text fields that commonly have encoding issues
-        const fieldsToProcess = ['bio', 'reasonForVisit', 'lessonSummary', 'notes', 'text', 'comment'];
+        const fieldsToProcess = ['bio', 'shortDescription', 'lessonSummary', 'notes', 'text', 'comment'];
 
         for (const field of fieldsToProcess) {
             if (req.body[field] && typeof req.body[field] === 'string') {

@@ -93,10 +93,10 @@
                         </div>
                     </div>
 
-                    <!-- Reason for Visit -->
+                    <!-- Short description -->
                     <div class="mb-6">
-                        <p class="text-sm text-gray-500 mb-2">Reason for Visit</p>
-                        <p class="text-gray-900 bg-gray-50 p-3 rounded-md">{{ appointment.reasonForVisit }}</p>
+                        <p class="text-sm text-gray-500 mb-2">Short description</p>
+                        <p class="text-gray-900 bg-gray-50 p-3 rounded-md">{{ appointment.shortDescription }}</p>
                     </div>
 
                     <!-- Student Contact Info -->

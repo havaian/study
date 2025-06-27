@@ -408,15 +408,15 @@ class NotificationService {
             const studentEmailData = {
                 to: student.email,
                 subject: 'Appointment Confirmation - Online-study.com',
-                text: `Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been confirmed for ${formattedDateTime}.`,
+                text: `Your appointment with ${teacher.firstName} ${teacher.lastName} has been confirmed for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Appointment Confirmation</h2>
-            <p>Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been confirmed.</p>
+            <p>Your appointment with ${teacher.firstName} ${teacher.lastName} has been confirmed.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
+              <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
             <p>You can view your appointment details and join the lesson by logging into your Online-study.com account.</p>
           </div>
@@ -450,7 +450,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `✅ Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been confirmed for ${formattedDateTime}.`,
+                    text: `✅ Your appointment with ${teacher.firstName} ${teacher.lastName} has been confirmed for ${formattedDateTime}.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -495,15 +495,15 @@ class NotificationService {
             const studentEmailData = {
                 to: student.email,
                 subject: 'Appointment Canceled - Online-study.com',
-                text: `Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} scheduled for ${formattedDateTime} has been canceled.`,
+                text: `Your appointment with ${teacher.firstName} ${teacher.lastName} scheduled for ${formattedDateTime} has been canceled.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #e74c3c;">Appointment Canceled</h2>
-            <p>Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been canceled.</p>
+            <p>Your appointment with ${teacher.firstName} ${teacher.lastName} has been canceled.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
+              <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
             <p>You can schedule a new appointment by logging into your Online-study.com account.</p>
           </div>
@@ -536,7 +536,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `❌ Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} scheduled for ${formattedDateTime} has been canceled.`,
+                    text: `❌ Your appointment with ${teacher.firstName} ${teacher.lastName} scheduled for ${formattedDateTime} has been canceled.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -573,11 +573,11 @@ class NotificationService {
             const studentEmailData = {
                 to: student.email,
                 subject: 'Appointment Completed - Online-study.com',
-                text: `Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been completed. Please leave your feedback.`,
+                text: `Your appointment with ${teacher.firstName} ${teacher.lastName} has been completed. Please leave your feedback.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Appointment Completed</h2>
-            <p>Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been completed.</p>
+            <p>Your appointment with ${teacher.firstName} ${teacher.lastName} has been completed.</p>
             <p>If any homeworks were provided, you can view them in your Online-study.com account.</p>
             <a href="${process.env.FRONTEND_URL}/appointments/feedback/${appointment._id}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Leave Feedback</a>
             <p>Your feedback helps us improve our services.</p>
@@ -592,7 +592,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `✅ Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been completed. Any homeworks will be available in your account. Please consider leaving feedback.`,
+                    text: `✅ Your appointment with ${teacher.firstName} ${teacher.lastName} has been completed. Any homeworks will be available in your account. Please consider leaving feedback.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -632,11 +632,11 @@ class NotificationService {
             const studentEmailData = {
                 to: student.email,
                 subject: 'New Homeworks - Online-study.com',
-                text: `Dr. ${teacher.firstName} ${teacher.lastName} has added homeworks to your recent appointment.`,
+                text: `${teacher.firstName} ${teacher.lastName} has added homeworks to your recent appointment.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">New Homeworks</h2>
-            <p>Dr. ${teacher.firstName} ${teacher.lastName} has added the following homeworks to your recent appointment:</p>
+            <p>${teacher.firstName} ${teacher.lastName} has added the following homeworks to your recent appointment:</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               ${homeworksHtml}
             </div>
@@ -652,7 +652,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `💊 Dr. ${teacher.firstName} ${teacher.lastName} has added homeworks to your recent appointment. Check your email or Online-study.com account for details.`,
+                    text: `💊 ${teacher.firstName} ${teacher.lastName} has added homeworks to your recent appointment. Check your email or Online-study.com account for details.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -686,15 +686,15 @@ class NotificationService {
             const studentEmailData = {
                 to: student.email,
                 subject: 'Follow-up Appointment Scheduled - Online-study.com',
-                text: `A follow-up appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been scheduled for ${formattedDateTime}.`,
+                text: `A follow-up appointment with ${teacher.firstName} ${teacher.lastName} has been scheduled for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Follow-up Appointment Scheduled</h2>
-            <p>A follow-up appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been scheduled.</p>
+            <p>A follow-up appointment with ${teacher.firstName} ${teacher.lastName} has been scheduled.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
+              <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
             <p>You can view your appointment details and join the lesson by logging into your Online-study.com account.</p>
           </div>
@@ -728,7 +728,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `📅 A follow-up appointment with Dr. ${teacher.firstName} ${teacher.lastName} has been scheduled for ${formattedDateTime}.`,
+                    text: `📅 A follow-up appointment with ${teacher.firstName} ${teacher.lastName} has been scheduled for ${formattedDateTime}.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -773,15 +773,15 @@ class NotificationService {
             const studentEmailData = {
                 to: student.email,
                 subject: 'Appointment Reminder - Online-study.com',
-                text: `Reminder: Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
+                text: `Reminder: Your appointment with ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Appointment Reminder</h2>
-            <p>This is a reminder that your appointment with Dr. ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow.</p>
+            <p>This is a reminder that your appointment with ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               <p><strong>Date and Time:</strong> ${formattedDateTime}</p>
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
-              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
+              <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
             <p>You can view your appointment details and join the lesson by logging into your Online-study.com account.</p>
           </div>
@@ -815,7 +815,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `⏰ Reminder: Your appointment with Dr. ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
+                    text: `⏰ Reminder: Your appointment with ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -858,11 +858,11 @@ class NotificationService {
             const studentEmailData = {
                 to: student.email,
                 subject: 'Your Lesson Starts Soon - Online-study.com',
-                text: `Your lesson with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes.`,
+                text: `Your lesson with ${teacher.firstName} ${teacher.lastName} starts in 15 minutes.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Your Lesson Starts Soon</h2>
-            <p>Your lesson with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes at ${formattedTime}.</p>
+            <p>Your lesson with ${teacher.firstName} ${teacher.lastName} starts in 15 minutes at ${formattedTime}.</p>
             <a href="${lessonLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Join Lesson</a>
             <p>Please ensure your device has a working camera and microphone for a video lesson.</p>
           </div>
@@ -892,7 +892,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `🔔 Your lesson with Dr. ${teacher.firstName} ${teacher.lastName} starts in 15 minutes. Click here to join: ${lessonLink}`,
+                    text: `🔔 Your lesson with ${teacher.firstName} ${teacher.lastName} starts in 15 minutes. Click here to join: ${lessonLink}`,
                     options: {
                         parse_mode: 'HTML',
                         disable_web_page_preview: false
@@ -935,7 +935,7 @@ class NotificationService {
             <h2 style="color: #4a90e2;">Payment Successful</h2>
             <p>Your payment for the appointment has been processed successfully.</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+              <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
               <p><strong>Date & Time:</strong> ${formattedDate}</p>
               <p><strong>Type:</strong> ${appointment.type}</p>
               <p><strong>Payment ID:</strong> ${paymentId}</p>
@@ -1001,7 +1001,7 @@ class NotificationService {
             <h2 style="color: #e74c3c;">Payment Failed</h2>
             <p>We were unable to process your payment for the following appointment:</p>
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <p><strong>Teacher:</strong> Dr. ${teacher.firstName} ${teacher.lastName}</p>
+              <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName}</p>
               <p><strong>Date & Time:</strong> ${formattedDate}</p>
               <p><strong>Type:</strong> ${appointment.type}</p>
             </div>

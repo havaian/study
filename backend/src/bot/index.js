@@ -213,7 +213,7 @@
 //                 }
                 
 //                 // Save reason for visit
-//                 ctx.session.appointmentData.reasonForVisit = ctx.message.text.trim();
+//                 ctx.session.appointmentData.shortDescription = ctx.message.text.trim();
 //                 ctx.session.step = 'appointment_confirm';
 
 //                 const { teacherName, date, time, type } = ctx.session.appointmentData;
@@ -234,7 +234,7 @@
 //                     `Date: ${date}\n` +
 //                     `Time: ${time}\n` +
 //                     `Type: ${type}\n` +
-//                     `Reason: ${ctx.session.appointmentData.reasonForVisit}\n\n` +
+//                     `Reason: ${ctx.session.appointmentData.shortDescription}\n\n` +
 //                     "Is this correct? (Yes/No)"
 //                 );
 //             } else if (ctx.session.step === 'appointment_confirm') {
@@ -247,10 +247,10 @@
 //                             throw new Error('Missing appointment or user data');
 //                         }
                         
-//                         const { teacherId, dateTime, type, reasonForVisit } = ctx.session.appointmentData;
+//                         const { teacherId, dateTime, type, shortDescription } = ctx.session.appointmentData;
                         
 //                         // Validate required fields
-//                         if (!teacherId || !dateTime || !type || !reasonForVisit) {
+//                         if (!teacherId || !dateTime || !type || !shortDescription) {
 //                             throw new Error('Missing required appointment fields');
 //                         }
                         
@@ -271,7 +271,7 @@
 //                                 teacherId,
 //                                 dateTime,
 //                                 type,
-//                                 reasonForVisit
+//                                 shortDescription
 //                             },
 //                             {
 //                                 headers: {
@@ -756,7 +756,7 @@
             
 //             let message = `Please select a teacher for ${selectedSpecialization}:\n\n`;
 //             teachers.forEach((teacher, index) => {
-//                 message += `${index + 1}. Dr. ${teacher.firstName} ${teacher.lastName}\n`;
+//                 message += `${index + 1}. ${teacher.firstName} ${teacher.lastName}\n`;
 //                 message += `   Experience: ${teacher.experience} years\n`;
 //                 message += `   Fee: ${teacher.lessonFee} 'UZS'\n\n`;
 //             });

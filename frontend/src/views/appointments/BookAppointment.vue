@@ -10,7 +10,7 @@
             <div class="bg-white shadow rounded-lg overflow-hidden">
                 <div class="p-6">
                     <h1 class="text-2xl font-bold text-gray-900">
-                        Book Appointment with Dr. {{ teacher.firstName }} {{ teacher.lastName }}
+                        Book Appointment with {{ teacher.firstName }} {{ teacher.lastName }}
                     </h1>
                     <div class="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
                         <span v-for="spec in teacher.specializations" :key="spec"
@@ -69,13 +69,13 @@
                             </p>
                         </div>
 
-                        <!-- Reason for Visit -->
+                        <!-- Short description -->
                         <div>
-                            <label for="reason" class="label">Reason for Visit</label>
-                            <textarea id="reason" v-model="formData.reasonForVisit" rows="3" class="input mt-1"
-                                required :class="{ 'border-red-500': validationErrors.reasonForVisit }"></textarea>
-                            <p v-if="validationErrors.reasonForVisit" class="mt-1 text-sm text-red-600">
-                                {{ validationErrors.reasonForVisit }}
+                            <label for="reason" class="label">Short description</label>
+                            <textarea id="reason" v-model="formData.shortDescription" rows="3" class="input mt-1"
+                                required :class="{ 'border-red-500': validationErrors.shortDescription }"></textarea>
+                            <p v-if="validationErrors.shortDescription" class="mt-1 text-sm text-red-600">
+                                {{ validationErrors.shortDescription }}
                             </p>
                         </div>
 
@@ -131,7 +131,7 @@ const validationErrors = reactive({
     date: '',
     time: '',
     type: '',
-    reasonForVisit: ''
+    shortDescription: ''
 })
 
 const lessonTypes = [
@@ -144,7 +144,7 @@ const formData = reactive({
     date: '',
     time: '',
     type: 'video',
-    reasonForVisit: ''
+    shortDescription: ''
 })
 
 const minDate = computed(() => format(new Date(), 'yyyy-MM-dd'))
@@ -264,8 +264,8 @@ function validateForm() {
         isValid = false
     }
     
-    if (!formData.reasonForVisit.trim()) {
-        validationErrors.reasonForVisit = 'Please provide a reason for your visit'
+    if (!formData.shortDescription.trim()) {
+        validationErrors.shortDescription = 'Please provide a reason for your visit'
         isValid = false
     }
     
@@ -286,7 +286,7 @@ async function handleSubmit() {
             teacherId: route.params.teacherId,
             dateTime: formData.time, // Send the original time string from the backend
             type: formData.type,
-            reasonForVisit: formData.reasonForVisit
+            shortDescription: formData.shortDescription
         }
 
         const response = await axios.post('/api/appointments', appointmentData)

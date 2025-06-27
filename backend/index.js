@@ -140,7 +140,7 @@ app.use((req, res, next) => {
         // Only sanitize fields that could contain HTML/script tags
         // For text fields like bio, we should preserve apostrophes and quotes
         const fieldsToFullySanitize = ['html', 'script', 'code', 'content'];
-        const fieldsToPreserveQuotes = ['bio', 'reasonForVisit', 'lessonSummary', 'notes', 'text', 'comment'];
+        const fieldsToPreserveQuotes = ['bio', 'shortDescription', 'lessonSummary', 'notes', 'text', 'comment'];
 
         // Check if this field should preserve quotes and apostrophes
         const shouldPreserveQuotes = fieldsToPreserveQuotes.some(field =>
@@ -252,7 +252,7 @@ app.use((req, res, next) => {
 
     //         // These fields should have HTML entities decoded
     //         const fieldsToProcess = [
-    //             'bio', 'reasonForVisit', 'lessonSummary',
+    //             'bio', 'shortDescription', 'lessonSummary',
     //             'notes', 'text', 'comment', 'message'
     //         ];
 
