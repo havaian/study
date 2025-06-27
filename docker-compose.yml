@@ -23,7 +23,7 @@ services:
   # Redis service for caching
   redis:
     image: redis:alpine
-    container_name: redis
+    container_name: ${PROJECT_NAME}-redis
     restart: always
     ports:
       - "${REDIS_EXPOSE}:${REDIS_PORT}"
