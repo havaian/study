@@ -46,25 +46,12 @@
             <h2 class="text-lg font-medium text-gray-900 mb-4">Educational History</h2>
             <dl class="space-y-4">
               <div>
-                <dt class="text-sm font-medium text-gray-500">Allergies</dt>
+                <dt class="text-sm font-medium text-gray-500">Educational Background</dt>
                 <dd class="mt-1 text-gray-900">
-                  <ul v-if="user?.educationalHistory?.allergies?.length" class="list-disc list-inside">
-                    <li v-for="allergy in user.educationalHistory.allergies" :key="allergy">
-                      {{ allergy }}
-                    </li>
-                  </ul>
-                  <span v-else class="text-gray-500">None reported</span>
-                </dd>
-              </div>
-              <div>
-                <dt class="text-sm font-medium text-gray-500">Chronic Conditions</dt>
-                <dd class="mt-1 text-gray-900">
-                  <ul v-if="user?.educationalHistory?.chronicConditions?.length" class="list-disc list-inside">
-                    <li v-for="condition in user.educationalHistory.chronicConditions" :key="condition">
-                      {{ condition }}
-                    </li>
-                  </ul>
-                  <span v-else class="text-gray-500">None reported</span>
+                  <p v-if="user?.educationalHistory?.length">
+                    {{ user.educationalHistory }}
+                  </p>
+                  <span v-else class="text-gray-500">Nothing reported</span>
                 </dd>
               </div>
             </dl>

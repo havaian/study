@@ -73,15 +73,7 @@ exports.validateUserInput = (data) => {
             }),
 
         // Student-specific optional fields
-        educationalHistory: Joi.object({
-            allergies: Joi.array().items(Joi.string()),
-            chronicConditions: Joi.array().items(Joi.string()),
-            currentMedications: Joi.array().items(Joi.string()),
-            surgeries: Joi.array().items(Joi.object({
-                procedure: Joi.string().required(),
-                year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required()
-            }))
-        }).optional(),
+        educationalHistory: Joi.string().optional(),
 
         emergencyContact: Joi.object({
             name: Joi.string().trim().min(2).max(100),

@@ -118,13 +118,8 @@ const userSchema = new Schema({
     },
     // Student-specific fields
     educationalHistory: {
-        allergies: [String],
-        chronicConditions: [String],
-        currentMedications: [String],
-        surgeries: [{
-            procedure: String,
-            year: Number
-        }]
+        type: String,
+        required: false
     },
     emergencyContact: {
         name: String,

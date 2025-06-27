@@ -170,14 +170,9 @@
                             <h2 class="text-lg font-medium text-gray-900 mb-4">Educational Information</h2>
                             <div class="space-y-4">
                                 <div>
-                                    <label for="allergies" class="label">Allergies</label>
-                                    <input id="allergies" v-model="allergiesInput" type="text" class="input mt-1"
+                                    <label for="educationalHistory" class="label">Educational Background</label>
+                                    <input id="educationalHistory" v-model="educationalHistoryInput" type="text" class="input mt-1"
                                         placeholder="Separate with commas" />
-                                </div>
-                                <div>
-                                    <label for="chronicConditions" class="label">Chronic Conditions</label>
-                                    <input id="chronicConditions" v-model="conditionsInput" type="text"
-                                        class="input mt-1" placeholder="Separate with commas" />
                                 </div>
                             </div>
                         </div>
@@ -256,10 +251,7 @@ const formData = reactive({
         { dayOfWeek: 6, isAvailable: false, startTime: '09:00', endTime: '17:00' },
         { dayOfWeek: 7, isAvailable: false, startTime: '09:00', endTime: '17:00' }
     ],
-    educationalHistory: {
-        allergies: [],
-        chronicConditions: []
-    },
+    educationalHistory: '',
     emergencyContact: {
         name: '',
         phone: '',
@@ -268,7 +260,7 @@ const formData = reactive({
 })
 
 const languagesInput = ref('')
-const allergiesInput = ref('')
+const educationalHistoryInput = ref('')
 const conditionsInput = ref('')
 
 // Helper functions for arrays
@@ -352,12 +344,11 @@ async function fetchUserProfile() {
             // Update input fields
             languagesInput.value = user.languages?.join(', ') || ''
         } else {
-            formData.educationalHistory = user.educationalHistory || { allergies: [], chronicConditions: [] }
+            formData.educationalHistory = user.educationalHistory || ''
             formData.emergencyContact = user.emergencyContact || { name: '', phone: '', relationship: '' }
 
             // Update input fields
-            allergiesInput.value = user.educationalHistory?.allergies?.join(', ') || ''
-            conditionsInput.value = user.educationalHistory?.chronicConditions?.join(', ') || ''
+            educationalHistoryInput.value = user.educationalHistory || ''
         }
     } catch (error) {
         console.error('Error fetching user profile:', error)
@@ -387,10 +378,7 @@ async function handleSubmit() {
             updateData.bio = formData.bio
             updateData.availability = formData.availability
         } else {
-            updateData.educationalHistory = {
-                allergies: allergiesInput.value.split(',').map(item => item.trim()).filter(Boolean),
-                chronicConditions: conditionsInput.value.split(',').map(item => item.trim()).filter(Boolean)
-            }
+            updateData.educationalHistory = educationalHistoryInput.value
             updateData.emergencyContact = formData.emergencyContact
         }
 
