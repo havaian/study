@@ -212,7 +212,7 @@
 //                     ctx.session.appointmentData = {};
 //                 }
                 
-//                 // Save reason for visit
+//                 // Save short descriptionvisit
 //                 ctx.session.appointmentData.shortDescription = ctx.message.text.trim();
 //                 ctx.session.step = 'appointment_confirm';
 

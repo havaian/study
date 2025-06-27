@@ -265,7 +265,7 @@ function validateForm() {
     }
     
     if (!formData.shortDescription.trim()) {
-        validationErrors.shortDescription = 'Please provide a reason for your visit'
+        validationErrors.shortDescription = 'Please provide a short descriptionyour visit'
         isValid = false
     }
     
