@@ -110,7 +110,6 @@ const formatGender = (gender) => {
 async function fetchUserProfile() {
   try {
     const response = await axios.get('/api/users/me')
-    console.log(response);
     user.value = response.data.user
   } catch (error) {
     console.error('Error fetching user profile:', error)

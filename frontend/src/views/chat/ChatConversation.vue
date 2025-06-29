@@ -291,8 +291,6 @@ async function sendMessage() {
             text: messageText
         }
 
-        console.log('Sending message:', messageData)
-
         // Add acknowledgment callback to confirm message was received by server
         socket.value.emit('new-message', messageData, (response) => {
             if (response && response.success) {
@@ -321,8 +319,6 @@ function initializeSocket() {
         console.error('No authentication token available')
         return
     }
-
-    console.log('Initializing socket connection...')
 
     socket.value = io('http://localhost:6633', {
         query: { token },
@@ -353,7 +349,6 @@ function initializeSocket() {
     })
 
     socket.value.on('new-message', async (message) => {
-        console.log('Received new message:', message)
         if (message.conversation === route.params.id) {
             messages.value.push(message)
             await nextTick()
@@ -367,14 +362,12 @@ function initializeSocket() {
     })
 
     socket.value.on('new-message-notification', (data) => {
-        console.log('Received message notification:', data)
         // Handle notifications for messages in other conversations
         // You could show a toast notification here
     })
 
     // Online status events
     socket.value.on('conversation-participants-status', (data) => {
-        console.log('Participants status:', data)
         if (data.conversationId === route.params.id && recipient.value) {
             const status = data.statuses[recipient.value._id]
             if (status) {
@@ -384,7 +377,6 @@ function initializeSocket() {
     })
 
     socket.value.on('user-status', (data) => {
-        console.log('User status update:', data)
         if (recipient.value && data.userId === recipient.value._id) {
             recipientOnlineStatus.value = {
                 isOnline: data.isOnline,
@@ -394,14 +386,12 @@ function initializeSocket() {
     })
 
     socket.value.on('user-joined', (data) => {
-        console.log('User joined conversation:', data)
         if (recipient.value && data.userId === recipient.value._id) {
             recipientOnlineStatus.value.isOnline = true
         }
     })
 
     socket.value.on('user-left', (data) => {
-        console.log('User left conversation:', data)
         if (recipient.value && data.userId === recipient.value._id) {
             recipientOnlineStatus.value.isOnline = data.isOnline || false
         }
@@ -425,7 +415,6 @@ function initializeSocket() {
 
     // Read receipts
     socket.value.on('messages-read', (data) => {
-        console.log('Messages marked as read:', data)
         if (data.conversationId === route.params.id) {
             // Update read status for messages sent by current user
             messages.value = messages.value.map(message => {
