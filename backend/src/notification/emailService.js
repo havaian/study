@@ -27,7 +27,7 @@ class EmailService {
     async sendEmail(options) {
         try {
             const mailOptions = {
-                from: `"Online-study.com" <${process.env.SMTP_FROM_EMAIL}>`,
+                from: `"Study.ytech.com" <${process.env.SMTP_FROM_EMAIL}>`,
                 to: options.to,
                 subject: options.subject,
                 text: options.text || '',
@@ -51,7 +51,7 @@ class EmailService {
             // Email to student
             await this.sendEmail({
                 to: student.email,
-                subject: 'Appointment Confirmation - Online-study.com',
+                subject: 'Appointment Confirmation - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Confirmed</h2>
@@ -67,7 +67,7 @@ class EmailService {
                     </div>
                     
                     <p>Please make sure to join the lesson 5 minutes before the scheduled time.</p>
-                    <p>You can view your appointment details and join the lesson by logging into your Online-study.com account.</p>
+                    <p>You can view your appointment details and join the lesson by logging into your Study.ytech.com account.</p>
                 </div>
                 `
             });
@@ -75,7 +75,7 @@ class EmailService {
             // Email to teacher
             await this.sendEmail({
                 to: teacher.email,
-                subject: 'New Appointment Scheduled - Online-study.com',
+                subject: 'New Appointment Scheduled - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">New Appointment</h2>
@@ -88,7 +88,7 @@ class EmailService {
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Lesson</p>
                     </div>
                     
-                    <p>Please log in to your Online-study.com account to view the complete appointment details.</p>
+                    <p>Please log in to your Study.ytech.com account to view the complete appointment details.</p>
                 </div>
                 `
             });
@@ -108,7 +108,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: student.email,
-                subject: 'Appointment Booking Failed - Online-study.com',
+                subject: 'Appointment Booking Failed - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #e74c3c;">Appointment Booking Failed</h2>
@@ -143,7 +143,7 @@ class EmailService {
             // Email to student
             await this.sendEmail({
                 to: student.email,
-                subject: 'Appointment Reminder - Online-study.com',
+                subject: 'Appointment Reminder - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Reminder</h2>
@@ -164,7 +164,7 @@ class EmailService {
             // Email to teacher
             await this.sendEmail({
                 to: teacher.email,
-                subject: 'Appointment Reminder - Online-study.com',
+                subject: 'Appointment Reminder - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Reminder</h2>
@@ -198,7 +198,7 @@ class EmailService {
             // Email to student
             await this.sendEmail({
                 to: student.email,
-                subject: 'Appointment Cancelled - Online-study.com',
+                subject: 'Appointment Cancelled - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #e74c3c;">Appointment Cancelled</h2>
@@ -219,7 +219,7 @@ class EmailService {
             // Email to teacher
             await this.sendEmail({
                 to: teacher.email,
-                subject: 'Appointment Cancelled - Online-study.com',
+                subject: 'Appointment Cancelled - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #e74c3c;">Appointment Cancelled</h2>
@@ -253,7 +253,7 @@ class EmailService {
             // Email to student
             await this.sendEmail({
                 to: student.email,
-                subject: 'Appointment Confirmed by Teacher - Online-study.com',
+                subject: 'Appointment Confirmed by Teacher - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Confirmed by Teacher</h2>
@@ -274,7 +274,7 @@ class EmailService {
             // Email confirmation to teacher
             await this.sendEmail({
                 to: teacher.email,
-                subject: 'Appointment Confirmation Successful - Online-study.com',
+                subject: 'Appointment Confirmation Successful - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Confirmed</h2>
@@ -307,7 +307,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: student.email,
-                subject: 'Payment Successful - Online-study.com',
+                subject: 'Payment Successful - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Payment Successful</h2>
@@ -356,7 +356,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: student.email,
-                subject: 'Payment Confirmation - Online-study.com',
+                subject: 'Payment Confirmation - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Payment Confirmation</h2>
@@ -400,7 +400,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: student.email,
-                subject: 'Payment Refund - Online-study.com',
+                subject: 'Payment Refund - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Payment Refund</h2>
@@ -452,7 +452,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: student.email,
-                subject: 'New Homeworks from Your Teacher - Online-study.com',
+                subject: 'New Homeworks from Your Teacher - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">New Homeworks</h2>
@@ -462,7 +462,7 @@ class EmailService {
                         ${homeworksHtml}
                     </div>
                     
-                    <p>You can view these homeworks at any time by logging into your Online-study.com account.</p>
+                    <p>You can view these homeworks at any time by logging into your Study.ytech.com account.</p>
                     <p><strong>Note:</strong> Always follow your teacher's instructions when taking medications.</p>
                 </div>
                 `
@@ -485,7 +485,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: student.email,
-                subject: 'Follow-up Appointment Recommended - Online-study.com',
+                subject: 'Follow-up Appointment Recommended - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Follow-up Appointment</h2>
@@ -499,14 +499,14 @@ class EmailService {
                         <p><strong>Reason:</strong> ${shortDescription}</p>
                     </div>
                     
-                    <p>This appointment requires payment confirmation. Please log in to your Online-study.com account to confirm and complete payment for this follow-up appointment.</p>
+                    <p>This appointment requires payment confirmation. Please log in to your Study.ytech.com account to confirm and complete payment for this follow-up appointment.</p>
                 </div>
                 `
             });
 
             await this.sendEmail({
                 to: teacher.email,
-                subject: 'Follow-up Appointment Created - Online-study.com',
+                subject: 'Follow-up Appointment Created - Study.ytech.com',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Follow-up Appointment Created</h2>

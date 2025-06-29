@@ -42,7 +42,7 @@ exports.sendDocumentUploadNotification = async (appointment, document, recipient
         // Send email notification
         await emailService.sendEmail({
             to: recipientEmail,
-            subject: 'New Document Uploaded - Online-study',
+            subject: 'New Document Uploaded - E-Study',
             text: `${uploaderName} has uploaded a new document for your appointment scheduled on ${new Date(appointment.dateTime).toLocaleDateString()}.
             Document name: ${document.name}
             Please log in to your account to view the document.`,

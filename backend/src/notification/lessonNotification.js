@@ -21,7 +21,7 @@ exports.sendLessonCompletedNotification = async (appointment) => {
         // Send email to student
         await emailService.sendEmail({
             to: student.email,
-            subject: 'Your Lesson Has Ended - Online-study',
+            subject: 'Your Lesson Has Ended - E-Study',
             text: `Your lesson with ${teacher.firstName} ${teacher.lastName} has ended. 
             If you need to schedule a follow-up appointment, please visit our website.`,
             html: `
@@ -32,7 +32,7 @@ exports.sendLessonCompletedNotification = async (appointment) => {
               <p><strong>Date:</strong> ${new Date(appointment.dateTime).toLocaleDateString()}</p>
               <p><strong>Time:</strong> ${new Date(appointment.dateTime).toLocaleTimeString()} - ${new Date(appointment.endTime).toLocaleTimeString()}</p>
               <p>If you need to schedule a follow-up appointment, please visit our website.</p>
-              <p>Thank you for choosing Online-study for your education needs.</p>
+              <p>Thank you for choosing E-Study for your education needs.</p>
             </div>
             `
         });
@@ -40,7 +40,7 @@ exports.sendLessonCompletedNotification = async (appointment) => {
         // Send email to teacher
         await emailService.sendEmail({
             to: teacher.email,
-            subject: 'Lesson Completed - Online-study',
+            subject: 'Lesson Completed - E-Study',
             text: `Your lesson with ${student.firstName} ${student.lastName} has ended. 
             Please complete your lesson summary if you haven't already done so.`,
             html: `
