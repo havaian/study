@@ -1,7 +1,7 @@
 <template>
     <nav class="bg-white/95 backdrop-blur-md shadow-lg border-b border-educational-blue/10 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
+            <div class="flex justify-between h-24">
                 <!-- Logo and main navigation -->
                 <div class="flex items-center">
                     <!-- Logo -->
