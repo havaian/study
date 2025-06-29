@@ -5,10 +5,38 @@
                 <!-- Logo and main navigation -->
                 <div class="flex items-center">
                     <!-- Logo -->
-                    <a href='https://bolt.new/' target="_blank" rel="noopener noreferrer" class="flex items-center space-x-3">
-                        <img class="h-24 w-24 text-white" src="/images/logo.png" alt="">
-                    </a>
                     <router-link to="/" class="flex items-center space-x-3">
+                        <div
+                            class="bg-gradient-to-r from-educational-blue to-educational-purple rounded-xl p-2 shadow-lg">
+                            <svg width="40" height="40" viewBox="4 4 40 40" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="educationalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+
+                                <!-- Rounded rectangle background with gradient -->
+                                <rect x="4" y="4" width="40" height="40" rx="10" ry="10"
+                                    fill="url(#educationalGradient)" />
+
+                                <!-- Graduation cap icon (centered in the container) -->
+                                <g transform="translate(12, 12)">
+                                    <!-- Main cap (mortarboard) -->
+                                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        fill="none" d="M2 10l10-6 10 6-10 6-10-6z" />
+
+                                    <!-- Cap base/band -->
+                                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        fill="none" d="M6 13v4c0 2 2.686 4 6 4s6-2 6-4v-4" />
+
+                                    <!-- Tassel -->
+                                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        fill="none" d="M16 7v4" />
+                                    <circle cx="16" cy="11" r="1" fill="white" />
+                                </g>
+                            </svg>
+                        </div>
                         <span class="text-xl font-bold">
                             STUDY.<span
                                 class="bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent">YTECH</span><span

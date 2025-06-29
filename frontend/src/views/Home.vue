@@ -65,9 +65,9 @@
             </div>
           </div>
           <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-3">
-            ONLINE-<span
-              class="bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent">STUDY</span><span
-              class="text-educational-green">.COM</span>
+            STUDY.<span
+              class="bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent">YTECH</span><span
+              class="text-educational-green">.SPACE</span>
           </h1>
           <p class="text-xl text-gray-700 font-medium">Your Academic Performance, Our Digital Care</p>
         </div>
