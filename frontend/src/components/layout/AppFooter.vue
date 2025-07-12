@@ -17,7 +17,7 @@
       <div class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
         <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
           <p class="text-gray-400 text-sm">
-            © {{ new Date().getFullYear() }} Study.ytech.com. All rights reserved.
+            © {{ new Date().getFullYear() }} E-stud.uz. All rights reserved.
           </p>
           <div class="flex space-x-6">
             <a href="#" class="text-gray-400 hover:text-educational-blue text-sm transition-colors duration-200">Privacy Policy</a>

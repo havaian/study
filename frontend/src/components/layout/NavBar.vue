@@ -1,18 +1,18 @@
 <template>
     <nav class="bg-white/95 backdrop-blur-md shadow-lg border-b border-educational-blue/10 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-24">
+            <div class="flex justify-between h-16">
                 <!-- Logo and main navigation -->
                 <div class="flex items-center">
                     <!-- Logo -->
-                    <a href='https://bolt.new/' target="_blank" rel="noopener noreferrer" class="flex items-center space-x-3">
-                        <img class="h-24 w-24 text-white" src="/images/logo.png" alt="">
-                    </a>
                     <router-link to="/" class="flex items-center space-x-3">
+                        <div class="bg-gradient-to-r from-educational-blue to-educational-purple rounded-xl p-2 shadow-lg">
+                            <img src="/images/logo.svg" alt="E-stud.uz Logo" width="40" height="40" class="w-10 h-10" />
+                        </div>
                         <span class="text-xl font-bold">
-                            STUDY.<span
-                                class="bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent">YTECH</span><span
-                                class="text-educational-green">.SPACE</span>
+                            E-<span
+                                class="bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent">STUD</span><span
+                                class="text-educational-green">.UZ</span>
                         </span>
                     </router-link>
 

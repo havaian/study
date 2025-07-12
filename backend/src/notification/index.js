@@ -204,7 +204,7 @@ class NotificationService {
             console.log('- Subject:', subject);
 
             const mailOptions = {
-                from: `"Study.ytech.com" <${process.env.SMTP_FROM_EMAIL}>`,
+                from: `"e-stud.uz" <${process.env.SMTP_FROM_EMAIL}>`,
                 to,
                 subject,
                 text,
@@ -322,17 +322,17 @@ class NotificationService {
 
         const emailData = {
             to: email,
-            subject: 'Verify Your Email - Study.ytech.com',
+            subject: 'Verify Your Email - e-stud.uz',
             text: `Please verify your email by clicking on the following link: ${verificationLink}`,
             html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #4a90e2;">Study.ytech.com Email Verification</h2>
-          <p>Thank you for registering with Study.ytech.com! Please verify your email address by clicking the button below:</p>
+          <h2 style="color: #4a90e2;">e-stud.uz Email Verification</h2>
+          <p>Thank you for registering with e-stud.uz! Please verify your email address by clicking the button below:</p>
           <a href="${verificationLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Verify Email</a>
           <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
           <p>${verificationLink}</p>
           <p>This link will expire in 24 hours.</p>
-          <p>If you didn't create an account with Study.ytech.com, please ignore this email.</p>
+          <p>If you didn't create an account with e-stud.uz, please ignore this email.</p>
         </div>
       `
         };
@@ -359,11 +359,11 @@ class NotificationService {
 
         const emailData = {
             to: email,
-            subject: 'Reset Your Password - Study.ytech.com',
+            subject: 'Reset Your Password - e-stud.uz',
             text: `You requested a password reset. Please click the following link to reset your password: ${resetLink}`,
             html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #4a90e2;">Study.ytech.com Password Reset</h2>
+          <h2 style="color: #4a90e2;">e-stud.uz Password Reset</h2>
           <p>We received a request to reset your password. Click the button below to set a new password:</p>
           <a href="${resetLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Reset Password</a>
           <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
@@ -407,7 +407,7 @@ class NotificationService {
             // Email to student
             const studentEmailData = {
                 to: student.email,
-                subject: 'Appointment Confirmation - Study.ytech.com',
+                subject: 'Appointment Confirmation - e-stud.uz',
                 text: `Your appointment with ${teacher.firstName} ${teacher.lastName} has been confirmed for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -418,7 +418,7 @@ class NotificationService {
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the lesson by logging into your Study.ytech.com account.</p>
+            <p>You can view your appointment details and join the lesson by logging into your e-stud.uz account.</p>
           </div>
         `
             };
@@ -426,7 +426,7 @@ class NotificationService {
             // Email to teacher
             const teacherEmailData = {
                 to: teacher.email,
-                subject: 'New Appointment - Study.ytech.com',
+                subject: 'New Appointment - e-stud.uz',
                 text: `You have a new appointment with ${student.firstName} ${student.lastName} scheduled for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -437,7 +437,7 @@ class NotificationService {
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
-            <p>You can view appointment details and join the lesson by logging into your Study.ytech.com account.</p>
+            <p>You can view appointment details and join the lesson by logging into your e-stud.uz account.</p>
           </div>
         `
             };
@@ -494,7 +494,7 @@ class NotificationService {
             // Email to student
             const studentEmailData = {
                 to: student.email,
-                subject: 'Appointment Canceled - Study.ytech.com',
+                subject: 'Appointment Canceled - e-stud.uz',
                 text: `Your appointment with ${teacher.firstName} ${teacher.lastName} scheduled for ${formattedDateTime} has been canceled.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -505,7 +505,7 @@ class NotificationService {
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can schedule a new appointment by logging into your Study.ytech.com account.</p>
+            <p>You can schedule a new appointment by logging into your e-stud.uz account.</p>
           </div>
         `
             };
@@ -513,7 +513,7 @@ class NotificationService {
             // Email to teacher
             const teacherEmailData = {
                 to: teacher.email,
-                subject: 'Appointment Canceled - Study.ytech.com',
+                subject: 'Appointment Canceled - e-stud.uz',
                 text: `Your appointment with ${student.firstName} ${student.lastName} scheduled for ${formattedDateTime} has been canceled.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -572,13 +572,13 @@ class NotificationService {
             // Email to student for feedback
             const studentEmailData = {
                 to: student.email,
-                subject: 'Appointment Completed - Study.ytech.com',
+                subject: 'Appointment Completed - e-stud.uz',
                 text: `Your appointment with ${teacher.firstName} ${teacher.lastName} has been completed. Please leave your feedback.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Appointment Completed</h2>
             <p>Your appointment with ${teacher.firstName} ${teacher.lastName} has been completed.</p>
-            <p>If any homeworks were provided, you can view them in your Study.ytech.com account.</p>
+            <p>If any homeworks were provided, you can view them in your e-stud.uz account.</p>
             <a href="${process.env.FRONTEND_URL}/appointments/feedback/${appointment._id}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Leave Feedback</a>
             <p>Your feedback helps us improve our services.</p>
           </div>
@@ -631,7 +631,7 @@ class NotificationService {
             // Email to student
             const studentEmailData = {
                 to: student.email,
-                subject: 'New Homeworks - Study.ytech.com',
+                subject: 'New Homeworks - e-stud.uz',
                 text: `${teacher.firstName} ${teacher.lastName} has added homeworks to your recent appointment.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -640,7 +640,7 @@ class NotificationService {
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               ${homeworksHtml}
             </div>
-            <p>You can view these homeworks anytime by logging into your Study.ytech.com account.</p>
+            <p>You can view these homeworks anytime by logging into your e-stud.uz account.</p>
           </div>
         `
             };
@@ -652,7 +652,7 @@ class NotificationService {
             if (student.telegramId) {
                 const telegramData = {
                     chatId: student.telegramId,
-                    text: `💊 ${teacher.firstName} ${teacher.lastName} has added homeworks to your recent appointment. Check your email or Study.ytech.com account for details.`,
+                    text: `💊 ${teacher.firstName} ${teacher.lastName} has added homeworks to your recent appointment. Check your email or e-stud.uz account for details.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -685,7 +685,7 @@ class NotificationService {
             // Email to student
             const studentEmailData = {
                 to: student.email,
-                subject: 'Follow-up Appointment Scheduled - Study.ytech.com',
+                subject: 'Follow-up Appointment Scheduled - e-stud.uz',
                 text: `A follow-up appointment with ${teacher.firstName} ${teacher.lastName} has been scheduled for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -696,7 +696,7 @@ class NotificationService {
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the lesson by logging into your Study.ytech.com account.</p>
+            <p>You can view your appointment details and join the lesson by logging into your e-stud.uz account.</p>
           </div>
         `
             };
@@ -704,7 +704,7 @@ class NotificationService {
             // Email to teacher
             const teacherEmailData = {
                 to: teacher.email,
-                subject: 'Follow-up Appointment Scheduled - Study.ytech.com',
+                subject: 'Follow-up Appointment Scheduled - e-stud.uz',
                 text: `A follow-up appointment with ${student.firstName} ${student.lastName} has been scheduled for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -715,7 +715,7 @@ class NotificationService {
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
-            <p>You can view appointment details and join the lesson by logging into your Study.ytech.com account.</p>
+            <p>You can view appointment details and join the lesson by logging into your e-stud.uz account.</p>
           </div>
         `
             };
@@ -772,7 +772,7 @@ class NotificationService {
             // Email to student
             const studentEmailData = {
                 to: student.email,
-                subject: 'Appointment Reminder - Study.ytech.com',
+                subject: 'Appointment Reminder - e-stud.uz',
                 text: `Reminder: Your appointment with ${teacher.firstName} ${teacher.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -783,7 +783,7 @@ class NotificationService {
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Teacher:</strong> ${teacher.firstName} ${teacher.lastName} (${teacher.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the lesson by logging into your Study.ytech.com account.</p>
+            <p>You can view your appointment details and join the lesson by logging into your e-stud.uz account.</p>
           </div>
         `
             };
@@ -791,7 +791,7 @@ class NotificationService {
             // Email to teacher
             const teacherEmailData = {
                 to: teacher.email,
-                subject: 'Appointment Reminder - Study.ytech.com',
+                subject: 'Appointment Reminder - e-stud.uz',
                 text: `Reminder: Your appointment with ${student.firstName} ${student.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -802,7 +802,7 @@ class NotificationService {
               <p><strong>Lesson Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
             </div>
-            <p>You can view appointment details and join the lesson by logging into your Study.ytech.com account.</p>
+            <p>You can view appointment details and join the lesson by logging into your e-stud.uz account.</p>
           </div>
         `
             };
@@ -857,7 +857,7 @@ class NotificationService {
             // Email to student
             const studentEmailData = {
                 to: student.email,
-                subject: 'Your Lesson Starts Soon - Study.ytech.com',
+                subject: 'Your Lesson Starts Soon - e-stud.uz',
                 text: `Your lesson with ${teacher.firstName} ${teacher.lastName} starts in 15 minutes.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -872,7 +872,7 @@ class NotificationService {
             // Email to teacher
             const teacherEmailData = {
                 to: teacher.email,
-                subject: 'Lesson Starts Soon - Study.ytech.com',
+                subject: 'Lesson Starts Soon - e-stud.uz',
                 text: `Your lesson with ${student.firstName} ${student.lastName} starts in 15 minutes.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -929,7 +929,7 @@ class NotificationService {
 
             const emailData = {
                 to: student.email,
-                subject: 'Payment Successful - Study.ytech.com',
+                subject: 'Payment Successful - e-stud.uz',
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Payment Successful</h2>
@@ -940,7 +940,7 @@ class NotificationService {
               <p><strong>Type:</strong> ${appointment.type}</p>
               <p><strong>Payment ID:</strong> ${paymentId}</p>
             </div>
-            <p>You can view your appointment details in your Study.ytech.com account.</p>
+            <p>You can view your appointment details in your e-stud.uz account.</p>
           </div>
         `
             };
@@ -962,7 +962,7 @@ class NotificationService {
 
             const emailData = {
                 to: teacher.email,
-                subject: 'New Appointment Confirmed - Study.ytech.com',
+                subject: 'New Appointment Confirmed - e-stud.uz',
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">New Appointment Confirmed</h2>
@@ -972,7 +972,7 @@ class NotificationService {
               <p><strong>Date & Time:</strong> ${formattedDate}</p>
               <p><strong>Type:</strong> ${appointment.type}</p>
             </div>
-            <p>Please log in to your Study.ytech.com account to view the appointment details.</p>
+            <p>Please log in to your e-stud.uz account to view the appointment details.</p>
           </div>
         `
             };
@@ -995,7 +995,7 @@ class NotificationService {
 
             const emailData = {
                 to: student.email,
-                subject: 'Payment Failed - Study.ytech.com',
+                subject: 'Payment Failed - e-stud.uz',
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #e74c3c;">Payment Failed</h2>

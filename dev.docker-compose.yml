@@ -11,7 +11,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     networks:
-      - study_net
+      - stud_net
     command: mongod --port ${MONGODB_PORT}
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--port", "${MONGODB_PORT}"]
@@ -31,7 +31,7 @@ services:
       - redis_data:/data
     command: --port ${REDIS_PORT}
     networks:
-      - study_net
+      - stud_net
     healthcheck:
       test: ["CMD", "redis-cli", "-p", "${REDIS_PORT}", "ping"]
       interval: 5s
@@ -54,7 +54,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
       - ./rabbitmq/main.conf:/etc/rabbitmq/rabbitmq.conf
     networks:
-      - study_net
+      - stud_net
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
@@ -94,7 +94,7 @@ services:
     volumes:
       - backend_logs:/usr/src/app/logs
     networks:
-      - study_net
+      - stud_net
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${BACKEND_PORT}/api/health"]
       interval: 20s
@@ -123,7 +123,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     networks:
-      - study_net
+      - stud_net
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
@@ -142,7 +142,7 @@ services:
   #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
   #     - prometheus_data:/prometheus
   #   networks:
-  #     - study_net
+  #     - stud_net
   #   healthcheck:
   #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
   #     interval: 10s
@@ -163,7 +163,7 @@ services:
   #     - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
   #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
   #   networks:
-  #     - study_net
+  #     - stud_net
   #   depends_on:
   #     prometheus:
   #       condition: service_healthy
@@ -185,7 +185,7 @@ services:
   #     - loki_data:/loki
   #   command: -config.file=/etc/loki/local-config.yaml
   #   networks:
-  #     - study_net
+  #     - stud_net
   #   healthcheck:
   #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
   #     interval: 10s
@@ -205,5 +205,5 @@ volumes:
   # nginx_logs:
 
 networks:
-  study_net:
+  stud_net:
     driver: bridge
