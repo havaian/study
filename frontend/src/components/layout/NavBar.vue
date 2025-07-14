@@ -6,8 +6,8 @@
                 <div class="flex items-center">
                     <!-- Logo -->
                     <router-link to="/" class="flex items-center space-x-3">
-                        <div class="bg-gradient-to-r from-educational-blue to-educational-purple rounded-xl p-2 shadow-lg">
-                            <img src="/images/logo.svg" alt="E-stud.uz Logo" width="40" height="40" class="w-10 h-10" />
+                        <div class="rounded-xl shadow-lg">
+                            <img src="/images/logo.svg" alt="E-stud.uz Logo" width="40" height="40" class="w-15 h-15" />
                         </div>
                         <span class="text-xl font-bold">
                             E-<span
