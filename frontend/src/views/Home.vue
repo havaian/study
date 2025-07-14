@@ -27,14 +27,14 @@
         </div>
       </div>
 
-      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">
+      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 pb-16 text-center">
         <!-- Logo Section -->
         <div class="mb-12 slide-in">
           <div class="flex items-center justify-center mb-8">
             <div class="relative">
               <div
                 class="float-educational glow-effect">
-                  <img src="/images/logo.svg" alt="E-stud.uz Logo" width="40" height="40" class="w-15 h-15" />
+                  <img src="/images/logo.svg" alt="E-stud.uz Logo" width="80" height="80" class="w-20 h-20" />
               </div>
             </div>
           </div>
