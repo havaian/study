@@ -12,19 +12,7 @@ const Specialization = require('./src/specializations/model');
 // Set longer timeout for MongoDB operations
 mongoose.set('bufferTimeoutMS', 30000);
 
-// MongoDB connection with options to avoid buffering issues
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            serverSelectionTimeoutMS: 5000,
-            socketTimeoutMS: 45000,
-        });
-        console.log('✅ [db seed] Connected to MongoDB');
-    } catch (err) {
-        console.error('❌ [db seed] MongoDB connection error:', err);
-        process.exit(1);
-    }
-};
+// No need to connect - using existing connection from db.js
 
 // Seed data
 const specializations = [
@@ -43,9 +31,6 @@ const specializations = [
 // Non-destructive seed function
 async function seedDatabase() {
     try {
-        console.log('🔄 [db seed] Connecting to database...');
-        await connectDB();
-        
         console.log('🔍 [db seed] Checking existing specializations...');
         
         // Get all existing specializations
@@ -83,14 +68,6 @@ async function seedDatabase() {
             console.error('💡 [db seed] Timeout error - check MongoDB connection and network');
         } else if (error.code === 11000) {
             console.error('💡 [db seed] Duplicate key error - specialization names must be unique');
-        }
-    } finally {
-        // Always disconnect
-        try {
-            await mongoose.disconnect();
-            console.log('🔌 [db seed] Disconnected from MongoDB');
-        } catch (disconnectError) {
-            console.error('[db seed] Error disconnecting:', disconnectError);
         }
     }
 }
