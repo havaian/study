@@ -375,6 +375,6 @@ process.on('uncaughtException', err => {
     process.exit(1);
 });
 
-// require('./seed');
+require('./seed');
 
 module.exports = { app, server, io };
