@@ -16,8 +16,17 @@ axios.interceptors.response.use(
   error => {
     if (error.response?.status === 401) {
       const authStore = useAuthStore()
-      authStore.logout()
-      window.location.href = '/login'
+      
+      // CRITICAL: Only redirect if we're NOT already on the login page
+      // and if the request was NOT a login attempt
+      const isLoginAttempt = error.config.url?.includes('/api/users/login')
+      const isOnLoginPage = router.currentRoute.value.path === '/login'
+      
+      if (!isLoginAttempt && !isOnLoginPage) {
+        // This is an expired token scenario - logout and redirect
+        authStore.logout()
+        router.push('/login')
+      }
     }
     return Promise.reject(error)
   }
