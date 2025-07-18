@@ -4,19 +4,20 @@
             <div>
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
             </div>
-            <form class="mt-8 space-y-6" @submit.prevent="handleSubmit">
+            <form class="mt-8 space-y-6" @submit.prevent="handleSubmit" novalidate>
                 <div class="rounded-md shadow-sm -space-y-px">
                     <div>
                         <label for="email" class="sr-only">Email address</label>
                         <input id="email" v-model="email" name="email" type="email" required class="input rounded-t-md"
-                            placeholder="Email address" />
+                            placeholder="Email address" autocomplete="email" />
                     </div>
                     <div class="relative">
                         <label for="password" class="sr-only">Password</label>
                         <input id="password" v-model="password" name="password" :type="showPassword ? 'text' : 'password'" required
-                            class="input rounded-b-md pr-10" placeholder="Password" />
+                            class="input rounded-b-md pr-10" placeholder="Password" autocomplete="current-password" />
                         <button type="button" @click="togglePassword" 
-                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
+                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
+                            tabindex="-1">
                             <svg v-if="showPassword" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                     d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
@@ -81,25 +82,33 @@ const togglePassword = () => {
 }
 
 async function handleSubmit(event) {
-    if (loading.value) return
+    // Extra safety - prevent default behavior
+    if (event) {
+        event.preventDefault()
+        event.stopPropagation()
+    }
+    
+    // Prevent double submission
+    if (loading.value) return false
     
     try {
         loading.value = true
         error.value = ''
         
-        // Attempt login - will return response.data on success or throw on error
+        // Attempt login
         await authStore.login(email.value, password.value)
         
         // If we get here, login was successful, so navigate
         router.push({ path: '/' })
     } catch (err) {
         console.error('Login error:', err)
-        // Your authStore throws either error.response.data or error.message
+        // Set error message but don't reload page
         error.value = typeof err === 'string' ? err : (err.message || 'Failed to sign in')
-        // No navigation here, so errors will be visible on the page
     } finally {
         loading.value = false
     }
+    
+    return false // Prevent any default form submission
 }
 
 function forgotPassword() {
