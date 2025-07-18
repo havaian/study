@@ -35,11 +35,9 @@
                   class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
                   {{ lang }}
                 </span>
-                <span
-                  class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                   <span>{{ timezoneDisplay }}</span>
-                  <div v-if="timezoneLoading"
-                    class="ml-2 animate-spin rounded-full h-3 w-3 border border-green-600 border-t-transparent"></div>
+                  <div v-if="timezoneLoading" class="ml-2 animate-spin rounded-full h-3 w-3 border border-green-600 border-t-transparent"></div>
                 </span>
               </div>
             </div>
@@ -74,8 +72,7 @@
                   <dd class="mt-1 text-gray-900">
                     <div class="flex items-center space-x-2">
                       <span>{{ timezoneDisplay }}</span>
-                      <div v-if="timezoneLoading"
-                        class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
+                      <div v-if="timezoneLoading" class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
                     </div>
                     <p v-if="currentTime" class="text-xs text-gray-500 mt-1">
                       Current time: {{ currentTime }}
@@ -97,7 +94,7 @@
                   No education information provided.
                 </div>
               </dl>
-
+              
               <h2 class="text-xl font-semibold text-gray-900 mb-4 mt-6">Certifications</h2>
               <dl class="space-y-4">
                 <div v-for="cert in user.certifications" :key="cert.issuer">
@@ -189,12 +186,12 @@ const timezoneDisplay = computed(() => {
 
 const timezoneAbbr = computed(() => {
   if (!timezoneInfo.value) return 'UTC+5'
-
+  
   const offset = timezoneInfo.value.offset
   const sign = offset >= 0 ? '+' : ''
   const hours = Math.floor(Math.abs(offset))
   const minutes = Math.abs(offset) % 1 === 0.5 ? ':30' : (Math.abs(offset) % 1 === 0.75 ? ':45' : '')
-
+  
   return `UTC${sign}${offset === 0 ? '0' : offset > 0 ? hours + minutes : '-' + hours + minutes}`
 })
 
@@ -254,10 +251,10 @@ const formatDay = (dayOfWeek) => {
 
 async function fetchTimezoneInfo(timezone) {
   if (!timezone) return
-
+  
   try {
     timezoneLoading.value = true
-    const response = await axios.get(`/api/timezones/${encodeURIComponent(timezone)}`)
+    const response = await axios.get(`/api/timezones/info/${encodeURIComponent(timezone)}`)
     if (response.data.success) {
       timezoneInfo.value = response.data.timezone
     }
@@ -274,7 +271,7 @@ async function fetchUserProfile() {
     loading.value = true
     const response = await axios.get('/api/users/me')
     user.value = response.data.user || response.data
-
+    
     // Fetch timezone info after user data is loaded
     if (user.value?.timezone) {
       await fetchTimezoneInfo(user.value.timezone)

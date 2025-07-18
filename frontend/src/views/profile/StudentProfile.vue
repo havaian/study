@@ -12,8 +12,7 @@
             </h1>
             <p class="text-gray-600">Student</p>
             <div class="mt-2">
-              <span
-                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                 {{ timezoneDisplay }}
               </span>
             </div>
@@ -49,8 +48,7 @@
                 <dd class="mt-1 text-gray-900">
                   <div class="flex items-center space-x-2">
                     <span>{{ timezoneDisplay }}</span>
-                    <div v-if="timezoneLoading"
-                      class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
+                    <div v-if="timezoneLoading" class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
                   </div>
                   <p v-if="currentTime" class="text-xs text-gray-500 mt-1">
                     Current time: {{ currentTime }}
@@ -158,10 +156,10 @@ const formatGender = (gender) => {
 
 async function fetchTimezoneInfo(timezone) {
   if (!timezone) return
-
+  
   try {
     timezoneLoading.value = true
-    const response = await axios.get(`/api/timezones/${encodeURIComponent(timezone)}`)
+    const response = await axios.get(`/api/timezones/info/${encodeURIComponent(timezone)}`)
     if (response.data.success) {
       timezoneInfo.value = response.data.timezone
     }
@@ -177,7 +175,7 @@ async function fetchUserProfile() {
   try {
     const response = await axios.get('/api/users/me')
     user.value = response.data.user || response.data
-
+    
     // Fetch timezone info after user data is loaded
     if (user.value?.timezone) {
       await fetchTimezoneInfo(user.value.timezone)

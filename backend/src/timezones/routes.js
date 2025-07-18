@@ -1,4 +1,4 @@
-// routes/timezones.js
+// src/timezones/routes.js
 const express = require('express');
 const User = require('../user/model');
 const router = express.Router();
@@ -11,12 +11,12 @@ router.get('/', (req, res) => {
     try {
         // Get all supported timezones from the User model
         const supportedTimezones = User.getSupportedTimezones();
-
+        
         // Create timezone data with display names and offsets
         const timezoneData = supportedTimezones.map(timezone => {
             // Create a temporary user instance to access timezone methods
             const tempUser = new User({ timezone });
-
+            
             return {
                 value: timezone,
                 label: tempUser.getTimezoneDisplayName(),
@@ -44,69 +44,27 @@ router.get('/', (req, res) => {
 });
 
 /**
- * Get timezone information by timezone ID
- * GET /api/timezones/:timezoneId
- */
-router.get('/:timezoneId', (req, res) => {
-    try {
-        const { timezoneId } = req.params;
-
-        // Validate timezone
-        const supportedTimezones = User.getSupportedTimezones();
-        if (!supportedTimezones.includes(timezoneId)) {
-            return res.status(404).json({
-                success: false,
-                message: 'Timezone not found'
-            });
-        }
-
-        // Create a temporary user instance to access timezone methods
-        const tempUser = new User({ timezone: timezoneId });
-
-        const timezoneInfo = {
-            value: timezoneId,
-            label: tempUser.getTimezoneDisplayName(),
-            offset: tempUser.getTimezoneOffset(),
-            region: getTimezoneRegion(timezoneId),
-            currentTime: getCurrentTimeInTimezone(timezoneId, tempUser.getTimezoneOffset())
-        };
-
-        res.status(200).json({
-            success: true,
-            timezone: timezoneInfo
-        });
-    } catch (error) {
-        console.error('Error fetching timezone info:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch timezone information',
-            error: error.message
-        });
-    }
-});
-
-/**
  * Get timezones grouped by region
- * GET /api/timezones/grouped
+ * GET /api/timezones/grouped/regions
  */
 router.get('/grouped/regions', (req, res) => {
     try {
         const supportedTimezones = User.getSupportedTimezones();
-
+        
         const timezonesByRegion = supportedTimezones.reduce((acc, timezone) => {
             const tempUser = new User({ timezone });
             const region = getTimezoneRegion(timezone);
-
+            
             if (!acc[region]) {
                 acc[region] = [];
             }
-
+            
             acc[region].push({
                 value: timezone,
                 label: tempUser.getTimezoneDisplayName(),
                 offset: tempUser.getTimezoneOffset()
             });
-
+            
             return acc;
         }, {});
 
@@ -138,7 +96,7 @@ router.get('/grouped/regions', (req, res) => {
 router.post('/convert', (req, res) => {
     try {
         const { fromTimezone, toTimezone, dateTime } = req.body;
-
+        
         if (!fromTimezone || !toTimezone || !dateTime) {
             return res.status(400).json({
                 success: false,
@@ -183,6 +141,58 @@ router.post('/convert', (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to convert timezone',
+            error: error.message
+        });
+    }
+});
+
+/**
+ * Get timezone information by timezone ID
+ * GET /api/timezones/info/:timezoneId
+ * This route handles URL-encoded timezone names like Asia%2FTashkent
+ */
+router.get('/info/*', (req, res) => {
+    try {
+        // Get the full path after /info/ and decode it
+        const fullPath = req.params[0]; // This gets everything after /info/
+        const timezoneId = decodeURIComponent(fullPath);
+        
+        console.log('Received timezone request for:', timezoneId);
+        
+        // Validate timezone
+        const supportedTimezones = User.getSupportedTimezones();
+        if (!supportedTimezones.includes(timezoneId)) {
+            console.log('Timezone not found in supported list:', timezoneId);
+            console.log('Available timezones include:', supportedTimezones.filter(tz => tz.includes('Asia')).slice(0, 5));
+            return res.status(404).json({
+                success: false,
+                message: 'Timezone not found',
+                requested: timezoneId,
+                availableCount: supportedTimezones.length
+            });
+        }
+
+        // Create a temporary user instance to access timezone methods
+        const tempUser = new User({ timezone: timezoneId });
+        
+        const timezoneInfo = {
+            value: timezoneId,
+            label: tempUser.getTimezoneDisplayName(),
+            offset: tempUser.getTimezoneOffset(),
+            region: getTimezoneRegion(timezoneId),
+            currentTime: getCurrentTimeInTimezone(timezoneId, tempUser.getTimezoneOffset())
+        };
+
+        console.log('Returning timezone info for:', timezoneId);
+        res.status(200).json({
+            success: true,
+            timezone: timezoneInfo
+        });
+    } catch (error) {
+        console.error('Error fetching timezone info:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch timezone information',
             error: error.message
         });
     }

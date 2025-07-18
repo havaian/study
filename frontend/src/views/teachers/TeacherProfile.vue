@@ -35,12 +35,9 @@
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
                                     {{ lang }}
                                 </span>
-                                <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                                     <span>{{ teacherTimezoneAbbr }}</span>
-                                    <div v-if="timezoneLoading"
-                                        class="ml-2 animate-spin rounded-full h-3 w-3 border border-green-600 border-t-transparent">
-                                    </div>
+                                    <div v-if="timezoneLoading" class="ml-2 animate-spin rounded-full h-3 w-3 border border-green-600 border-t-transparent"></div>
                                 </span>
                             </div>
                         </div>
@@ -105,9 +102,7 @@
                                 <h3 class="font-medium text-gray-900">Teacher's Timezone</h3>
                                 <div class="flex items-center space-x-2">
                                     <span class="text-gray-600">{{ teacherTimezoneDisplay }}</span>
-                                    <div v-if="timezoneLoading"
-                                        class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent">
-                                    </div>
+                                    <div v-if="timezoneLoading" class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
                                 </div>
                                 <p v-if="teacherCurrentTime" class="text-xs text-gray-500 mt-1">
                                     Teacher's current time: {{ teacherCurrentTime }}
@@ -144,18 +139,17 @@
                 <!-- Reviews Section - Only show if reviews exist or review system is working -->
                 <div v-if="reviewsLoaded" class="p-6 sm:p-8 border-t border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Student Reviews</h2>
-
+                    
                     <!-- No reviews yet -->
                     <div v-if="reviews.length === 0" class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                         <h3 class="mt-2 text-sm font-medium text-gray-900">No reviews yet</h3>
                         <p class="mt-1 text-sm text-gray-500">Be the first to leave a review for this teacher!</p>
                     </div>
-
+                    
                     <!-- Reviews list -->
                     <div v-else class="space-y-6">
                         <div v-for="review in reviews" :key="review._id"
@@ -232,12 +226,12 @@ const teacherTimezoneDisplay = computed(() => {
 
 const teacherTimezoneAbbr = computed(() => {
     if (!teacherTimezoneInfo.value) return 'UTC+5'
-
+    
     const offset = teacherTimezoneInfo.value.offset
     const sign = offset >= 0 ? '+' : ''
     const hours = Math.floor(Math.abs(offset))
     const minutes = Math.abs(offset) % 1 === 0.5 ? ':30' : (Math.abs(offset) % 1 === 0.75 ? ':45' : '')
-
+    
     return `UTC${sign}${offset === 0 ? '0' : offset > 0 ? hours + minutes : '-' + hours + minutes}`
 })
 
@@ -302,10 +296,10 @@ const formatDate = (date) => {
 
 async function fetchTimezoneInfo(timezone) {
     if (!timezone) return
-
+    
     try {
         timezoneLoading.value = true
-        const response = await axios.get(`/api/timezones/${encodeURIComponent(timezone)}`)
+        const response = await axios.get(`/api/timezones/info/${encodeURIComponent(timezone)}`)
         if (response.data.success) {
             teacherTimezoneInfo.value = response.data.timezone
         }
@@ -365,8 +359,8 @@ async function checkUpcomingAppointments() {
 
     try {
         const response = await axios.get(`/api/appointments/student/${authStore.user._id}`, {
-            params: {
-                status: 'scheduled',
+            params: { 
+                status: 'scheduled', 
                 teacher: teacher.value._id  // Use teacher filter instead of teacherId
             }
         })
