@@ -54,7 +54,8 @@
                                         class="flex gap-2">
                                         <select v-model="formData.specializations[index]" class="input flex-1">
                                             <option value="">Select Specialization</option>
-                                            <option v-for="spec in availableSpecializations" :key="spec" :value="spec">{{ spec }}
+                                            <option v-for="spec in getAvailableSpecializations(index)" :key="spec" :value="spec">
+                                                {{ spec }}
                                             </option>
                                         </select>
                                         <button type="button" @click="removeSpecialization(index)"
@@ -63,8 +64,33 @@
                                         </button>
                                     </div>
                                     <button type="button" @click="addSpecialization"
-                                        class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-800"
+                                        :disabled="availableSpecializations.length <= formData.specializations.filter(s => s !== '').length">
                                         + Add Another Specialization
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Languages -->
+                            <div class="mb-4">
+                                <label class="label">Languages</label>
+                                <div class="space-y-2">
+                                    <div v-for="(lang, index) in formData.languages" :key="index" class="flex gap-2">
+                                        <select v-model="formData.languages[index]" class="input flex-1">
+                                            <option value="">Select Language</option>
+                                            <option v-for="language in getAvailableLanguages(index)" :key="language" :value="language">
+                                                {{ language }}
+                                            </option>
+                                        </select>
+                                        <button type="button" @click="removeLanguage(index)"
+                                            class="px-2 py-1 text-red-600 hover:text-red-800">
+                                            Remove
+                                        </button>
+                                    </div>
+                                    <button type="button" @click="addLanguage"
+                                        class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-800"
+                                        :disabled="availableLanguages.length <= formData.languages.filter(l => l !== '').length">
+                                        + Add Language
                                     </button>
                                 </div>
                             </div>
@@ -131,12 +157,6 @@
                                     <input id="experience" v-model.number="formData.experience" type="number" min="0"
                                         class="input mt-1" required />
                                 </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <label for="languages" class="label">Languages</label>
-                                <input id="languages" v-model="languagesInput" type="text" class="input mt-1"
-                                    placeholder="English, Russian, Uzbek (comma separated)" />
                             </div>
 
                             <div class="mt-4">
@@ -226,6 +246,7 @@ const loading = ref(false)
 
 // Replace the hardcoded specializations with a ref to be filled from API
 const availableSpecializations = ref([])
+const availableLanguages = ref(['English', 'Russian', 'Uzbek'])
 
 const formData = reactive({
     firstName: '',
@@ -236,11 +257,11 @@ const formData = reactive({
         city: ''
     },
     specializations: [],
+    languages: [],
     education: [],
     certifications: [],
     lessonFee: 0,
     experience: 0,
-    languages: [],
     bio: '',
     availability: [
         { dayOfWeek: 1, isAvailable: false, startTime: '09:00', endTime: '17:00' },
@@ -259,9 +280,27 @@ const formData = reactive({
     }
 })
 
-const languagesInput = ref('')
 const educationalHistoryInput = ref('')
-const conditionsInput = ref('')
+
+// Get available specializations for a specific dropdown, excluding already selected ones
+const getAvailableSpecializations = (currentIndex) => {
+    const selectedSpecializations = formData.specializations
+        .filter((spec, index) => index !== currentIndex && spec !== '')
+    
+    return availableSpecializations.value.filter(spec => 
+        !selectedSpecializations.includes(spec)
+    )
+}
+
+// Get available languages for a specific dropdown, excluding already selected ones
+const getAvailableLanguages = (currentIndex) => {
+    const selectedLanguages = formData.languages
+        .filter((lang, index) => index !== currentIndex && lang !== '')
+    
+    return availableLanguages.value.filter(lang => 
+        !selectedLanguages.includes(lang)
+    )
+}
 
 // Helper functions for arrays
 const addSpecialization = () => {
@@ -270,6 +309,15 @@ const addSpecialization = () => {
 
 const removeSpecialization = (index) => {
     formData.specializations.splice(index, 1)
+}
+
+// Helper functions for languages
+const addLanguage = () => {
+    formData.languages.push('')
+}
+
+const removeLanguage = (index) => {
+    formData.languages.splice(index, 1)
 }
 
 const addEducation = () => {
@@ -333,16 +381,16 @@ async function fetchUserProfile() {
                 user.specializations : 
                 (user.specialization ? [user.specialization] : [])
                 
+            // Handle languages properly as an array
+            formData.languages = Array.isArray(user.languages) ? 
+                user.languages : []
+                
             formData.education = user.education || []
             formData.certifications = user.certifications || []
             formData.lessonFee = user.lessonFee || 0
             formData.experience = user.experience || 0
-            formData.languages = user.languages || []
             formData.bio = user.bio || ''
             formData.availability = user.availability || formData.availability
-
-            // Update input fields
-            languagesInput.value = user.languages?.join(', ') || ''
         } else {
             formData.educationalHistory = user.educationalHistory || ''
             formData.emergencyContact = user.emergencyContact || { name: '', phone: '', relationship: '' }
@@ -370,11 +418,12 @@ async function handleSubmit() {
         if (authStore.isTeacher) {
             // Ensure specializations is an array of non-empty strings
             updateData.specializations = formData.specializations.filter(Boolean)
+            // Ensure languages is an array of non-empty strings  
+            updateData.languages = formData.languages.filter(Boolean)
             updateData.education = formData.education.filter(e => e.degree && e.institution && e.year)
             updateData.certifications = formData.certifications.filter(c => c.name && c.issuer && c.year)
             updateData.lessonFee = formData.lessonFee
             updateData.experience = formData.experience
-            updateData.languages = languagesInput.value.split(',').map(lang => lang.trim()).filter(Boolean)
             updateData.bio = formData.bio
             updateData.availability = formData.availability
         } else {
