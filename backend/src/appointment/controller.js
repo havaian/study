@@ -66,6 +66,10 @@ exports.createAppointment = async (req, res) => {
         const appointmentDate = new Date(dateTime);
         const endTime = new Date(appointmentDate.getTime() + duration * 60000);
 
+        console.log('Received dateTime:', dateTime);
+        console.log('Parsed appointmentDate (UTC):', appointmentDate.toISOString());
+        console.log('Parsed appointmentDate (local):', appointmentDate.toString());
+
         // Check if the teacher is available for the entire duration
         const conflictingAppointment = await Appointment.findOne({
             teacher: teacherId,
@@ -109,28 +113,21 @@ exports.createAppointment = async (req, res) => {
         // Your backend uses: Monday=1, Tuesday=2, ..., Sunday=7
         const backendDayIndex = dayOfWeek === 0 ? 7 : dayOfWeek;
 
-        console.log(`Appointment date: ${appointmentDate.toISOString()}`);
-        console.log(`JavaScript day of week: ${dayOfWeek} (0=Sunday, 6=Saturday)`);
-        console.log(`Backend day index: ${backendDayIndex} (1=Monday, 7=Sunday)`);
-
         const teacherAvailability = teacher.availability.find(a => a.dayOfWeek === backendDayIndex);
 
         if (!teacherAvailability || !teacherAvailability.isAvailable) {
             return res.status(400).json({ message: 'Teacher is not available on this day' });
         }
 
-        // FIXED: Check if appointment falls within teacher's working hours
-        // Get appointment time in local time (assuming UTC+5 timezone)
-        const appointmentHour = appointmentDate.getHours();
-        const appointmentMinute = appointmentDate.getMinutes();
-        const appointmentTimeMinutes = appointmentHour * 60 + appointmentMinute;
+        // Check if appointment falls within teacher's working hours
+        const teacherOffset = teacher.getTimezoneOffset(); // Get from teacher model
+        const localAppointmentHour = (appointmentDate.getUTCHours() + teacherOffset) % 24;
+        const localAppointmentMinute = appointmentDate.getUTCMinutes();
+        const appointmentTimeMinutes = localAppointmentHour * 60 + localAppointmentMinute;
 
-        const endHour = endTime.getHours();
-        const endMinute = endTime.getMinutes();
-        const appointmentEndTimeMinutes = endHour * 60 + endMinute;
-
-        console.log(`Appointment time: ${appointmentHour}:${appointmentMinute} (${appointmentTimeMinutes} minutes)`);
-        console.log(`Appointment end time: ${endHour}:${endMinute} (${appointmentEndTimeMinutes} minutes)`);
+        const localEndHour = (endTime.getUTCHours() + teacherOffset) % 24;
+        const localEndMinute = endTime.getUTCMinutes();
+        const appointmentEndTimeMinutes = localEndHour * 60 + localEndMinute;
 
         let isWithinWorkingHours = false;
 

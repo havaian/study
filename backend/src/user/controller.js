@@ -199,7 +199,7 @@ exports.loginUser = async (req, res) => {
 // Get current user profile
 exports.getCurrentUser = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password -resetPasswordToken -resetPasswordExpire -verificationToken -jwtSecret');
+        const user = await User.findById(req.user.id).select('-password -resetPasswordToken -resetPasswordExpire -verificationToken -jwtSecret -jwtSecretCreatedAt');
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -419,7 +419,7 @@ exports.getTeachers = async (req, res) => {
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const teachers = await User.find(query)
-            .select('-password -verificationToken -resetPasswordToken -resetPasswordExpire')
+            .select('-password -verificationToken -resetPasswordToken -resetPasswordExpire -jwtSecret -jwtSecretCreatedAt')
             .skip(skip)
             .limit(parseInt(limit))
             .sort({ experience: -1 });
@@ -451,7 +451,7 @@ exports.getTeacherById = async (req, res) => {
             role: 'teacher',
             isActive: true,
             isVerified: true
-        }).select('-password -verificationToken -resetPasswordToken -resetPasswordExpire');
+        }).select('-password -verificationToken -resetPasswordToken -resetPasswordExpire -jwtSecret -jwtSecretCreatedAt');
 
         if (!teacher) {
             return res.status(404).json({ message: 'Teacher not found' });
