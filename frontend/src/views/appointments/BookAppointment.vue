@@ -142,7 +142,6 @@ const error = ref('')
 const availableSlots = ref([])
 const teacherTimezoneInfo = ref(null)
 const studentTimezoneInfo = ref(null)
-const userTimezone = ref(null)
 const validationErrors = reactive({
     date: '',
     time: '',
