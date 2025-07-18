@@ -47,7 +47,7 @@
 
                         <!-- Time Slots -->
                         <div v-if="formData.date">
-                            <label class="label">Available Time Slots ({{ studentTimezoneInfo }})</label>
+                            <label class="label">Available Time Slots ({{ studentTimezoneInfo?.label }})</label>
                             <div class="mt-2 grid grid-cols-3 gap-3">
                                 <button v-for="slot in availableSlots" :key="slot.start" type="button"
                                     class="btn-secondary"
@@ -198,8 +198,16 @@ const formatFee = () => {
 // Format time display in user's timezone
 const formatTimeDisplay = (utcTimeString) => {
     try {
+        // Parse as UTC time and display directly without timezone conversion
         const utcDate = new Date(utcTimeString)
-        return formatInTimeZone(utcDate, userTimezone.value, 'h:mm a')
+        const hours = utcDate.getUTCHours()
+        const minutes = utcDate.getUTCMinutes()
+        
+        const period = hours >= 12 ? 'PM' : 'AM'
+        const displayHours = hours % 12 || 12
+        const displayMinutes = minutes.toString().padStart(2, '0')
+        
+        return `${displayHours}:${displayMinutes} ${period}`
     } catch (error) {
         console.error('Error formatting time:', error)
         return utcTimeString
