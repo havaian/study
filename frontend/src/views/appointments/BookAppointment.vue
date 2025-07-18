@@ -22,8 +22,8 @@
                     <!-- Timezone Information -->
                     <div class="mt-4 p-3 bg-blue-50 rounded-lg">
                         <p class="text-sm text-blue-700">
-                            <span class="font-medium">Your timezone:</span> {{ userTimezone }}
-                            <span class="ml-2 font-medium">Teacher's timezone:</span> {{ teacher.timezone ||
+                            <span class="font-medium">Your timezone:</span> {{ studentTimezoneInfo?.label }}
+                            <span class="ml-2 font-medium">Teacher's timezone:</span> {{ teacherTimezoneInfo?.label ||
                             'Asia/Tashkent' }}
                         </p>
                         <p class="text-xs text-blue-600 mt-1">
@@ -45,7 +45,7 @@
 
                         <!-- Time Slots -->
                         <div v-if="formData.date">
-                            <label class="label">Available Time Slots ({{ userTimezone }})</label>
+                            <label class="label">Available Time Slots ({{ studentTimezoneInfo }})</label>
                             <div class="mt-2 grid grid-cols-3 gap-3">
                                 <button v-for="slot in availableSlots" :key="slot.start" type="button"
                                     class="btn-secondary"
@@ -141,6 +141,7 @@ const submitting = ref(false)
 const error = ref('')
 const availableSlots = ref([])
 const teacherTimezoneInfo = ref(null)
+const studentTimezoneInfo = ref(null)
 const userTimezone = ref(null)
 const validationErrors = reactive({
     date: '',
@@ -213,6 +214,11 @@ const isWithinJoinWindow = (dateTime) => {
     })
 }
 
+// Get user's timezone from auth store or default
+const userTimezone = computed(() => {
+    return authStore.user?.timezone || 'Asia/Tashkent'
+})
+
 async function fetchTeacherTimezoneInfo() {
     if (!teacher.value?.timezone) return
     
@@ -232,7 +238,7 @@ async function fetchStudentTimezoneInfo() {
     try {
         const response = await axios.get(`/api/timezones/info/${authStore.user?.timezone}`)
         if (response.data.success) {
-            userTimezone.value = response.data.timezone
+            studentTimezoneInfo.value = response.data.timezone
         }
     } catch (error) {
         console.error('Error fetching teacher timezone info:', error)
