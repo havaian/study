@@ -316,7 +316,7 @@ class NotificationService {
      * Send verification email
      * @param {String} email User email
      * @param {String} token Verification token
-     */
+    */
     async sendVerificationEmail(email, token) {
         const verificationLink = `${process.env.FRONTEND_URL}/verify-email/${token}`;
 
@@ -325,28 +325,22 @@ class NotificationService {
             subject: 'Verify Your Email - dev.e-stud.uz',
             text: `Please verify your email by clicking on the following link: ${verificationLink}`,
             html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #4a90e2;">dev.e-stud.uz Email Verification</h2>
-          <p>Thank you for registering with dev.e-stud.uz! Please verify your email address by clicking the button below:</p>
-          <a href="${verificationLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Verify Email</a>
-          <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
-          <p>${verificationLink}</p>
-          <p>This link will expire in 24 hours.</p>
-          <p>If you didn't create an account with dev.e-stud.uz, please ignore this email.</p>
-        </div>
-      `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #4a90e2;">dev.e-stud.uz Email Verification</h2>
+            <p>Thank you for registering with dev.e-stud.uz!</p>
+            <p>Please verify your email address by clicking the button below:</p>
+            <a href="${verificationLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Verify Email</a>
+            <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
+            <p>${verificationLink}</p>
+            <p>This link will expire in 24 hours.</p>
+            <p>If you didn't create an account with dev.e-stud.uz, please ignore this email.</p>
+            </div>
+        `
         };
 
-        // Queue email to be sent asynchronously
+        // Only queue email - don't send directly
         this.queueEmail(emailData);
-        
-        // Also try sending directly for important verification emails
-        try {
-            await this.sendEmail(emailData);
-            console.log('Verification email sent directly as backup');
-        } catch (directError) {
-            console.error('Direct verification email sending failed (queued version still processing):', directError.message);
-        }
+        console.log('Verification email queued successfully for:', email);
     }
 
     /**
@@ -362,34 +356,27 @@ class NotificationService {
             subject: 'Reset Your Password - dev.e-stud.uz',
             text: `You requested a password reset. Please click the following link to reset your password: ${resetLink}`,
             html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #4a90e2;">dev.e-stud.uz Password Reset</h2>
-          <p>We received a request to reset your password. Click the button below to set a new password:</p>
-          <a href="${resetLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Reset Password</a>
-          <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
-          <p>${resetLink}</p>
-          <p>This link will expire in 10 minutes.</p>
-          <p>If you didn't request a password reset, please ignore this email or contact support if you're concerned.</p>
-        </div>
-      `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #4a90e2;">dev.e-stud.uz Password Reset</h2>
+            <p>We received a request to reset your password. Click the button below to set a new password:</p>
+            <a href="${resetLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Reset Password</a>
+            <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
+            <p>${resetLink}</p>
+            <p>This link will expire in 10 minutes.</p>
+            <p>If you didn't request a password reset, please ignore this email or contact support if you're concerned.</p>
+            </div>
+        `
         };
 
-        // Queue email to be sent asynchronously
+        // Only queue email - don't send directly
         this.queueEmail(emailData);
-        
-        // Also try sending directly for important reset emails
-        try {
-            await this.sendEmail(emailData);
-            console.log('Password reset email sent directly as backup');
-        } catch (directError) {
-            console.error('Direct password reset email sending failed (queued version still processing):', directError.message);
-        }
+        console.log('Password reset email queued successfully for:', email);
     }
 
     /**
      * Send appointment confirmation
      * @param {Object} appointment Appointment object
-     */
+    */
     async sendAppointmentConfirmation(appointment) {
         try {
             await appointment.populate('student teacher');
