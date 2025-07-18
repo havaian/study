@@ -194,8 +194,25 @@
 
                         <div>
                             <label for="languages" class="label">Languages</label>
-                            <input id="languages" v-model="languagesInput" type="text" class="input mt-1"
-                                placeholder="English, Russian, Uzbek (comma separated)" />
+                            <div class="space-y-2">
+                                <div v-for="(lang, index) in formData.languages" :key="index" class="flex gap-2">
+                                    <select v-model="formData.languages[index]" class="input flex-1">
+                                        <option value="">Select Language</option>
+                                        <option v-for="language in getAvailableLanguages(index)" :key="language" :value="language">
+                                            {{ language }}
+                                        </option>
+                                    </select>
+                                    <button type="button" @click="removeLanguage(index)"
+                                        class="px-2 py-1 text-red-600 hover:text-red-800">
+                                        Remove
+                                    </button>
+                                </div>
+                                <button type="button" @click="addLanguage"
+                                    class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-800"
+                                    :disabled="availableLanguages.length <= formData.languages.filter(l => l !== '').length">
+                                    + Add Language
+                                </button>
+                            </div>
                         </div>
                     </template>
 
@@ -253,7 +270,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const availableSpecializations = ref([])
-const languagesInput = ref('')
+const availableLanguages = ref(['English', 'Russian', 'Uzbek'])
 const showPassword = ref(false)
 
 const formData = reactive({
@@ -266,6 +283,7 @@ const formData = reactive({
     dateOfBirth: '',
     gender: '',
     specializations: [],
+    languages: [],
     licenseNumber: '',
     experience: 0,
     lessonFee: 0
@@ -343,6 +361,16 @@ const getAvailableSpecializations = (currentIndex) => {
     )
 }
 
+// Get available languages for a specific dropdown, excluding already selected ones
+const getAvailableLanguages = (currentIndex) => {
+    const selectedLanguages = formData.languages
+        .filter((lang, index) => index !== currentIndex && lang !== '')
+    
+    return availableLanguages.value.filter(lang => 
+        !selectedLanguages.includes(lang)
+    )
+}
+
 // Password validation function
 const validatePassword = () => {
     const password = formData.password
@@ -368,10 +396,20 @@ const removeSpecialization = (index) => {
     formData.specializations.splice(index, 1)
 }
 
+// Helper functions for languages
+const addLanguage = () => {
+    formData.languages.push('')
+}
+
+const removeLanguage = (index) => {
+    formData.languages.splice(index, 1)
+}
+
 // Add default empty specialization when switching to teacher role
 const watchRole = () => {
     if (formData.role === 'teacher' && formData.specializations.length === 0) {
         formData.specializations.push('')
+        formData.languages.push('')
     }
 }
 
@@ -388,11 +426,7 @@ async function handleSubmit() {
             registrationData.specializations = formData.specializations.filter(s => s !== "");
 
             // Process languages for teacher registration
-            if (languagesInput.value) {
-                registrationData.languages = languagesInput.value.split(',').map(lang => lang.trim()).filter(Boolean);
-            } else {
-                registrationData.languages = [];
-            }
+            registrationData.languages = formData.languages.filter(l => l !== "");
 
             // Remove student-only fields for teacher registration
             delete registrationData.dateOfBirth;
@@ -400,10 +434,10 @@ async function handleSubmit() {
         } else {
             // For student registration, remove all teacher-specific fields
             delete registrationData.specializations;
+            delete registrationData.languages;
             delete registrationData.licenseNumber;
             delete registrationData.experience;
             delete registrationData.lessonFee;
-            delete registrationData.languages;
         }
 
         await authStore.register(registrationData);
