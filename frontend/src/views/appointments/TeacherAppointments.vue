@@ -2,13 +2,6 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 class="text-2xl font-bold text-gray-900 mb-8">My Schedule</h1>
 
-        <!-- Timezone Notice -->
-        <div class="bg-blue-50 p-3 rounded-lg mb-6">
-            <p class="text-sm text-blue-700">
-                <span class="font-medium">Viewing times in your timezone:</span> {{ userTimezone }}
-            </p>
-        </div>
-
         <!-- Tab Navigation -->
         <div class="border-b border-gray-200 mb-8">
             <nav class="-mb-px flex space-x-8">

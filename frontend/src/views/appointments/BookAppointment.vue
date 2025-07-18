@@ -333,14 +333,28 @@ async function handleSubmit() {
         submitting.value = true
         error.value = ''
 
-        // The selected time is already in UTC from the backend
-        // Send it directly without any conversion
+        // Get student's timezone offset for postfix
+        const studentOffset = studentTimezoneInfo.value?.offset || 5
+        const sign = studentOffset >= 0 ? '+' : ''
+        const offsetFormatted = `${sign}${Math.abs(studentOffset).toString().padStart(2, '0')}:00`
+        
+        // Parse the selected time and add timezone postfix
+        const selectedDateTime = new Date(formData.time)
+        const year = selectedDateTime.getUTCFullYear()
+        const month = (selectedDateTime.getUTCMonth() + 1).toString().padStart(2, '0')
+        const day = selectedDateTime.getUTCDate().toString().padStart(2, '0')
+        const hours = selectedDateTime.getUTCHours().toString().padStart(2, '0')
+        const minutes = selectedDateTime.getUTCMinutes().toString().padStart(2, '0')
+        const seconds = selectedDateTime.getUTCSeconds().toString().padStart(2, '0')
+        
+        const dateTimeWithTimezone = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetFormatted}`
+
         const appointmentData = {
             teacherId: route.params.teacherId,
-            dateTime: formData.time, // Already UTC from backend
+            dateTime: dateTimeWithTimezone, // DateTime with timezone postfix
             type: formData.type,
             shortDescription: formData.shortDescription,
-            studentTimezone: userTimezone.value // Send student's timezone for reference
+            studentTimezone: userTimezone.value
         }
 
         const response = await axios.post('/api/appointments', appointmentData)

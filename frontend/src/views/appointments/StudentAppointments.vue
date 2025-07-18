@@ -2,13 +2,6 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 class="text-2xl font-bold text-gray-900 mb-8">My Appointments</h1>
 
-        <!-- Timezone Notice -->
-        <div class="bg-blue-50 p-3 rounded-lg mb-6">
-            <p class="text-sm text-blue-700">
-                <span class="font-medium">Viewing times in your timezone:</span> {{ userTimezone }}
-            </p>
-        </div>
-
         <!-- Filters -->
         <div class="bg-white shadow rounded-lg p-6 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
