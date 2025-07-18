@@ -92,7 +92,6 @@ async function seedDatabase() {
         } catch (disconnectError) {
             console.error('[db seed] Error disconnecting:', disconnectError);
         }
-        process.exit(0);
     }
 }
 
