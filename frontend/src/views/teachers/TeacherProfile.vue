@@ -37,7 +37,10 @@
                                 </span>
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                    {{ getTimezoneAbbr(teacher.timezone) }}
+                                    <span>{{ teacherTimezoneAbbr }}</span>
+                                    <div v-if="timezoneLoading"
+                                        class="ml-2 animate-spin rounded-full h-3 w-3 border border-green-600 border-t-transparent">
+                                    </div>
                                 </span>
                             </div>
                         </div>
@@ -100,7 +103,15 @@
 
                             <div>
                                 <h3 class="font-medium text-gray-900">Teacher's Timezone</h3>
-                                <p class="text-gray-600">{{ getTimezoneDisplay(teacher.timezone) }}</p>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">{{ teacherTimezoneDisplay }}</span>
+                                    <div v-if="timezoneLoading"
+                                        class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent">
+                                    </div>
+                                </div>
+                                <p v-if="teacherCurrentTime" class="text-xs text-gray-500 mt-1">
+                                    Teacher's current time: {{ teacherCurrentTime }}
+                                </p>
                                 <p class="text-xs text-gray-500 mt-1">
                                     Appointment times will be converted to your timezone when booking
                                 </p>
@@ -109,13 +120,12 @@
                             <div>
                                 <h3 class="font-medium text-gray-900">Available Days</h3>
                                 <p class="text-sm text-gray-500 mb-2">
-                                    Times shown in teacher's timezone ({{ getTimezoneAbbr(teacher.timezone) }})
+                                    Times shown in teacher's timezone ({{ teacherTimezoneAbbr }})
                                 </p>
                                 <ul class="mt-2 space-y-2">
                                     <li v-for="day in availableDays" :key="day.dayOfWeek" class="text-gray-600">
                                         {{ formatDay(day.dayOfWeek) }}: {{ day.startTime }} - {{ day.endTime }}
-                                        <span class="text-xs text-gray-500">({{ getTimezoneAbbr(teacher.timezone)
-                                            }})</span>
+                                        <span class="text-xs text-gray-500">({{ teacherTimezoneAbbr }})</span>
                                     </li>
                                     <li v-if="availableDays.length === 0" class="text-gray-500">
                                         No availability information provided.
@@ -204,23 +214,36 @@ const reviews = ref([])
 const loading = ref(true)
 const reviewsLoaded = ref(false)
 const hasUpcomingAppointment = ref(false)
-
-// Available timezones for display
-const availableTimezones = [
-    { value: 'Asia/Tashkent', label: 'Asia/Tashkent (UTC+5) - Uzbekistan', abbr: 'UTC+5' },
-    { value: 'Asia/Almaty', label: 'Asia/Almaty (UTC+6) - Kazakhstan', abbr: 'UTC+6' },
-    { value: 'Asia/Yekaterinburg', label: 'Asia/Yekaterinburg (UTC+5) - Russia', abbr: 'UTC+5' },
-    { value: 'Europe/Moscow', label: 'Europe/Moscow (UTC+3) - Russia', abbr: 'UTC+3' },
-    { value: 'Asia/Dubai', label: 'Asia/Dubai (UTC+4) - UAE', abbr: 'UTC+4' },
-    { value: 'Asia/Karachi', label: 'Asia/Karachi (UTC+5) - Pakistan', abbr: 'UTC+5' },
-    { value: 'Asia/Kolkata', label: 'Asia/Kolkata (UTC+5:30) - India', abbr: 'UTC+5:30' },
-    { value: 'Asia/Dhaka', label: 'Asia/Dhaka (UTC+6) - Bangladesh', abbr: 'UTC+6' },
-    { value: 'UTC', label: 'UTC (UTC+0) - Universal Time', abbr: 'UTC+0' }
-]
+const teacherTimezoneInfo = ref(null)
+const timezoneLoading = ref(false)
 
 const availableDays = computed(() => {
     if (!teacher.value?.availability) return []
     return teacher.value.availability.filter(day => day.isAvailable)
+})
+
+const teacherTimezoneDisplay = computed(() => {
+    if (!teacher.value?.timezone) return 'Asia/Tashkent (UTC+5) - Uzbekistan'
+    if (teacherTimezoneInfo.value) {
+        return teacherTimezoneInfo.value.label
+    }
+    return `${teacher.value.timezone} (Loading...)`
+})
+
+const teacherTimezoneAbbr = computed(() => {
+    if (!teacherTimezoneInfo.value) return 'UTC+5'
+
+    const offset = teacherTimezoneInfo.value.offset
+    const sign = offset >= 0 ? '+' : ''
+    const hours = Math.floor(Math.abs(offset))
+    const minutes = Math.abs(offset) % 1 === 0.5 ? ':30' : (Math.abs(offset) % 1 === 0.75 ? ':45' : '')
+
+    return `UTC${sign}${offset === 0 ? '0' : offset > 0 ? hours + minutes : '-' + hours + minutes}`
+})
+
+const teacherCurrentTime = computed(() => {
+    if (!teacherTimezoneInfo.value?.currentTime) return null
+    return format(new Date(teacherTimezoneInfo.value.currentTime), 'MMM d, h:mm a')
 })
 
 // Computed property for decoded bio
@@ -277,16 +300,21 @@ const formatDate = (date) => {
     return format(new Date(date), 'MMM d, yyyy')
 }
 
-const getTimezoneDisplay = (timezone) => {
-    if (!timezone) return 'Asia/Tashkent (UTC+5) - Uzbekistan'
-    const tz = availableTimezones.find(t => t.value === timezone)
-    return tz ? tz.label : `${timezone} (Unknown)`
-}
+async function fetchTimezoneInfo(timezone) {
+    if (!timezone) return
 
-const getTimezoneAbbr = (timezone) => {
-    if (!timezone) return 'UTC+5'
-    const tz = availableTimezones.find(t => t.value === timezone)
-    return tz ? tz.abbr : 'UTC+5'
+    try {
+        timezoneLoading.value = true
+        const response = await axios.get(`/api/timezones/${encodeURIComponent(timezone)}`)
+        if (response.data.success) {
+            teacherTimezoneInfo.value = response.data.timezone
+        }
+    } catch (error) {
+        console.error('Error fetching timezone info:', error)
+        teacherTimezoneInfo.value = null
+    } finally {
+        timezoneLoading.value = false
+    }
 }
 
 async function fetchTeacherProfile() {
@@ -294,6 +322,11 @@ async function fetchTeacherProfile() {
         loading.value = true
         const response = await axios.get(`/api/users/teachers/${route.params.id}`)
         teacher.value = response.data.teacher
+
+        // Fetch timezone info after teacher data is loaded
+        if (teacher.value?.timezone) {
+            await fetchTimezoneInfo(teacher.value.timezone)
+        }
 
         // After teacher is loaded, check appointments and fetch reviews
         await Promise.all([

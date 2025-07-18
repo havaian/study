@@ -28,6 +28,7 @@ const adminRoutes = require('./src/admin/routes');
 const specializationRoutes = require('./src/specializations/routes');
 const chatRoutes = require('./src/chat/routes');
 const reviewRoutes = require('./src/review/routes');
+const timezonesRoutes = require('./src/timezones/routes');
 
 // Initialize express app
 const app = express();
@@ -320,6 +321,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/specializations', specializationRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/timezones', timezonesRoutes);
 
 // Initialize cron jobs
 scheduleAppointmentReminders();

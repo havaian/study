@@ -25,14 +25,24 @@
                             </div>
                             <div>
                                 <label for="timezone" class="label">Timezone</label>
-                                <select id="timezone" v-model="formData.timezone" class="input mt-1" required>
-                                    <option value="">Select Timezone</option>
-                                    <option v-for="tz in availableTimezones" :key="tz.value" :value="tz.value">
-                                        {{ tz.label }}
-                                    </option>
-                                </select>
+                                <div class="relative">
+                                    <select id="timezone" v-model="formData.timezone" class="input mt-1" required>
+                                        <option value="">Select Timezone</option>
+                                        <optgroup v-for="(timezones, region) in groupedTimezones" :key="region" :label="region">
+                                            <option v-for="tz in timezones" :key="tz.value" :value="tz.value">
+                                                {{ tz.label }}
+                                            </option>
+                                        </optgroup>
+                                    </select>
+                                    <div v-if="timezonesLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                        <div class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
+                                    </div>
+                                </div>
                                 <p class="mt-1 text-sm text-gray-500">
                                     Your timezone affects appointment scheduling and availability display.
+                                </p>
+                                <p v-if="selectedTimezoneInfo" class="mt-1 text-xs text-blue-600">
+                                    Current time: {{ formatCurrentTime(selectedTimezoneInfo.currentTime) }}
                                 </p>
                             </div>
                         </div>
@@ -66,8 +76,7 @@
                                         class="flex gap-2">
                                         <select v-model="formData.specializations[index]" class="input flex-1">
                                             <option value="">Select Specialization</option>
-                                            <option v-for="spec in getAvailableSpecializations(index)" :key="spec"
-                                                :value="spec">
+                                            <option v-for="spec in getAvailableSpecializations(index)" :key="spec" :value="spec">
                                                 {{ spec }}
                                             </option>
                                         </select>
@@ -91,8 +100,7 @@
                                     <div v-for="(lang, index) in formData.languages" :key="index" class="flex gap-2">
                                         <select v-model="formData.languages[index]" class="input flex-1">
                                             <option value="">Select Language</option>
-                                            <option v-for="language in getAvailableLanguages(index)" :key="language"
-                                                :value="language">
+                                            <option v-for="language in getAvailableLanguages(index)" :key="language" :value="language">
                                                 {{ language }}
                                             </option>
                                         </select>
@@ -163,8 +171,8 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="lessonFee" class="label">Lesson Fee (UZS)</label>
-                                    <input id="lessonFee" v-model.number="formData.lessonFee" type="number" min="0"
-                                        class="input mt-1" required />
+                                    <input id="lessonFee" v-model.number="formData.lessonFee" type="number"
+                                        min="0" class="input mt-1" required />
                                 </div>
                                 <div>
                                     <label for="experience" class="label">Years of Experience</label>
@@ -182,8 +190,7 @@
                             <div class="mt-4">
                                 <label class="label">Availability (in your local time)</label>
                                 <p class="text-sm text-gray-500 mb-3">
-                                    Set your working hours in your local timezone ({{
-                                    getTimezoneDisplay(formData.timezone) }}).
+                                    Set your working hours in your local timezone ({{ getTimezoneDisplayName(formData.timezone) }}).
                                     These will be automatically converted for appointment scheduling.
                                 </p>
                                 <div class="space-y-2">
@@ -198,7 +205,7 @@
                                         <input type="time" v-model="day.endTime" class="input"
                                             :disabled="!day.isAvailable" />
                                         <span class="text-sm text-gray-500">
-                                            {{ getTimezoneDisplay(formData.timezone) }}
+                                            {{ getTimezoneAbbr(formData.timezone) }}
                                         </span>
                                     </div>
                                 </div>
@@ -213,8 +220,8 @@
                             <div class="space-y-4">
                                 <div>
                                     <label for="educationalHistory" class="label">Educational Background</label>
-                                    <input id="educationalHistory" v-model="educationalHistoryInput" type="text"
-                                        class="input mt-1" placeholder="Separate with commas" />
+                                    <input id="educationalHistory" v-model="educationalHistoryInput" type="text" class="input mt-1"
+                                        placeholder="Separate with commas" />
                                 </div>
                             </div>
                         </div>
@@ -257,27 +264,21 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { format } from 'date-fns'
 import axios from 'axios'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const loading = ref(false)
+const timezonesLoading = ref(false)
 
-// Available timezones with user-friendly labels
-const availableTimezones = ref([
-    { value: 'Asia/Tashkent', label: 'Asia/Tashkent (UTC+5) - Uzbekistan' },
-    { value: 'Asia/Almaty', label: 'Asia/Almaty (UTC+6) - Kazakhstan' },
-    { value: 'Asia/Yekaterinburg', label: 'Asia/Yekaterinburg (UTC+5) - Russia' },
-    { value: 'Europe/Moscow', label: 'Europe/Moscow (UTC+3) - Russia' },
-    { value: 'Asia/Dubai', label: 'Asia/Dubai (UTC+4) - UAE' },
-    { value: 'Asia/Karachi', label: 'Asia/Karachi (UTC+5) - Pakistan' },
-    { value: 'Asia/Kolkata', label: 'Asia/Kolkata (UTC+5:30) - India' },
-    { value: 'Asia/Dhaka', label: 'Asia/Dhaka (UTC+6) - Bangladesh' },
-    { value: 'UTC', label: 'UTC (UTC+0) - Universal Time' }
-])
+// Timezone data from API
+const groupedTimezones = ref({})
+const timezoneMap = ref(new Map()) // For quick timezone lookup
+const selectedTimezoneInfo = ref(null)
 
 const availableSpecializations = ref([])
 const availableLanguages = ref(['English', 'Russian', 'Uzbek'])
@@ -286,7 +287,7 @@ const formData = reactive({
     firstName: '',
     lastName: '',
     phone: '',
-    timezone: 'Asia/Tashkent', // Default timezone
+    timezone: 'Asia/Tashkent',
     address: {
         street: '',
         city: ''
@@ -317,19 +318,44 @@ const formData = reactive({
 
 const educationalHistoryInput = ref('')
 
-// Get timezone display for availability
-const getTimezoneDisplay = (timezone) => {
-    if (!timezone) return '(UTC+5)'
-    const tz = availableTimezones.value.find(t => t.value === timezone)
-    return tz ? tz.label.split(' ')[1] : '(UTC+5)'
+// Watch for timezone changes to fetch current time
+watch(() => formData.timezone, async (newTimezone) => {
+    if (newTimezone) {
+        await fetchTimezoneInfo(newTimezone)
+    }
+})
+
+// Helper functions using API data
+const getTimezoneDisplayName = (timezone) => {
+    if (!timezone) return 'Asia/Tashkent (UTC+5)'
+    const timezoneData = timezoneMap.value.get(timezone)
+    return timezoneData ? timezoneData.label : `${timezone} (Unknown)`
+}
+
+const getTimezoneAbbr = (timezone) => {
+    if (!timezone) return 'UTC+5'
+    const timezoneData = timezoneMap.value.get(timezone)
+    if (!timezoneData) return 'UTC+5'
+    
+    const offset = timezoneData.offset
+    const sign = offset >= 0 ? '+' : ''
+    const hours = Math.floor(Math.abs(offset))
+    const minutes = Math.abs(offset) % 1 === 0.5 ? ':30' : (Math.abs(offset) % 1 === 0.75 ? ':45' : '')
+    
+    return `UTC${sign}${offset === 0 ? '0' : offset > 0 ? hours + minutes : '-' + hours + minutes}`
+}
+
+const formatCurrentTime = (isoString) => {
+    if (!isoString) return ''
+    return format(new Date(isoString), 'MMM d, h:mm a')
 }
 
 // Get available specializations for a specific dropdown, excluding already selected ones
 const getAvailableSpecializations = (currentIndex) => {
     const selectedSpecializations = formData.specializations
         .filter((spec, index) => index !== currentIndex && spec !== '')
-
-    return availableSpecializations.value.filter(spec =>
+    
+    return availableSpecializations.value.filter(spec => 
         !selectedSpecializations.includes(spec)
     )
 }
@@ -338,8 +364,8 @@ const getAvailableSpecializations = (currentIndex) => {
 const getAvailableLanguages = (currentIndex) => {
     const selectedLanguages = formData.languages
         .filter((lang, index) => index !== currentIndex && lang !== '')
-
-    return availableLanguages.value.filter(lang =>
+    
+    return availableLanguages.value.filter(lang => 
         !selectedLanguages.includes(lang)
     )
 }
@@ -382,6 +408,49 @@ const formatDay = (dayOfWeek) => {
     return days[dayOfWeek - 1]
 }
 
+// API functions
+async function fetchTimezones() {
+    try {
+        timezonesLoading.value = true
+        const response = await axios.get('/api/timezones/grouped/regions')
+        
+        if (response.data.success) {
+            groupedTimezones.value = response.data.timezonesByRegion
+            
+            // Create a map for quick lookup
+            Object.values(response.data.timezonesByRegion).forEach(timezones => {
+                timezones.forEach(tz => {
+                    timezoneMap.value.set(tz.value, tz)
+                })
+            })
+        }
+    } catch (error) {
+        console.error('Error fetching timezones:', error)
+        // Fallback to basic timezone list
+        groupedTimezones.value = {
+            'Asia': [
+                { value: 'Asia/Tashkent', label: 'Uzbekistan (UTC+5)', offset: 5 },
+                { value: 'Asia/Almaty', label: 'Kazakhstan (UTC+6)', offset: 6 },
+                { value: 'Asia/Dubai', label: 'UAE (UTC+4)', offset: 4 }
+            ]
+        }
+    } finally {
+        timezonesLoading.value = false
+    }
+}
+
+async function fetchTimezoneInfo(timezone) {
+    try {
+        const response = await axios.get(`/api/timezones/${encodeURIComponent(timezone)}`)
+        if (response.data.success) {
+            selectedTimezoneInfo.value = response.data.timezone
+        }
+    } catch (error) {
+        console.error('Error fetching timezone info:', error)
+        selectedTimezoneInfo.value = null
+    }
+}
+
 async function fetchSpecializations() {
     try {
         const response = await axios.get('/api/specializations')
@@ -416,13 +485,13 @@ async function fetchUserProfile() {
         formData.address = user.address || { street: '', city: '' }
 
         if (authStore.isTeacher) {
-            formData.specializations = Array.isArray(user.specializations) ?
-                user.specializations :
+            formData.specializations = Array.isArray(user.specializations) ? 
+                user.specializations : 
                 (user.specialization ? [user.specialization] : [])
-
-            formData.languages = Array.isArray(user.languages) ?
+                
+            formData.languages = Array.isArray(user.languages) ? 
                 user.languages : []
-
+                
             formData.education = user.education || []
             formData.certifications = user.certifications || []
             formData.lessonFee = user.lessonFee || 0
@@ -438,6 +507,11 @@ async function fetchUserProfile() {
         // Update auth store with timezone if it changed
         if (authStore.user && authStore.user.timezone !== formData.timezone) {
             authStore.user.timezone = formData.timezone
+        }
+
+        // Fetch timezone info for the current timezone
+        if (formData.timezone) {
+            await fetchTimezoneInfo(formData.timezone)
         }
     } catch (error) {
         console.error('Error fetching user profile:', error)
@@ -471,13 +545,13 @@ async function handleSubmit() {
         }
 
         const response = await axios.patch('/api/users/me', updateData)
-
+        
         // Update auth store with latest user data including timezone
         if (response.data.user) {
             authStore.user = { ...authStore.user, ...response.data.user }
             localStorage.setItem('user', JSON.stringify(authStore.user))
         }
-
+        
         router.push({ name: authStore.isTeacher ? 'teacher-profile' : 'student-profile' })
     } catch (error) {
         console.error('Error updating profile:', error)
@@ -486,10 +560,11 @@ async function handleSubmit() {
     }
 }
 
-onMounted(() => {
-    fetchUserProfile()
+onMounted(async () => {
+    await fetchTimezones()
+    await fetchUserProfile()
     if (authStore.isTeacher) {
-        fetchSpecializations()
+        await fetchSpecializations()
     }
 })
 </script>

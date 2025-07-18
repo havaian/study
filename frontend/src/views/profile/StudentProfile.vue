@@ -14,7 +14,7 @@
             <div class="mt-2">
               <span
                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                {{ getTimezoneDisplay(user?.timezone) }}
+                {{ timezoneDisplay }}
               </span>
             </div>
           </div>
@@ -46,7 +46,16 @@
               </div>
               <div>
                 <dt class="text-sm font-medium text-gray-500">Timezone</dt>
-                <dd class="mt-1 text-gray-900">{{ getTimezoneDisplay(user?.timezone) }}</dd>
+                <dd class="mt-1 text-gray-900">
+                  <div class="flex items-center space-x-2">
+                    <span>{{ timezoneDisplay }}</span>
+                    <div v-if="timezoneLoading"
+                      class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
+                  </div>
+                  <p v-if="currentTime" class="text-xs text-gray-500 mt-1">
+                    Current time: {{ currentTime }}
+                  </p>
+                </dd>
               </div>
             </dl>
           </div>
@@ -114,26 +123,28 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { format } from 'date-fns'
 import axios from 'axios'
 
 const authStore = useAuthStore()
 const user = ref(null)
+const timezoneInfo = ref(null)
+const timezoneLoading = ref(false)
 
-// Available timezones for display
-const availableTimezones = [
-  { value: 'Asia/Tashkent', label: 'Asia/Tashkent (UTC+5) - Uzbekistan' },
-  { value: 'Asia/Almaty', label: 'Asia/Almaty (UTC+6) - Kazakhstan' },
-  { value: 'Asia/Yekaterinburg', label: 'Asia/Yekaterinburg (UTC+5) - Russia' },
-  { value: 'Europe/Moscow', label: 'Europe/Moscow (UTC+3) - Russia' },
-  { value: 'Asia/Dubai', label: 'Asia/Dubai (UTC+4) - UAE' },
-  { value: 'Asia/Karachi', label: 'Asia/Karachi (UTC+5) - Pakistan' },
-  { value: 'Asia/Kolkata', label: 'Asia/Kolkata (UTC+5:30) - India' },
-  { value: 'Asia/Dhaka', label: 'Asia/Dhaka (UTC+6) - Bangladesh' },
-  { value: 'UTC', label: 'UTC (UTC+0) - Universal Time' }
-]
+const timezoneDisplay = computed(() => {
+  if (!user.value?.timezone) return 'Asia/Tashkent (UTC+5) - Uzbekistan'
+  if (timezoneInfo.value) {
+    return timezoneInfo.value.label
+  }
+  return `${user.value.timezone} (Loading...)`
+})
+
+const currentTime = computed(() => {
+  if (!timezoneInfo.value?.currentTime) return null
+  return format(new Date(timezoneInfo.value.currentTime), 'MMM d, h:mm a')
+})
 
 const formatDate = (date) => {
   if (!date) return 'Not provided'
@@ -145,16 +156,32 @@ const formatGender = (gender) => {
   return gender.charAt(0).toUpperCase() + gender.slice(1)
 }
 
-const getTimezoneDisplay = (timezone) => {
-  if (!timezone) return 'Asia/Tashkent (UTC+5) - Uzbekistan'
-  const tz = availableTimezones.find(t => t.value === timezone)
-  return tz ? tz.label : `${timezone} (Unknown)`
+async function fetchTimezoneInfo(timezone) {
+  if (!timezone) return
+
+  try {
+    timezoneLoading.value = true
+    const response = await axios.get(`/api/timezones/${encodeURIComponent(timezone)}`)
+    if (response.data.success) {
+      timezoneInfo.value = response.data.timezone
+    }
+  } catch (error) {
+    console.error('Error fetching timezone info:', error)
+    timezoneInfo.value = null
+  } finally {
+    timezoneLoading.value = false
+  }
 }
 
 async function fetchUserProfile() {
   try {
     const response = await axios.get('/api/users/me')
     user.value = response.data.user || response.data
+
+    // Fetch timezone info after user data is loaded
+    if (user.value?.timezone) {
+      await fetchTimezoneInfo(user.value.timezone)
+    }
   } catch (error) {
     console.error('Error fetching user profile:', error)
   }
