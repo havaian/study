@@ -151,28 +151,22 @@ router.post('/convert', (req, res) => {
  * GET /api/timezones/info/:timezoneId
  * This route handles URL-encoded timezone names like Asia%2FTashkent
  */
-router.get('/info/:timezone(*)', (req, res) => {
+router.get('/info/:region/:city', (req, res) => {
     try {
-        // Get the full path after /info/ and decode it
-        const fullPath = req.params.timezone;
-        const timezoneId = decodeURIComponent(fullPath);
+        const timezoneId = `${req.params.region}/${req.params.city}`;
         
         console.log('Received timezone request for:', timezoneId);
         
         // Validate timezone
         const supportedTimezones = User.getSupportedTimezones();
         if (!supportedTimezones.includes(timezoneId)) {
-            console.log('Timezone not found in supported list:', timezoneId);
-            console.log('Available timezones include:', supportedTimezones.filter(tz => tz.includes('Asia')).slice(0, 5));
             return res.status(404).json({
                 success: false,
                 message: 'Timezone not found',
-                requested: timezoneId,
-                availableCount: supportedTimezones.length
+                requested: timezoneId
             });
         }
 
-        // Create a temporary user instance to access timezone methods
         const tempUser = new User({ timezone: timezoneId });
         
         const timezoneInfo = {
@@ -183,7 +177,6 @@ router.get('/info/:timezone(*)', (req, res) => {
             currentTime: getCurrentTimeInTimezone(timezoneId, tempUser.getTimezoneOffset())
         };
 
-        console.log('Returning timezone info for:', timezoneId);
         res.status(200).json({
             success: true,
             timezone: timezoneInfo
