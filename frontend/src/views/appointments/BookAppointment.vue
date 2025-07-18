@@ -217,7 +217,7 @@ async function fetchTeacherTimezoneInfo() {
     if (!teacher.value?.timezone) return
     
     try {
-        const response = await axios.get(`/api/timezones/${teacher.value.timezone}`)
+        const response = await axios.get(`/api/timezones/info/${teacher.value.timezone}`)
         if (response.data.success) {
             teacherTimezoneInfo.value = response.data.timezone
         }
@@ -230,7 +230,7 @@ async function fetchStudentTimezoneInfo() {
     if (!teacher.value?.timezone) return
     
     try {
-        const response = await axios.get(`/api/timezones/${authStore.user?.timezone}`)
+        const response = await axios.get(`/api/timezones/info/${authStore.user?.timezone}`)
         if (response.data.success) {
             userTimezone.value = response.data.timezone
         }
