@@ -319,7 +319,7 @@ async function fetchSpecializations() {
 async function fetchUserProfile() {
     try {
         const response = await axios.get('/api/users/me')
-        const user = response.data.user
+        const user = response.data
 
         // Update form data
         formData.firstName = user.firstName
