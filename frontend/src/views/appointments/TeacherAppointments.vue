@@ -117,7 +117,7 @@
                                 <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <p class="text-sm text-gray-500">Date & Time</p>
-                                        <p class="text-gray-900 font-medium">{{ formatDateTime(appointment.dateTime) }}
+                                        <p class="text-gray-900 font-medium">{{ formatTimeDisplay(appointment.dateTime) }}
                                         </p>
                                         <p class="text-xs text-gray-500">{{ userTimezone }}</p>
                                     </div>
@@ -196,9 +196,22 @@ const userTimezone = computed(() => {
 })
 
 // Utility functions
-const formatDateTime = (dateTime) => {
-    const utcDate = parseISO(dateTime)
-    return formatInTimeZone(utcDate, userTimezone.value, 'MMM d, yyyy h:mm a')
+const formatTimeDisplay = (utcTimeString) => {
+    try {
+        // Parse as UTC time and display directly without timezone conversion
+        const utcDate = new Date(utcTimeString)
+        const hours = utcDate.getUTCHours()
+        const minutes = utcDate.getUTCMinutes()
+        
+        const period = hours >= 12 ? 'PM' : 'AM'
+        const displayHours = hours % 12 || 12
+        const displayMinutes = minutes.toString().padStart(2, '0')
+        
+        return `${displayHours}:${displayMinutes} ${period}`
+    } catch (error) {
+        console.error('Error formatting time:', error)
+        return utcTimeString
+    }
 }
 
 const calculateAge = (dateOfBirth) => {

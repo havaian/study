@@ -47,7 +47,7 @@
 
                         <!-- Time Slots -->
                         <div v-if="formData.date">
-                            <label class="label">Available Time Slots ({{ studentTimezoneInfo?.label }})</label>
+                            <label class="label">Available Time Slots</label>
                             <div class="mt-2 grid grid-cols-3 gap-3">
                                 <button v-for="slot in availableSlots" :key="slot.start" type="button"
                                     class="btn-secondary"
