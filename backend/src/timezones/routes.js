@@ -209,7 +209,19 @@ function getCurrentTimeInTimezone(timezone, offset) {
     const now = new Date();
     const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
     const targetTime = new Date(utcTime + (offset * 3600000));
-    return targetTime.toISOString();
+    
+    // Format with UTC offset postfix
+    const hours = targetTime.getUTCHours().toString().padStart(2, '0');
+    const minutes = targetTime.getUTCMinutes().toString().padStart(2, '0');
+    const seconds = targetTime.getUTCSeconds().toString().padStart(2, '0');
+    const year = targetTime.getUTCFullYear();
+    const month = (targetTime.getUTCMonth() + 1).toString().padStart(2, '0');
+    const day = targetTime.getUTCDate().toString().padStart(2, '0');
+    
+    const sign = offset >= 0 ? '+' : '';
+    const offsetFormatted = `${sign}${offset.toString().padStart(2, '0')}:00`;
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetFormatted}`;
 }
 
 module.exports = router;

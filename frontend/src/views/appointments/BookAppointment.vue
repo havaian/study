@@ -140,6 +140,8 @@ const loading = ref(true)
 const submitting = ref(false)
 const error = ref('')
 const availableSlots = ref([])
+const teacherTimezoneInfo = ref(null)
+const userTimezone = ref(null)
 const validationErrors = reactive({
     date: '',
     time: '',
@@ -158,11 +160,6 @@ const formData = reactive({
     time: '',
     type: 'video',
     shortDescription: ''
-})
-
-// Get user's timezone from auth store or default
-const userTimezone = computed(() => {
-    return authStore.user?.timezone || 'Asia/Tashkent'
 })
 
 // Calculate min/max dates in user's timezone
@@ -216,11 +213,41 @@ const isWithinJoinWindow = (dateTime) => {
     })
 }
 
+async function fetchTeacherTimezoneInfo() {
+    if (!teacher.value?.timezone) return
+    
+    try {
+        const response = await axios.get(`/api/timezones/${teacher.value.timezone}`)
+        if (response.data.success) {
+            teacherTimezoneInfo.value = response.data.timezone
+        }
+    } catch (error) {
+        console.error('Error fetching teacher timezone info:', error)
+    }
+}
+
+async function fetchStudentTimezoneInfo() {
+    if (!teacher.value?.timezone) return
+    
+    try {
+        const response = await axios.get(`/api/timezones/${authStore.user?.timezone}`)
+        if (response.data.success) {
+            userTimezone.value = response.data.timezone
+        }
+    } catch (error) {
+        console.error('Error fetching teacher timezone info:', error)
+    }
+}
+
 async function fetchTeacherProfile() {
     try {
         loading.value = true
         const response = await axios.get(`/api/users/teachers/${route.params.teacherId}`)
         teacher.value = response.data.teacher
+        
+        // Fetch timezone info after teacher data
+        await fetchTeacherTimezoneInfo()
+        await fetchStudentTimezoneInfo()
     } catch (error) {
         console.error('Error fetching teacher profile:', error)
     } finally {
