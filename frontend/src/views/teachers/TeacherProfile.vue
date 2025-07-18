@@ -11,8 +11,8 @@
                 <!-- Header -->
                 <div class="p-6 sm:p-8 border-b border-gray-200">
                     <div class="flex flex-col sm:flex-row items-center sm:items-start">
-                        <img :src="teacher.profilePicture || ''" :alt="teacher.firstName"
-                            class="h-32 w-32 rounded-full object-cover" />
+                        <img :src="teacher.profilePicture || '/images/default-avatar.png'" :alt="teacher.firstName"
+                            class="h-32 w-32 rounded-full object-cover bg-gray-200" />
                         <div class="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left">
                             <h1 class="text-2xl font-bold text-gray-900">
                                 {{ teacher.firstName }} {{ teacher.lastName }}
@@ -118,12 +118,21 @@
                     </div>
                 </div>
 
-                <!-- Reviews -->
-                <div class="p-6 sm:p-8 border-t border-gray-200">
+                <!-- Reviews Section - Only show if reviews exist or review system is working -->
+                <div v-if="reviewsLoaded" class="p-6 sm:p-8 border-t border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Student Reviews</h2>
-                    <div v-if="reviews.length === 0" class="text-gray-600">
-                        No reviews yet.
+                    
+                    <!-- No reviews yet -->
+                    <div v-if="reviews.length === 0" class="text-center py-8">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">No reviews yet</h3>
+                        <p class="mt-1 text-sm text-gray-500">Be the first to leave a review for this teacher!</p>
                     </div>
+                    
+                    <!-- Reviews list -->
                     <div v-else class="space-y-6">
                         <div v-for="review in reviews" :key="review._id"
                             class="border-b border-gray-200 pb-6 last:border-0">
@@ -139,7 +148,7 @@
                                     </div>
                                     <p class="mt-1 text-gray-900">{{ review.comment }}</p>
                                     <p class="mt-1 text-sm text-gray-500">
-                                        {{ review.student.firstName }} {{ review.student.lastName }} •
+                                        {{ review.student?.firstName }} {{ review.student?.lastName }} •
                                         {{ formatDate(review.createdAt) }}
                                     </p>
                                 </div>
@@ -167,17 +176,19 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { format } from 'date-fns'
 import axios from 'axios'
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 
 const teacher = ref(null)
 const reviews = ref([])
 const loading = ref(true)
+const reviewsLoaded = ref(false)
 const hasUpcomingAppointment = ref(false)
 
 const availableDays = computed(() => {
@@ -203,7 +214,7 @@ const formatLessonFee = computed(() => {
 
     // If fee is an object with amount property
     if (typeof fee === 'object' && fee !== null && 'amount' in fee) {
-        return `${new Intl.NumberFormat('uz-UZ').format(fee)} ${fee.currency || 'UZS'}`
+        return `${new Intl.NumberFormat('uz-UZ').format(fee.amount)} ${fee.currency || 'UZS'}`
     }
     // If it's just a number
     else if (typeof fee === 'number') {
@@ -245,14 +256,11 @@ async function fetchTeacherProfile() {
         const response = await axios.get(`/api/users/teachers/${route.params.id}`)
         teacher.value = response.data.teacher
 
-        // Fetch reviews
-        try {
-            const reviewsResponse = await axios.get(`/api/reviews/teacher/${route.params.id}`)
-            reviews.value = reviewsResponse.data.reviews
-        } catch (reviewError) {
-            console.error('Error fetching reviews:', reviewError)
-            reviews.value = []
-        }
+        // After teacher is loaded, check appointments and fetch reviews
+        await Promise.all([
+            checkUpcomingAppointments(),
+            fetchReviews()
+        ])
     } catch (error) {
         console.error('Error fetching teacher profile:', error)
     } finally {
@@ -260,12 +268,35 @@ async function fetchTeacherProfile() {
     }
 }
 
+async function fetchReviews() {
+    try {
+        const reviewsResponse = await axios.get(`/api/reviews/teacher/${route.params.id}`)
+        reviews.value = reviewsResponse.data.reviews || []
+        reviewsLoaded.value = true
+    } catch (reviewError) {
+        console.error('Error fetching reviews:', reviewError)
+        // Only show reviews section if the endpoint exists (not 404)
+        if (reviewError.response?.status === 404) {
+            reviewsLoaded.value = false // Don't show reviews section at all
+        } else {
+            reviewsLoaded.value = true // Show section but with empty reviews
+            reviews.value = []
+        }
+    }
+}
+
 async function checkUpcomingAppointments() {
-    if (!authStore.isAuthenticated || !authStore.isStudent) return
+    // Check if user is authenticated and teacher is loaded
+    if (!authStore.isAuthenticated || !authStore.isStudent || !teacher.value?._id) {
+        return
+    }
 
     try {
         const response = await axios.get(`/api/appointments/student/${authStore.user._id}`, {
-            params: { status: 'scheduled', teacherId: teacher.value._id }
+            params: { 
+                status: 'scheduled', 
+                teacher: teacher.value._id  // Use teacher filter instead of teacherId
+            }
         })
         hasUpcomingAppointment.value = response.data.appointments.length > 0
     } catch (error) {
@@ -274,6 +305,11 @@ async function checkUpcomingAppointments() {
 }
 
 async function startChat() {
+    if (!teacher.value?._id) {
+        console.error('Teacher not loaded')
+        return
+    }
+
     try {
         const response = await axios.post('/api/chat/conversations', {
             participantId: teacher.value._id
@@ -290,6 +326,5 @@ async function startChat() {
 
 onMounted(() => {
     fetchTeacherProfile()
-    checkUpcomingAppointments()
 })
 </script>

@@ -1,150 +1,89 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+// backend/src/review/routes.js
+const express = require('express');
+const router = express.Router();
+const reviewController = require('./controller');
+const { authenticateUser, authorizeRoles } = require('../auth');
 
-const reviewSchema = new Schema({
-    student: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    teacher: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    appointment: {
-        type: Schema.Types.ObjectId,
-        ref: 'Appointment',
-        required: true
-    },
-    rating: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 5
-    },
-    comment: {
-        type: String,
-        required: true,
-        trim: true,
-        maxlength: 1000
-    },
-    // Specific rating categories
-    communicationRating: {
-        type: Number,
-        min: 1,
-        max: 5
-    },
-    professionalismRating: {
-        type: Number,
-        min: 1,
-        max: 5
-    },
-    satisfactionRating: {
-        type: Number,
-        min: 1,
-        max: 5
-    },
-    // Admin moderation fields
-    isApproved: {
-        type: Boolean,
-        default: true // Auto-approve by default, can be changed for moderation
-    },
-    rejectionReason: {
-        type: String,
-        trim: true
-    },
-    // Teacher response to review
-    teacherResponse: {
-        text: {
-            type: String,
-            trim: true
-        },
-        respondedAt: {
-            type: Date
-        }
-    },
-    // Timestamps
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
-    }
-}, {
-    timestamps: true
-});
+/**
+ * @route POST /api/reviews
+ * @desc Create a new review for a completed appointment
+ * @access Private (Student only)
+ */
+router.post('/',
+    authenticateUser,
+    authorizeRoles(['student']),
+    reviewController.createReview
+);
 
-// Ensure a student can only leave one review per appointment
-reviewSchema.index({ student: 1, appointment: 1 }, { unique: true });
+/**
+ * @route GET /api/reviews/teacher/:teacherId
+ * @desc Get all reviews for a specific teacher
+ * @access Public
+ */
+router.get('/teacher/:teacherId',
+    reviewController.getTeacherReviews
+);
 
-// Add indexes for frequent queries
-reviewSchema.index({ teacher: 1 });
-reviewSchema.index({ isApproved: 1 });
-reviewSchema.index({ rating: 1 });
+/**
+ * @route GET /api/reviews/teacher/:teacherId/statistics
+ * @desc Get review statistics for a teacher (rating distribution, averages)
+ * @access Public
+ */
+router.get('/teacher/:teacherId/statistics',
+    reviewController.getReviewStatistics
+);
 
-// Prevent students from reviewing their own appointments multiple times
-reviewSchema.pre('save', async function (next) {
-    if (this.isNew) {
-        const existingReview = await this.constructor.findOne({
-            student: this.student,
-            appointment: this.appointment
-        });
+/**
+ * @route GET /api/reviews/student/:studentId
+ * @desc Get all reviews written by a specific student
+ * @access Private (Student can only see own reviews, teachers/admins can see all)
+ */
+router.get('/student/:studentId',
+    authenticateUser,
+    reviewController.getStudentReviews
+);
 
-        if (existingReview) {
-            const error = new Error('You have already reviewed this appointment');
-            error.status = 400;
-            return next(error);
-        }
-    }
+/**
+ * @route PUT /api/reviews/:reviewId
+ * @desc Update a review (only by the student who wrote it, within 24 hours)
+ * @access Private (Student only)
+ */
+router.put('/:reviewId',
+    authenticateUser,
+    authorizeRoles(['student']),
+    reviewController.updateReview
+);
 
-    this.updatedAt = Date.now();
-    next();
-});
+/**
+ * @route POST /api/reviews/:reviewId/respond
+ * @desc Teacher responds to a review
+ * @access Private (Teacher only)
+ */
+router.post('/:reviewId/respond',
+    authenticateUser,
+    authorizeRoles(['teacher']),
+    reviewController.respondToReview
+);
 
-// Static method to get teacher's average rating
-reviewSchema.statics.getTeacherRating = async function (teacherId) {
-    const result = await this.aggregate([
-        {
-            $match: {
-                teacher: mongoose.Types.ObjectId(teacherId),
-                isApproved: true
-            }
-        },
-        {
-            $group: {
-                _id: '$teacher',
-                averageRating: { $avg: '$rating' },
-                communicationRating: { $avg: '$communicationRating' },
-                professionalismRating: { $avg: '$professionalismRating' },
-                satisfactionRating: { $avg: '$satisfactionRating' },
-                reviewCount: { $sum: 1 }
-            }
-        }
-    ]);
+/**
+ * @route POST /api/reviews/:reviewId/flag
+ * @desc Flag a review for inappropriate content
+ * @access Private (Any authenticated user)
+ */
+router.post('/:reviewId/flag',
+    authenticateUser,
+    reviewController.flagReview
+);
 
-    return result.length ? result[0] : {
-        averageRating: 0,
-        communicationRating: 0,
-        professionalismRating: 0,
-        satisfactionRating: 0,
-        reviewCount: 0
-    };
-};
+/**
+ * @route POST /api/reviews/:reviewId/moderate
+ * @desc Admin: Moderate a flagged review (approve, hide, or delete)
+ * @access Private (Admin only)
+ */
+router.post('/:reviewId/moderate',
+    authenticateUser,
+    authorizeRoles(['admin']),
+    reviewController.moderateReview
+);
 
-// Static method to get recent reviews for a teacher
-reviewSchema.statics.getRecentReviews = async function (teacherId, limit = 5) {
-    return this.find({
-        teacher: teacherId,
-        isApproved: true
-    })
-        .populate('student', 'firstName lastName profilePicture')
-        .sort({ createdAt: -1 })
-        .limit(limit);
-};
-
-const Review = mongoose.model('Review', reviewSchema);
-
-module.exports = Review;
+module.exports = router;
