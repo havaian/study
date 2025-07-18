@@ -5,7 +5,6 @@
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
             </div>
             
-            <!-- Using div instead of form to prevent any default form behavior -->
             <div class="mt-8 space-y-6">
                 <div class="rounded-md shadow-sm -space-y-px">
                     <div>
@@ -15,11 +14,10 @@
                             v-model="email" 
                             name="email" 
                             type="email" 
-                            required 
                             class="input rounded-t-md"
                             placeholder="Email address" 
                             autocomplete="email"
-                            @keydown.enter="handleSubmit" />
+                            @keydown.enter.prevent="handleSubmit" />
                     </div>
                     <div class="relative">
                         <label for="password" class="sr-only">Password</label>
@@ -28,16 +26,14 @@
                             v-model="password" 
                             name="password" 
                             :type="showPassword ? 'text' : 'password'" 
-                            required
                             class="input rounded-b-md pr-10" 
                             placeholder="Password" 
                             autocomplete="current-password"
-                            @keydown.enter="handleSubmit" />
+                            @keydown.enter.prevent="handleSubmit" />
                         <button 
                             type="button" 
-                            @click="togglePassword" 
-                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
-                            tabindex="-1">
+                            @click.prevent="togglePassword" 
+                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
                             <svg v-if="showPassword" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                     d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
@@ -54,9 +50,9 @@
 
                 <div class="flex items-center justify-between">
                     <div class="text-sm">
-                        <a href="#" @click.prevent="forgotPassword" class="font-medium bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-500">
+                        <button type="button" @click.prevent="forgotPassword" class="font-medium bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-500 bg-transparent border-none cursor-pointer">
                             Forgot your password?
-                        </a>
+                        </button>
                     </div>
                 </div>
 
@@ -65,7 +61,7 @@
                         type="button" 
                         class="btn-primary w-full" 
                         :disabled="loading"
-                        @click="handleSubmit">
+                        @click.prevent.stop="handleSubmit">
                         {{ loading ? 'Signing in...' : 'Sign in' }}
                     </button>
                 </div>
@@ -73,14 +69,22 @@
 
             <p class="mt-2 text-center text-sm text-gray-600">
                 Don't have an account?
-                <a href="#" @click.prevent="goToRegister" class="font-medium bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-500">
+                <button type="button" @click.prevent="goToRegister" class="font-medium bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-500 bg-transparent border-none cursor-pointer">
                     Sign up
-                </a>
+                </button>
             </p>
 
             <div v-if="error"
                 class="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm text-center">
                 {{ error }}
+            </div>
+            
+            <!-- DEBUG INFO -->
+            <div class="mt-4 text-xs text-gray-500 space-y-1">
+                <div>Email: {{ email }}</div>
+                <div>Password: {{ password ? '***' : 'empty' }}</div>
+                <div>Loading: {{ loading }}</div>
+                <div>Error: {{ error }}</div>
             </div>
         </div>
     </div>
@@ -101,43 +105,105 @@ const error = ref('')
 const showPassword = ref(false)
 
 // Toggle password visibility
-const togglePassword = () => {
+const togglePassword = (event) => {
+    if (event) {
+        event.preventDefault()
+        event.stopPropagation()
+    }
+    console.log('Toggle password clicked')
     showPassword.value = !showPassword.value
 }
 
-async function handleSubmit() {
+async function handleSubmit(event) {
+    console.log('=== HANDLE SUBMIT CALLED ===')
+    console.log('Event:', event)
+    console.log('Email:', email.value)
+    console.log('Password length:', password.value?.length || 0)
+    console.log('Loading state:', loading.value)
+    
+    // Prevent any default behavior
+    if (event) {
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+    }
+    
     // Prevent double submission
-    if (loading.value) return
+    if (loading.value) {
+        console.log('Already loading, skipping...')
+        return false
+    }
     
     // Basic validation
     if (!email.value || !password.value) {
+        console.log('Validation failed - missing fields')
         error.value = 'Please enter both email and password'
-        return
+        return false
     }
     
     try {
+        console.log('Starting login attempt...')
         loading.value = true
         error.value = ''
         
-        // Attempt login
-        await authStore.login(email.value, password.value)
+        // Add a small delay to see if the page reloads immediately
+        await new Promise(resolve => setTimeout(resolve, 100))
+        console.log('After delay, still here...')
         
-        // If we get here, login was successful, so navigate
-        router.push({ path: '/' })
+        // Attempt login
+        console.log('Calling authStore.login...')
+        const result = await authStore.login(email.value, password.value)
+        console.log('Login result:', result)
+        
+        // If we get here, login was successful
+        console.log('Login successful, navigating...')
+        await router.push({ path: '/' })
+        console.log('Navigation complete')
+        
     } catch (err) {
-        console.error('Login error:', err)
-        // Set error message - no page reload will happen
+        console.log('=== LOGIN ERROR ===')
+        console.error('Login error details:', err)
+        console.log('Error type:', typeof err)
+        console.log('Error message:', err.message)
+        console.log('Error response:', err.response?.data)
+        
+        // Set error message
         error.value = typeof err === 'string' ? err : (err.message || 'Failed to sign in')
+        console.log('Set error to:', error.value)
+        
     } finally {
+        console.log('Setting loading to false...')
         loading.value = false
+        console.log('handleSubmit function ending...')
     }
+    
+    return false
 }
 
-function forgotPassword() {
+function forgotPassword(event) {
+    console.log('Forgot password clicked')
+    if (event) {
+        event.preventDefault()
+        event.stopPropagation()
+    }
     router.push('/forgot-password')
 }
 
-function goToRegister() {
+function goToRegister(event) {
+    console.log('Go to register clicked')
+    if (event) {
+        event.preventDefault()
+        event.stopPropagation()
+    }
     router.push('/register')
 }
+
+// Debug: Log when component mounts
+console.log('Login component mounted')
+
+// Debug: Watch for unexpected navigation
+router.beforeEach((to, from, next) => {
+    console.log('Router navigation:', from.path, '->', to.path)
+    next()
+})
 </script>
