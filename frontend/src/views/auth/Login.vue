@@ -91,7 +91,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -157,6 +157,9 @@ async function handleSubmit(event) {
         
         // If we get here, login was successful
         console.log('Login successful, navigating...')
+        
+        // Use nextTick to ensure DOM updates before navigation
+        await nextTick()
         await router.push({ path: '/' })
         console.log('Navigation complete')
         
@@ -171,12 +174,23 @@ async function handleSubmit(event) {
         error.value = typeof err === 'string' ? err : (err.message || 'Failed to sign in')
         console.log('Set error to:', error.value)
         
+        // CRITICAL: Force DOM update and prevent any navigation
+        await nextTick()
+        console.log('After nextTick, error should be visible')
+        
+        // Extra protection: Prevent any router navigation on error
+        console.log('Current route:', router.currentRoute.value.path)
+        
     } finally {
         console.log('Setting loading to false...')
         loading.value = false
+        
+        // Ensure DOM updates
+        await nextTick()
         console.log('handleSubmit function ending...')
     }
     
+    // CRITICAL: Prevent any default behavior
     return false
 }
 
@@ -201,9 +215,10 @@ function goToRegister(event) {
 // Debug: Log when component mounts
 console.log('Login component mounted')
 
+// REMOVE THIS - This might be causing the navigation
 // Debug: Watch for unexpected navigation
-router.beforeEach((to, from, next) => {
-    console.log('Router navigation:', from.path, '->', to.path)
-    next()
-})
+// router.beforeEach((to, from, next) => {
+//     console.log('Router navigation:', from.path, '->', to.path)
+//     next()
+// })
 </script>
