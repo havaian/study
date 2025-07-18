@@ -4,18 +4,38 @@
             <div>
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
             </div>
-            <form class="mt-8 space-y-6" @submit.prevent="handleSubmit" novalidate>
+            
+            <!-- Using div instead of form to prevent any default form behavior -->
+            <div class="mt-8 space-y-6">
                 <div class="rounded-md shadow-sm -space-y-px">
                     <div>
                         <label for="email" class="sr-only">Email address</label>
-                        <input id="email" v-model="email" name="email" type="email" required class="input rounded-t-md"
-                            placeholder="Email address" autocomplete="email" />
+                        <input 
+                            id="email" 
+                            v-model="email" 
+                            name="email" 
+                            type="email" 
+                            required 
+                            class="input rounded-t-md"
+                            placeholder="Email address" 
+                            autocomplete="email"
+                            @keydown.enter="handleSubmit" />
                     </div>
                     <div class="relative">
                         <label for="password" class="sr-only">Password</label>
-                        <input id="password" v-model="password" name="password" :type="showPassword ? 'text' : 'password'" required
-                            class="input rounded-b-md pr-10" placeholder="Password" autocomplete="current-password" />
-                        <button type="button" @click="togglePassword" 
+                        <input 
+                            id="password" 
+                            v-model="password" 
+                            name="password" 
+                            :type="showPassword ? 'text' : 'password'" 
+                            required
+                            class="input rounded-b-md pr-10" 
+                            placeholder="Password" 
+                            autocomplete="current-password"
+                            @keydown.enter="handleSubmit" />
+                        <button 
+                            type="button" 
+                            @click="togglePassword" 
                             class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
                             tabindex="-1">
                             <svg v-if="showPassword" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,11 +61,15 @@
                 </div>
 
                 <div>
-                    <button type="submit" class="btn-primary w-full" :disabled="loading">
+                    <button 
+                        type="button" 
+                        class="btn-primary w-full" 
+                        :disabled="loading"
+                        @click="handleSubmit">
                         {{ loading ? 'Signing in...' : 'Sign in' }}
                     </button>
                 </div>
-            </form>
+            </div>
 
             <p class="mt-2 text-center text-sm text-gray-600">
                 Don't have an account?
@@ -81,15 +105,15 @@ const togglePassword = () => {
     showPassword.value = !showPassword.value
 }
 
-async function handleSubmit(event) {
-    // Extra safety - prevent default behavior
-    if (event) {
-        event.preventDefault()
-        event.stopPropagation()
-    }
-    
+async function handleSubmit() {
     // Prevent double submission
-    if (loading.value) return false
+    if (loading.value) return
+    
+    // Basic validation
+    if (!email.value || !password.value) {
+        error.value = 'Please enter both email and password'
+        return
+    }
     
     try {
         loading.value = true
@@ -102,13 +126,11 @@ async function handleSubmit(event) {
         router.push({ path: '/' })
     } catch (err) {
         console.error('Login error:', err)
-        // Set error message but don't reload page
+        // Set error message - no page reload will happen
         error.value = typeof err === 'string' ? err : (err.message || 'Failed to sign in')
     } finally {
         loading.value = false
     }
-    
-    return false // Prevent any default form submission
 }
 
 function forgotPassword() {
