@@ -64,6 +64,22 @@ const userSchema = new Schema({
         type: String,
         default: '/images/user-placeholder.jpg'
     },
+    // NEW: Timezone field
+    timezone: {
+        type: String,
+        default: 'Asia/Tashkent', // Default to Uzbekistan timezone
+        enum: [
+            'Asia/Tashkent',     // UTC+5 (Uzbekistan)
+            'Asia/Almaty',       // UTC+6 (Kazakhstan)
+            'Asia/Yekaterinburg', // UTC+5 (Russia)
+            'Europe/Moscow',     // UTC+3 (Russia)
+            'Asia/Dubai',        // UTC+4 (UAE)
+            'Asia/Karachi',      // UTC+5 (Pakistan)
+            'Asia/Kolkata',      // UTC+5:30 (India)
+            'Asia/Dhaka',        // UTC+6 (Bangladesh)
+            'UTC'                // UTC+0 (Universal)
+        ]
+    },
     address: {
         street: String,
         city: String,
@@ -104,13 +120,13 @@ const userSchema = new Schema({
         maxlength: [500, 'Bio cannot be more than 500 characters']
     },
     availability: [{
-        dayOfWeek: Number, // 0 = Monday, 6 = Sunday
+        dayOfWeek: Number, // 1 = Monday, 7 = Sunday (to match backend logic)
         isAvailable: Boolean,
         // Legacy fields - kept for backward compatibility
-        startTime: String, // Format: "HH:MM"
-        endTime: String,   // Format: "HH:MM"
+        startTime: String, // Format: "HH:MM" - stored in user's local timezone
+        endTime: String,   // Format: "HH:MM" - stored in user's local timezone
         // New field - multiple time slots per day
-        timeSlots: [timeSlotSchema]
+        timeSlots: [timeSlotSchema] // Times stored in user's local timezone
     }],
     lessonFee: {
         type: Number,
@@ -231,6 +247,54 @@ userSchema.methods.generateAuthToken = function () {
         this.jwtSecret || process.env.JWT_SECRET,
         { expiresIn: '24h' } // Set token expiration to 24 hours
     );
+};
+
+// NEW: Method to convert local time to UTC for storage
+userSchema.methods.convertLocalTimeToUTC = function (localDateTime) {
+    if (!localDateTime || !this.timezone) return localDateTime;
+    
+    // This would typically use a library like moment-timezone or date-fns-tz
+    // For now, we'll use a simple offset calculation
+    const timezoneOffsets = {
+        'Asia/Tashkent': 5,     // UTC+5
+        'Asia/Almaty': 6,       // UTC+6
+        'Asia/Yekaterinburg': 5, // UTC+5
+        'Europe/Moscow': 3,     // UTC+3
+        'Asia/Dubai': 4,        // UTC+4
+        'Asia/Karachi': 5,      // UTC+5
+        'Asia/Kolkata': 5.5,    // UTC+5:30
+        'Asia/Dhaka': 6,        // UTC+6
+        'UTC': 0                // UTC+0
+    };
+    
+    const offset = timezoneOffsets[this.timezone] || 5; // Default to UTC+5
+    const localTime = new Date(localDateTime);
+    const utcTime = new Date(localTime.getTime() - (offset * 60 * 60 * 1000));
+    
+    return utcTime;
+};
+
+// NEW: Method to convert UTC time to user's local time for display
+userSchema.methods.convertUTCToLocalTime = function (utcDateTime) {
+    if (!utcDateTime || !this.timezone) return utcDateTime;
+    
+    const timezoneOffsets = {
+        'Asia/Tashkent': 5,     // UTC+5
+        'Asia/Almaty': 6,       // UTC+6
+        'Asia/Yekaterinburg': 5, // UTC+5
+        'Europe/Moscow': 3,     // UTC+3
+        'Asia/Dubai': 4,        // UTC+4
+        'Asia/Karachi': 5,      // UTC+5
+        'Asia/Kolkata': 5.5,    // UTC+5:30
+        'Asia/Dhaka': 6,        // UTC+6
+        'UTC': 0                // UTC+0
+    };
+    
+    const offset = timezoneOffsets[this.timezone] || 5; // Default to UTC+5
+    const utcTime = new Date(utcDateTime);
+    const localTime = new Date(utcTime.getTime() + (offset * 60 * 60 * 1000));
+    
+    return localTime;
 };
 
 // Rotate JWT secret

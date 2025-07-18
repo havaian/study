@@ -2,6 +2,13 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 class="text-2xl font-bold text-gray-900 mb-8">My Appointments</h1>
 
+        <!-- Timezone Notice -->
+        <div class="bg-blue-50 p-3 rounded-lg mb-6">
+            <p class="text-sm text-blue-700">
+                <span class="font-medium">Viewing times in your timezone:</span> {{ userTimezone }}
+            </p>
+        </div>
+
         <!-- Filters -->
         <div class="bg-white shadow rounded-lg p-6 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -69,6 +76,7 @@
                                 <div>
                                     <p class="text-sm text-gray-500">Date & Time</p>
                                     <p class="text-gray-900">{{ formatDateTime(appointment.dateTime) }}</p>
+                                    <p class="text-xs text-gray-500">{{ userTimezone }}</p>
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-500">Lesson Type</p>
@@ -110,10 +118,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { format, parseISO, isWithinInterval, subMinutes, addMinutes } from 'date-fns'
+import { parseISO, isWithinInterval, subMinutes, addMinutes } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import axios from 'axios'
 
 const router = useRouter()
@@ -127,8 +136,15 @@ const filters = reactive({
     status: ''
 })
 
+// Get user's timezone
+const userTimezone = computed(() => {
+    return authStore.user?.timezone || 'Asia/Tashkent'
+})
+
+// Format datetime in user's timezone
 const formatDateTime = (dateTime) => {
-    return format(parseISO(dateTime), 'MMM d, yyyy h:mm a')
+    const utcDate = parseISO(dateTime)
+    return formatInTimeZone(utcDate, userTimezone.value, 'MMM d, yyyy h:mm a')
 }
 
 const isWithinJoinWindow = (dateTime) => {

@@ -23,6 +23,18 @@
                                 <label for="phone" class="label">Phone</label>
                                 <input id="phone" v-model="formData.phone" type="tel" class="input mt-1" required />
                             </div>
+                            <div>
+                                <label for="timezone" class="label">Timezone</label>
+                                <select id="timezone" v-model="formData.timezone" class="input mt-1" required>
+                                    <option value="">Select Timezone</option>
+                                    <option v-for="tz in availableTimezones" :key="tz.value" :value="tz.value">
+                                        {{ tz.label }}
+                                    </option>
+                                </select>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    Your timezone affects appointment scheduling and availability display.
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -166,7 +178,11 @@
 
                             <!-- Availability -->
                             <div class="mt-4">
-                                <label class="label">Availability</label>
+                                <label class="label">Availability (in your local time)</label>
+                                <p class="text-sm text-gray-500 mb-3">
+                                    Set your working hours in your local timezone ({{ formData.timezone || 'Asia/Tashkent' }}).
+                                    These will be automatically converted for appointment scheduling.
+                                </p>
                                 <div class="space-y-2">
                                     <div v-for="day in formData.availability" :key="day.dayOfWeek"
                                         class="grid grid-cols-4 gap-4 items-center">
@@ -178,6 +194,9 @@
                                             :disabled="!day.isAvailable" />
                                         <input type="time" v-model="day.endTime" class="input"
                                             :disabled="!day.isAvailable" />
+                                        <span class="text-sm text-gray-500">
+                                            {{ getTimezoneDisplay(formData.timezone) }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -244,6 +263,19 @@ const router = useRouter()
 const authStore = useAuthStore()
 const loading = ref(false)
 
+// Available timezones with user-friendly labels
+const availableTimezones = ref([
+    { value: 'Asia/Tashkent', label: 'Asia/Tashkent (UTC+5) - Uzbekistan' },
+    { value: 'Asia/Almaty', label: 'Asia/Almaty (UTC+6) - Kazakhstan' },
+    { value: 'Asia/Yekaterinburg', label: 'Asia/Yekaterinburg (UTC+5) - Russia' },
+    { value: 'Europe/Moscow', label: 'Europe/Moscow (UTC+3) - Russia' },
+    { value: 'Asia/Dubai', label: 'Asia/Dubai (UTC+4) - UAE' },
+    { value: 'Asia/Karachi', label: 'Asia/Karachi (UTC+5) - Pakistan' },
+    { value: 'Asia/Kolkata', label: 'Asia/Kolkata (UTC+5:30) - India' },
+    { value: 'Asia/Dhaka', label: 'Asia/Dhaka (UTC+6) - Bangladesh' },
+    { value: 'UTC', label: 'UTC (UTC+0) - Universal Time' }
+])
+
 // Replace the hardcoded specializations with a ref to be filled from API
 const availableSpecializations = ref([])
 const availableLanguages = ref(['English', 'Russian', 'Uzbek'])
@@ -252,6 +284,7 @@ const formData = reactive({
     firstName: '',
     lastName: '',
     phone: '',
+    timezone: 'Asia/Tashkent', // Default timezone
     address: {
         street: '',
         city: ''
@@ -281,6 +314,12 @@ const formData = reactive({
 })
 
 const educationalHistoryInput = ref('')
+
+// Get timezone display for availability
+const getTimezoneDisplay = (timezone) => {
+    const tz = availableTimezones.value.find(t => t.value === timezone)
+    return tz ? tz.label.split(' ')[1] : '(UTC+5)'
+}
 
 // Get available specializations for a specific dropdown, excluding already selected ones
 const getAvailableSpecializations = (currentIndex) => {
@@ -373,6 +412,7 @@ async function fetchUserProfile() {
         formData.firstName = user.firstName
         formData.lastName = user.lastName
         formData.phone = user.phone
+        formData.timezone = user.timezone || 'Asia/Tashkent' // Set default if not present
         formData.address = user.address || { street: '', city: '' }
 
         if (authStore.isTeacher) {
@@ -412,6 +452,7 @@ async function handleSubmit() {
             firstName: formData.firstName,
             lastName: formData.lastName,
             phone: formData.phone,
+            timezone: formData.timezone, // Include timezone in update
             address: formData.address
         }
 
@@ -425,6 +466,7 @@ async function handleSubmit() {
             updateData.lessonFee = formData.lessonFee
             updateData.experience = formData.experience
             updateData.bio = formData.bio
+            // Note: Availability times are stored in user's local timezone
             updateData.availability = formData.availability
         } else {
             updateData.educationalHistory = educationalHistoryInput.value
@@ -432,9 +474,12 @@ async function handleSubmit() {
         }
 
         await axios.patch('/api/users/me', updateData)
+        
+        // Show success message or notification here if needed
         router.push({ name: authStore.isTeacher ? 'teacher-profile' : 'student-profile' })
     } catch (error) {
         console.error('Error updating profile:', error)
+        // Show error message to user here if needed
     } finally {
         loading.value = false
     }

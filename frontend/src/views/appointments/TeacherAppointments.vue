@@ -2,6 +2,13 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 class="text-2xl font-bold text-gray-900 mb-8">My Schedule</h1>
 
+        <!-- Timezone Notice -->
+        <div class="bg-blue-50 p-3 rounded-lg mb-6">
+            <p class="text-sm text-blue-700">
+                <span class="font-medium">Viewing times in your timezone:</span> {{ userTimezone }}
+            </p>
+        </div>
+
         <!-- Tab Navigation -->
         <div class="border-b border-gray-200 mb-8">
             <nav class="-mb-px flex space-x-8">
@@ -84,7 +91,7 @@
                                                 class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
                                                 <span class="text-sm font-medium text-gray-700">
                                                     {{ appointment.student.firstName.charAt(0) }}{{
-                                                    appointment.student.lastName.charAt(0) }}
+                                                        appointment.student.lastName.charAt(0) }}
                                                 </span>
                                             </div>
                                         </div>
@@ -102,7 +109,7 @@
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                                             :class="getStatusClass(appointment.status)">
                                             {{ appointment.status.charAt(0).toUpperCase() +
-                                            appointment.status.slice(1).replace('-', ' ') }}
+                                                appointment.status.slice(1).replace('-', ' ') }}
                                         </span>
                                     </div>
                                 </div>
@@ -112,6 +119,7 @@
                                         <p class="text-sm text-gray-500">Date & Time</p>
                                         <p class="text-gray-900 font-medium">{{ formatDateTime(appointment.dateTime) }}
                                         </p>
+                                        <p class="text-xs text-gray-500">{{ userTimezone }}</p>
                                     </div>
                                     <div>
                                         <p class="text-sm text-gray-500">Lesson Type</p>
@@ -159,10 +167,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, watch, onBeforeUnmount } from 'vue'
+import { ref, reactive, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { format, parseISO, differenceInYears, isWithinInterval, subMinutes, addMinutes } from 'date-fns'
+import { parseISO, differenceInYears, isWithinInterval, subMinutes, addMinutes } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import axios from 'axios'
 import PendingConfirmations from '@/components/appointments/PendingConfirmations.vue'
 
@@ -177,13 +186,19 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const pendingCount = ref(0)
 const filters = reactive({
-    date: format(new Date(), 'yyyy-MM-dd'),
+    date: formatInTimeZone(new Date(), authStore.user?.timezone || 'Asia/Tashkent', 'yyyy-MM-dd'),
     status: ''
+})
+
+// Get user's timezone
+const userTimezone = computed(() => {
+    return authStore.user?.timezone || 'Asia/Tashkent'
 })
 
 // Utility functions
 const formatDateTime = (dateTime) => {
-    return format(parseISO(dateTime), 'MMM d, yyyy h:mm a')
+    const utcDate = parseISO(dateTime)
+    return formatInTimeZone(utcDate, userTimezone.value, 'MMM d, yyyy h:mm a')
 }
 
 const calculateAge = (dateOfBirth) => {
