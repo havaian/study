@@ -151,10 +151,10 @@ router.post('/convert', (req, res) => {
  * GET /api/timezones/info/:timezoneId
  * This route handles URL-encoded timezone names like Asia%2FTashkent
  */
-router.get('/info/*', (req, res) => {
+router.get('/info/:timezone(*)', (req, res) => {
     try {
         // Get the full path after /info/ and decode it
-        const fullPath = req.params[0]; // This gets everything after /info/
+        const fullPath = req.params.timezone;
         const timezoneId = decodeURIComponent(fullPath);
         
         console.log('Received timezone request for:', timezoneId);
