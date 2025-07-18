@@ -21,13 +21,15 @@
 
                     <!-- Timezone Information -->
                     <div class="mt-4 p-3 bg-blue-50 rounded-lg">
-                        <p class="text-sm text-blue-700">
-                            <span class="font-medium">Your timezone:</span> {{ studentTimezoneInfo?.label }}
-                            <span class="ml-2 font-medium">Teacher's timezone:</span> {{ teacherTimezoneInfo?.label ||
-                            'Asia/Tashkent' }}
-                        </p>
-                        <p class="text-xs text-blue-600 mt-1">
-                            All times are shown in your local timezone for convenience.
+                        <p class="text-sm grid gap-4 text-blue-700">
+                            <div>
+                                <span class="font-medium">Your timezone:</span>
+                                <span>{{ studentTimezoneInfo?.label }}</span>
+                            </div>
+                            <div>
+                                <span class="font-medium">Teacher's timezone:</span>
+                                <span>{{ teacherTimezoneInfo?.label || 'Asia/Tashkent' }}</span>
+                            </div>
                         </p>
                     </div>
 
