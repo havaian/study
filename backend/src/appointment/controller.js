@@ -102,59 +102,80 @@ exports.createAppointment = async (req, res) => {
             return res.status(409).json({ message: 'Teacher is not available at this time' });
         }
 
-        // Check if teacher's working hours allow this appointment
-        const dayOfWeek = appointmentDate.getDay(); // 0 is Sunday, 1 is Monday
-        const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Convert to 0-based (Monday = 0, Sunday = 6)
+        // FIXED: Check if teacher's working hours allow this appointment
+        const dayOfWeek = appointmentDate.getDay(); // 0 is Sunday, 1 is Monday, etc.
+        
+        // Convert JavaScript day (0=Sunday) to your backend format
+        // Your backend uses: Monday=1, Tuesday=2, ..., Sunday=7
+        const backendDayIndex = dayOfWeek === 0 ? 7 : dayOfWeek;
 
-        const teacherAvailability = teacher.availability.find(a => a.dayOfWeek === dayIndex);
+        console.log(`Appointment date: ${appointmentDate.toISOString()}`);
+        console.log(`JavaScript day of week: ${dayOfWeek} (0=Sunday, 6=Saturday)`);
+        console.log(`Backend day index: ${backendDayIndex} (1=Monday, 7=Sunday)`);
+
+        const teacherAvailability = teacher.availability.find(a => a.dayOfWeek === backendDayIndex);
 
         if (!teacherAvailability || !teacherAvailability.isAvailable) {
             return res.status(400).json({ message: 'Teacher is not available on this day' });
         }
 
-        // Check if appointment falls within teacher's working hours
+        // FIXED: Check if appointment falls within teacher's working hours
+        // Get appointment time in local time (assuming UTC+5 timezone)
         const appointmentHour = appointmentDate.getHours();
         const appointmentMinute = appointmentDate.getMinutes();
-        const appointmentTime = appointmentHour * 60 + appointmentMinute;
+        const appointmentTimeMinutes = appointmentHour * 60 + appointmentMinute;
 
         const endHour = endTime.getHours();
         const endMinute = endTime.getMinutes();
-        const appointmentEndTime = endHour * 60 + endMinute;
+        const appointmentEndTimeMinutes = endHour * 60 + endMinute;
 
-        // Parse teacher's working hours
+        console.log(`Appointment time: ${appointmentHour}:${appointmentMinute} (${appointmentTimeMinutes} minutes)`);
+        console.log(`Appointment end time: ${endHour}:${endMinute} (${appointmentEndTimeMinutes} minutes)`);
+
         let isWithinWorkingHours = false;
 
-        // // Check each working time slot for the day
-        // if (Array.isArray(teacherAvailability.timeSlots) && teacherAvailability.timeSlots.length > 0) {
-        //     for (const slot of teacherAvailability.timeSlots) {
-        //         const [startHour, startMinute] = slot.startTime.split(':').map(Number);
-        //         const [endHour, endMinute] = slot.endTime.split(':').map(Number);
+        // Check each working time slot for the day
+        if (Array.isArray(teacherAvailability.timeSlots) && teacherAvailability.timeSlots.length > 0) {
+            console.log('Checking time slots:', teacherAvailability.timeSlots);
+            
+            for (const slot of teacherAvailability.timeSlots) {
+                const [startHour, startMinute] = slot.startTime.split(':').map(Number);
+                const [endHour, endMinute] = slot.endTime.split(':').map(Number);
 
-        //         const slotStartTime = startHour * 60 + startMinute;
-        //         const slotEndTime = endHour * 60 + endMinute;
+                const slotStartMinutes = startHour * 60 + startMinute;
+                const slotEndMinutes = endHour * 60 + endMinute;
 
-        //         // Check if appointment falls within this slot
-        //         if (appointmentTime >= slotStartTime && appointmentEndTime <= slotEndTime) {
-        //             isWithinWorkingHours = true;
-        //             break;
-        //         }
-        //     }
-        // } else {
-        //     // Fallback to the old format if timeSlots is not available
-        //     const [startHour, startMinute] = teacherAvailability.startTime.split(':').map(Number);
-        //     const [endHour, endMinute] = teacherAvailability.endTime.split(':').map(Number);
+                console.log(`Checking slot: ${slot.startTime} - ${slot.endTime} (${slotStartMinutes} - ${slotEndMinutes} minutes)`);
 
-        //     const workingStartTime = startHour * 60 + startMinute;
-        //     const workingEndTime = endHour * 60 + endMinute;
+                // Check if appointment falls within this slot
+                if (appointmentTimeMinutes >= slotStartMinutes && appointmentEndTimeMinutes <= slotEndMinutes) {
+                    console.log('✅ Appointment fits within time slot');
+                    isWithinWorkingHours = true;
+                    break;
+                }
+            }
+        } else if (teacherAvailability.startTime && teacherAvailability.endTime) {
+            // Fallback to the old format if timeSlots is not available
+            console.log('Using fallback format:', teacherAvailability.startTime, '-', teacherAvailability.endTime);
+            
+            const [startHour, startMinute] = teacherAvailability.startTime.split(':').map(Number);
+            const [endHour, endMinute] = teacherAvailability.endTime.split(':').map(Number);
 
-        //     if (appointmentTime >= workingStartTime && appointmentEndTime <= workingEndTime) {
-        //         isWithinWorkingHours = true;
-        //     }
-        // }
+            const workingStartMinutes = startHour * 60 + startMinute;
+            const workingEndMinutes = endHour * 60 + endMinute;
 
-        // if (!isWithinWorkingHours) {
-        //     return res.status(400).json({ message: 'Appointment time is outside teacher\'s working hours' });
-        // }
+            console.log(`Working hours: ${workingStartMinutes} - ${workingEndMinutes} minutes`);
+
+            if (appointmentTimeMinutes >= workingStartMinutes && appointmentEndTimeMinutes <= workingEndMinutes) {
+                console.log('✅ Appointment fits within working hours');
+                isWithinWorkingHours = true;
+            }
+        }
+
+        if (!isWithinWorkingHours) {
+            console.log('❌ Appointment is outside teacher\'s working hours');
+            return res.status(400).json({ message: 'Appointment time is outside teacher\'s working hours' });
+        }
 
         // Create new appointment with pending-teacher-confirmation status
         const appointment = new Appointment({
