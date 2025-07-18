@@ -54,7 +54,7 @@
                         <div>
                             <label class="label">Consultation Type</label>
                             <div class="mt-2 grid grid-cols-3 gap-3">
-                                <button v-for="type in consultationTypes" :key="type.value" type="button"
+                                <button v-for="type in lessonTypes" :key="type.value" type="button"
                                     class="btn-secondary" :class="{
                                         'ring-2 ring-indigo-500': formData.type === type.value,
                                         'border-red-500': validationErrors.type
@@ -132,7 +132,7 @@ const validationErrors = reactive({
     shortDescription: ''
 })
 
-const consultationTypes = [
+const lessonTypes = [
     { value: 'video', label: 'Video' },
     { value: 'voice', label: 'Voice' },
     { value: 'chat', label: 'Chat' }
@@ -181,7 +181,7 @@ const formatCurrency = (amount) => {
 // Function to safely format the teacher's fee
 const formatFee = () => {
     if (!teacher.value) return '0';
-    return formatCurrency(teacher.value.consultationFee);
+    return formatCurrency(teacher.value.lessonFee);
 }
 
 // Keep the original format function for other date formatting needs
@@ -273,7 +273,7 @@ function validateForm() {
     }
 
     if (!formData.type) {
-        validationErrors.type = 'Please select a consultation type'
+        validationErrors.type = 'Please select a lesson type'
         isValid = false
     }
 
