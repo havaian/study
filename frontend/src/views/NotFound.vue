@@ -16,7 +16,7 @@
                         <router-link to="/" class="btn-primary">
                             Go back home
                         </router-link>
-                        <a href="mailto:contact@e-stud.uz" class="btn-secondary">
+                        <a href="mailto:study@ytech.space" class="btn-secondary">
                             Contact support
                         </a>
                     </div>

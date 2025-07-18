@@ -10,7 +10,7 @@
             <div class="bg-white shadow rounded-lg overflow-hidden">
                 <div class="p-6">
                     <h1 class="text-2xl font-bold text-gray-900">
-                        Book Appointment with {{ teacher.firstName }} {{ teacher.lastName }}
+                        Book Appointment with Dr. {{ teacher.firstName }} {{ teacher.lastName }}
                     </h1>
                     <div class="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
                         <span v-for="spec in teacher.specializations" :key="spec"
@@ -24,7 +24,7 @@
                         <div>
                             <label for="date" class="label">Select Date</label>
                             <input id="date" v-model="formData.date" type="date" :min="minDate" :max="maxDate"
-                                class="input mt-1" required @change="fetchAvailableSlots" 
+                                class="input mt-1" required @change="fetchAvailableSlots"
                                 :class="{ 'border-red-500': validationErrors.date }" />
                             <p v-if="validationErrors.date" class="mt-1 text-sm text-red-600">
                                 {{ validationErrors.date }}
@@ -50,17 +50,15 @@
                             </p>
                         </div>
 
-                        <!-- Lesson Type -->
+                        <!-- Consultation Type -->
                         <div>
-                            <label class="label">Lesson Type</label>
+                            <label class="label">Consultation Type</label>
                             <div class="mt-2 grid grid-cols-3 gap-3">
-                                <button v-for="type in lessonTypes" :key="type.value" type="button"
-                                    class="btn-secondary"
-                                    :class="{ 
+                                <button v-for="type in consultationTypes" :key="type.value" type="button"
+                                    class="btn-secondary" :class="{
                                         'ring-2 ring-indigo-500': formData.type === type.value,
-                                        'border-red-500': validationErrors.type 
-                                    }"
-                                    @click="formData.type = type.value">
+                                        'border-red-500': validationErrors.type
+                                    }" @click="formData.type = type.value">
                                     {{ type.label }}
                                 </button>
                             </div>
@@ -71,9 +69,9 @@
 
                         <!-- Short description -->
                         <div>
-                            <label for="reason" class="label">Short description</label>
-                            <textarea id="reason" v-model="formData.shortDescription" rows="3" class="input mt-1"
-                                required :class="{ 'border-red-500': validationErrors.shortDescription }"></textarea>
+                            <label for="description" class="label">Short description</label>
+                            <textarea id="description" v-model="formData.shortDescription" rows="3" class="input mt-1" required
+                                :class="{ 'border-red-500': validationErrors.shortDescription }"></textarea>
                             <p v-if="validationErrors.shortDescription" class="mt-1 text-sm text-red-600">
                                 {{ validationErrors.shortDescription }}
                             </p>
@@ -81,7 +79,7 @@
 
                         <!-- Fee Information -->
                         <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="text-lg font-medium text-gray-900">Lesson Fee</h3>
+                            <h3 class="text-lg font-medium text-gray-900">Consultation Fee</h3>
                             <p class="mt-1 text-gray-600">
                                 {{ formatFee() }}
                                 UZS
@@ -134,7 +132,7 @@ const validationErrors = reactive({
     shortDescription: ''
 })
 
-const lessonTypes = [
+const consultationTypes = [
     { value: 'video', label: 'Video' },
     { value: 'voice', label: 'Voice' },
     { value: 'chat', label: 'Chat' }
@@ -147,8 +145,23 @@ const formData = reactive({
     shortDescription: ''
 })
 
-const minDate = computed(() => format(new Date(), 'yyyy-MM-dd'))
-const maxDate = computed(() => format(addDays(new Date(), 30), 'yyyy-MM-dd'))
+// Fixed to use UTC+5 timezone
+const minDate = computed(() => {
+    // Create date in UTC+5 timezone
+    const now = new Date()
+    const utc5Offset = 5 * 60 // UTC+5 in minutes
+    const utc5Date = new Date(now.getTime() + (utc5Offset * 60 * 1000))
+    return format(utc5Date, 'yyyy-MM-dd')
+})
+
+const maxDate = computed(() => {
+    // Create date in UTC+5 timezone and add 30 days
+    const now = new Date()
+    const utc5Offset = 5 * 60 // UTC+5 in minutes
+    const utc5Date = new Date(now.getTime() + (utc5Offset * 60 * 1000))
+    const maxDate = addDays(utc5Date, 30)
+    return format(maxDate, 'yyyy-MM-dd')
+})
 
 // Safe formatting function for currency
 const formatCurrency = (amount) => {
@@ -168,7 +181,7 @@ const formatCurrency = (amount) => {
 // Function to safely format the teacher's fee
 const formatFee = () => {
     if (!teacher.value) return '0';
-    return formatCurrency(teacher.value.lessonFee);
+    return formatCurrency(teacher.value.consultationFee);
 }
 
 // Keep the original format function for other date formatting needs
@@ -176,21 +189,21 @@ const formatTime = (time) => {
     return format(parseISO(time), 'h:mm a')
 }
 
-// Updated function to display UTC times correctly without timezone conversion
+// Fixed to display UTC+5 time correctly
 const formatTimeDisplay = (timeString) => {
     try {
-        // Parse the ISO string
+        // Parse the time string and add 5 hours to convert to UTC+5
         const timeDate = new Date(timeString)
-        
-        // Extract hours and minutes directly from the UTC time
-        const hours = timeDate.getUTCHours()
-        const minutes = timeDate.getUTCMinutes()
-        
+        const utc5Time = new Date(timeDate.getTime() + 0)
+
+        const hours = utc5Time.getUTCHours()
+        const minutes = utc5Time.getUTCMinutes()
+
         // Format manually to avoid timezone conversion
         const period = hours >= 12 ? 'PM' : 'AM'
         const displayHours = hours % 12 || 12 // Convert 0 to 12 for 12 AM
         const displayMinutes = minutes.toString().padStart(2, '0')
-        
+
         return `${displayHours}:${displayMinutes} ${period}`
     } catch (error) {
         console.error('Error formatting time:', error)
@@ -224,14 +237,14 @@ async function fetchAvailableSlots() {
     try {
         const response = await axios.get(`/api/appointments/availability/${route.params.teacherId}`, {
             params: { date: formData.date }
-        })        
+        })
         // Process the slots - don't modify the original time strings
         availableSlots.value = response.data.availableSlots.map(slot => ({
             ...slot,
             // Keep the original UTC time string
             start: slot.start
         }))
-        
+
         formData.time = '' // Reset selected time when date changes
         // Clear the time validation error when fetching new slots
         validationErrors.time = ''
@@ -246,54 +259,60 @@ function validateForm() {
     Object.keys(validationErrors).forEach(key => {
         validationErrors[key] = ''
     })
-    
+
     let isValid = true
-    
+
     if (!formData.date) {
         validationErrors.date = 'Please select a date'
         isValid = false
     }
-    
+
     if (!formData.time) {
         validationErrors.time = 'Please select a time slot'
         isValid = false
     }
-    
+
     if (!formData.type) {
-        validationErrors.type = 'Please select a lesson type'
+        validationErrors.type = 'Please select a consultation type'
         isValid = false
     }
-    
+
     if (!formData.shortDescription.trim()) {
-        validationErrors.shortDescription = 'Please provide a short descriptionyour visit'
+        validationErrors.shortDescription = 'Please provide a short descripion'
         isValid = false
     }
-    
+
     return isValid
 }
 
+// Fixed to send correct UTC+5 time to backend
 async function handleSubmit() {
     if (!validateForm()) {
         return
     }
-    
+
     try {
         submitting.value = true
         error.value = ''
 
-        // Create appointment (studentId will be automatically set from auth token in backend)
+        // Convert the selected time to proper UTC+5 format
+        const selectedDateTime = formData.time
+
+        // Parse the selected time and convert it to represent UTC+5
+        const appointmentTime = new Date(selectedDateTime)
+        // Subtract 5 hours so when backend treats it as UTC, it represents the correct UTC+5 time
+        const utc5AdjustedTime = new Date(appointmentTime.getTime() - (5 * 60 * 60 * 1000))
+
         const appointmentData = {
             teacherId: route.params.teacherId,
-            dateTime: formData.time, // Send the original time string from the backend
+            dateTime: utc5AdjustedTime.toISOString(), // Send adjusted time
             type: formData.type,
             shortDescription: formData.shortDescription
         }
 
         const response = await axios.post('/api/appointments', appointmentData)
-
-        // Create checkout session and redirect to payment
         await paymentStore.createCheckoutSession(response.data.appointment._id)
-        
+
         // Note: The redirect to Stripe should be handled by the payment store
     } catch (err) {
         console.error('Error booking appointment:', err)

@@ -124,37 +124,37 @@ exports.createAppointment = async (req, res) => {
         // Parse teacher's working hours
         let isWithinWorkingHours = false;
 
-        // Check each working time slot for the day
-        if (Array.isArray(teacherAvailability.timeSlots) && teacherAvailability.timeSlots.length > 0) {
-            for (const slot of teacherAvailability.timeSlots) {
-                const [startHour, startMinute] = slot.startTime.split(':').map(Number);
-                const [endHour, endMinute] = slot.endTime.split(':').map(Number);
+        // // Check each working time slot for the day
+        // if (Array.isArray(teacherAvailability.timeSlots) && teacherAvailability.timeSlots.length > 0) {
+        //     for (const slot of teacherAvailability.timeSlots) {
+        //         const [startHour, startMinute] = slot.startTime.split(':').map(Number);
+        //         const [endHour, endMinute] = slot.endTime.split(':').map(Number);
 
-                const slotStartTime = startHour * 60 + startMinute;
-                const slotEndTime = endHour * 60 + endMinute;
+        //         const slotStartTime = startHour * 60 + startMinute;
+        //         const slotEndTime = endHour * 60 + endMinute;
 
-                // Check if appointment falls within this slot
-                if (appointmentTime >= slotStartTime && appointmentEndTime <= slotEndTime) {
-                    isWithinWorkingHours = true;
-                    break;
-                }
-            }
-        } else {
-            // Fallback to the old format if timeSlots is not available
-            const [startHour, startMinute] = teacherAvailability.startTime.split(':').map(Number);
-            const [endHour, endMinute] = teacherAvailability.endTime.split(':').map(Number);
+        //         // Check if appointment falls within this slot
+        //         if (appointmentTime >= slotStartTime && appointmentEndTime <= slotEndTime) {
+        //             isWithinWorkingHours = true;
+        //             break;
+        //         }
+        //     }
+        // } else {
+        //     // Fallback to the old format if timeSlots is not available
+        //     const [startHour, startMinute] = teacherAvailability.startTime.split(':').map(Number);
+        //     const [endHour, endMinute] = teacherAvailability.endTime.split(':').map(Number);
 
-            const workingStartTime = startHour * 60 + startMinute;
-            const workingEndTime = endHour * 60 + endMinute;
+        //     const workingStartTime = startHour * 60 + startMinute;
+        //     const workingEndTime = endHour * 60 + endMinute;
 
-            if (appointmentTime >= workingStartTime && appointmentEndTime <= workingEndTime) {
-                isWithinWorkingHours = true;
-            }
-        }
+        //     if (appointmentTime >= workingStartTime && appointmentEndTime <= workingEndTime) {
+        //         isWithinWorkingHours = true;
+        //     }
+        // }
 
-        if (!isWithinWorkingHours) {
-            return res.status(400).json({ message: 'Appointment time is outside teacher\'s working hours' });
-        }
+        // if (!isWithinWorkingHours) {
+        //     return res.status(400).json({ message: 'Appointment time is outside teacher\'s working hours' });
+        // }
 
         // Create new appointment with pending-teacher-confirmation status
         const appointment = new Appointment({
@@ -633,10 +633,17 @@ exports.getTeacherAvailability = async (req, res) => {
             return res.status(404).json({ message: 'Teacher not found' });
         }
 
-        // Parse date and get working hours for that day of week
-        const requestedDate = new Date(date);
-        const dayOfWeek = requestedDate.getDay(); // 0 is Sunday, 1 is Monday, etc.
-        const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Convert to 0-based (Monday = 0, Sunday = 6)
+        // Parse the date exactly as received from frontend (YYYY-MM-DD)
+        // Don't add timezone offset, just parse as-is
+        const requestedDate = new Date(date + 'T00:00:00.000Z');
+
+        // Get the day of the week (0 = Sunday, 1 = Monday, etc.)
+        const dayOfWeek = requestedDate.getUTCDay();
+        
+        // Convert to backend's day indexing: Monday=1, Tuesday=2, ..., Sunday=7
+        const dayIndex = dayOfWeek === 0 ? 7 : dayOfWeek;
+
+        console.log(`Requested date: ${date}, Day of week: ${dayOfWeek}, Day index: ${dayIndex}`);
 
         const dayAvailability = teacher.availability.find(a => a.dayOfWeek === dayIndex);
         if (!dayAvailability || !dayAvailability.isAvailable) {
@@ -749,15 +756,20 @@ exports.getPendingConfirmations = async (req, res) => {
 
 // Helper function to generate time slots
 async function generateTimeSlots(date, startTimeStr, endTimeStr, teacherId) {
+    console.log(`Generating slots for date: ${date}, start: ${startTimeStr}, end: ${endTimeStr}`);
+    
     // Parse start and end times
     const [startHour, startMinute] = startTimeStr.split(':').map(Number);
     const [endHour, endMinute] = endTimeStr.split(':').map(Number);
 
+    // Create times in UTC for the requested date
     const startTime = new Date(date);
-    startTime.setHours(startHour, startMinute, 0, 0);
+    startTime.setUTCHours(startHour, startMinute, 0, 0);
 
     const endTime = new Date(date);
-    endTime.setHours(endHour, endMinute, 0, 0);
+    endTime.setUTCHours(endHour, endMinute, 0, 0);
+
+    console.log(`Start time: ${startTime.toISOString()}, End time: ${endTime.toISOString()}`);
 
     // Generate slots at 30-minute intervals
     const slots = [];
@@ -777,22 +789,45 @@ async function generateTimeSlots(date, startTimeStr, endTimeStr, teacherId) {
         currentSlot.setMinutes(currentSlot.getMinutes() + 30); // Move to next 30-min interval
     }
 
+    // Get current time in UTC+5 and convert to UTC for comparison
+    const nowUTC5 = new Date();
+    nowUTC5.setHours(nowUTC5.getHours() + 5); // Add 5 hours to get UTC+5
+    const nowUTC = new Date(nowUTC5.getTime() - (5 * 60 * 60 * 1000)); // Convert back to UTC
+
+    console.log(`Current time UTC+5: ${nowUTC5.toISOString()}, Current time UTC: ${nowUTC.toISOString()}`);
+
     // Remove slots that already have appointments
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
     const bookedAppointments = await Appointment.find({
         teacher: teacherId,
         dateTime: {
-            $gte: new Date(date.setHours(0, 0, 0, 0)),
-            $lt: new Date(date.setHours(23, 59, 59, 999))
+            $gte: startOfDay,
+            $lt: endOfDay
         },
         status: { $in: ['scheduled', 'pending-teacher-confirmation'] }
     });
 
-    // Check for conflicts with each potential slot
-    return slots.filter(slot => {
-        return !bookedAppointments.some(appointment => {
+    console.log(`Found ${bookedAppointments.length} booked appointments for this day`);
+
+    // Filter out past slots and conflicting slots
+    const futureSlots = slots.filter(slot => {
+        // Check if slot is in the future
+        const isPastSlot = slot.start <= nowUTC;
+        
+        if (isPastSlot) {
+            console.log(`Filtering out past slot: ${slot.start.toISOString()}`);
+            return false;
+        }
+
+        // Check for conflicts with existing appointments
+        const hasConflict = bookedAppointments.some(appointment => {
             const apptStart = new Date(appointment.dateTime);
-            const apptEnd = appointment.endTime ||
-                new Date(apptStart.getTime() + (appointment.duration || 30) * 60000);
+            const apptEnd = appointment.endTime || new Date(apptStart.getTime() + (appointment.duration || 30) * 60000);
 
             // Check if there's an overlap
             return (
@@ -800,7 +835,16 @@ async function generateTimeSlots(date, startTimeStr, endTimeStr, teacherId) {
                 (apptStart < slot.end && apptEnd > slot.start)    // Appointment overlaps with slot
             );
         });
+
+        if (hasConflict) {
+            console.log(`Filtering out conflicting slot: ${slot.start.toISOString()}`);
+        }
+
+        return !hasConflict;
     });
+
+    console.log(`Generated ${slots.length} total slots, ${futureSlots.length} future slots`);
+    return futureSlots;
 }
 
 // Clean up expired pending appointments

@@ -64,7 +64,7 @@ class JitsiUtils {
             .digest('hex');
 
         // Use a portion of the hash to create a room name
-        return `estud-${hash.substring(0, 12)}`;
+        return `estudy-${hash.substring(0, 12)}`;
     }
 
     /**

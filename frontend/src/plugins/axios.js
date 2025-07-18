@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 
-axios.defaults.baseURL = 'http://localhost:6633'; 
+axios.defaults.baseURL = 'https://dev.e-stud.uz'; 
 
 axios.interceptors.request.use(config => {
   const authStore = useAuthStore()
