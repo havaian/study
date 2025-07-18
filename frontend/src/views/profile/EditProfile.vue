@@ -66,7 +66,8 @@
                                         class="flex gap-2">
                                         <select v-model="formData.specializations[index]" class="input flex-1">
                                             <option value="">Select Specialization</option>
-                                            <option v-for="spec in getAvailableSpecializations(index)" :key="spec" :value="spec">
+                                            <option v-for="spec in getAvailableSpecializations(index)" :key="spec"
+                                                :value="spec">
                                                 {{ spec }}
                                             </option>
                                         </select>
@@ -90,7 +91,8 @@
                                     <div v-for="(lang, index) in formData.languages" :key="index" class="flex gap-2">
                                         <select v-model="formData.languages[index]" class="input flex-1">
                                             <option value="">Select Language</option>
-                                            <option v-for="language in getAvailableLanguages(index)" :key="language" :value="language">
+                                            <option v-for="language in getAvailableLanguages(index)" :key="language"
+                                                :value="language">
                                                 {{ language }}
                                             </option>
                                         </select>
@@ -161,8 +163,8 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="lessonFee" class="label">Lesson Fee (UZS)</label>
-                                    <input id="lessonFee" v-model.number="formData.lessonFee" type="number"
-                                        min="0" class="input mt-1" required />
+                                    <input id="lessonFee" v-model.number="formData.lessonFee" type="number" min="0"
+                                        class="input mt-1" required />
                                 </div>
                                 <div>
                                     <label for="experience" class="label">Years of Experience</label>
@@ -180,7 +182,8 @@
                             <div class="mt-4">
                                 <label class="label">Availability (in your local time)</label>
                                 <p class="text-sm text-gray-500 mb-3">
-                                    Set your working hours in your local timezone ({{ formData.timezone || 'Asia/Tashkent' }}).
+                                    Set your working hours in your local timezone ({{
+                                    getTimezoneDisplay(formData.timezone) }}).
                                     These will be automatically converted for appointment scheduling.
                                 </p>
                                 <div class="space-y-2">
@@ -210,8 +213,8 @@
                             <div class="space-y-4">
                                 <div>
                                     <label for="educationalHistory" class="label">Educational Background</label>
-                                    <input id="educationalHistory" v-model="educationalHistoryInput" type="text" class="input mt-1"
-                                        placeholder="Separate with commas" />
+                                    <input id="educationalHistory" v-model="educationalHistoryInput" type="text"
+                                        class="input mt-1" placeholder="Separate with commas" />
                                 </div>
                             </div>
                         </div>
@@ -254,7 +257,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import axios from 'axios'
@@ -276,7 +279,6 @@ const availableTimezones = ref([
     { value: 'UTC', label: 'UTC (UTC+0) - Universal Time' }
 ])
 
-// Replace the hardcoded specializations with a ref to be filled from API
 const availableSpecializations = ref([])
 const availableLanguages = ref(['English', 'Russian', 'Uzbek'])
 
@@ -317,6 +319,7 @@ const educationalHistoryInput = ref('')
 
 // Get timezone display for availability
 const getTimezoneDisplay = (timezone) => {
+    if (!timezone) return '(UTC+5)'
     const tz = availableTimezones.value.find(t => t.value === timezone)
     return tz ? tz.label.split(' ')[1] : '(UTC+5)'
 }
@@ -325,8 +328,8 @@ const getTimezoneDisplay = (timezone) => {
 const getAvailableSpecializations = (currentIndex) => {
     const selectedSpecializations = formData.specializations
         .filter((spec, index) => index !== currentIndex && spec !== '')
-    
-    return availableSpecializations.value.filter(spec => 
+
+    return availableSpecializations.value.filter(spec =>
         !selectedSpecializations.includes(spec)
     )
 }
@@ -335,8 +338,8 @@ const getAvailableSpecializations = (currentIndex) => {
 const getAvailableLanguages = (currentIndex) => {
     const selectedLanguages = formData.languages
         .filter((lang, index) => index !== currentIndex && lang !== '')
-    
-    return availableLanguages.value.filter(lang => 
+
+    return availableLanguages.value.filter(lang =>
         !selectedLanguages.includes(lang)
     )
 }
@@ -350,7 +353,6 @@ const removeSpecialization = (index) => {
     formData.specializations.splice(index, 1)
 }
 
-// Helper functions for languages
 const addLanguage = () => {
     formData.languages.push('')
 }
@@ -380,14 +382,12 @@ const formatDay = (dayOfWeek) => {
     return days[dayOfWeek - 1]
 }
 
-// Added function to fetch specializations from the API
 async function fetchSpecializations() {
     try {
         const response = await axios.get('/api/specializations')
         availableSpecializations.value = response.data.specializations.map(s => s.name)
     } catch (error) {
         console.error('Error fetching specializations:', error)
-        // Set some defaults in case API call fails
         availableSpecializations.value = [
             'Mathematics',
             'Science',
@@ -406,25 +406,23 @@ async function fetchSpecializations() {
 async function fetchUserProfile() {
     try {
         const response = await axios.get('/api/users/me')
-        const user = response.data
+        const user = response.data.user || response.data
 
         // Update form data
         formData.firstName = user.firstName
         formData.lastName = user.lastName
         formData.phone = user.phone
-        formData.timezone = user.timezone || 'Asia/Tashkent' // Set default if not present
+        formData.timezone = user.timezone || 'Asia/Tashkent'
         formData.address = user.address || { street: '', city: '' }
 
         if (authStore.isTeacher) {
-            // Handle specializations properly as an array
-            formData.specializations = Array.isArray(user.specializations) ? 
-                user.specializations : 
+            formData.specializations = Array.isArray(user.specializations) ?
+                user.specializations :
                 (user.specialization ? [user.specialization] : [])
-                
-            // Handle languages properly as an array
-            formData.languages = Array.isArray(user.languages) ? 
+
+            formData.languages = Array.isArray(user.languages) ?
                 user.languages : []
-                
+
             formData.education = user.education || []
             formData.certifications = user.certifications || []
             formData.lessonFee = user.lessonFee || 0
@@ -434,9 +432,12 @@ async function fetchUserProfile() {
         } else {
             formData.educationalHistory = user.educationalHistory || ''
             formData.emergencyContact = user.emergencyContact || { name: '', phone: '', relationship: '' }
-
-            // Update input fields
             educationalHistoryInput.value = user.educationalHistory || ''
+        }
+
+        // Update auth store with timezone if it changed
+        if (authStore.user && authStore.user.timezone !== formData.timezone) {
+            authStore.user.timezone = formData.timezone
         }
     } catch (error) {
         console.error('Error fetching user profile:', error)
@@ -447,39 +448,39 @@ async function handleSubmit() {
     try {
         loading.value = true
 
-        // Prepare update data
         const updateData = {
             firstName: formData.firstName,
             lastName: formData.lastName,
             phone: formData.phone,
-            timezone: formData.timezone, // Include timezone in update
+            timezone: formData.timezone,
             address: formData.address
         }
 
         if (authStore.isTeacher) {
-            // Ensure specializations is an array of non-empty strings
             updateData.specializations = formData.specializations.filter(Boolean)
-            // Ensure languages is an array of non-empty strings  
             updateData.languages = formData.languages.filter(Boolean)
             updateData.education = formData.education.filter(e => e.degree && e.institution && e.year)
             updateData.certifications = formData.certifications.filter(c => c.name && c.issuer && c.year)
             updateData.lessonFee = formData.lessonFee
             updateData.experience = formData.experience
             updateData.bio = formData.bio
-            // Note: Availability times are stored in user's local timezone
             updateData.availability = formData.availability
         } else {
             updateData.educationalHistory = educationalHistoryInput.value
             updateData.emergencyContact = formData.emergencyContact
         }
 
-        await axios.patch('/api/users/me', updateData)
-        
-        // Show success message or notification here if needed
+        const response = await axios.patch('/api/users/me', updateData)
+
+        // Update auth store with latest user data including timezone
+        if (response.data.user) {
+            authStore.user = { ...authStore.user, ...response.data.user }
+            localStorage.setItem('user', JSON.stringify(authStore.user))
+        }
+
         router.push({ name: authStore.isTeacher ? 'teacher-profile' : 'student-profile' })
     } catch (error) {
         console.error('Error updating profile:', error)
-        // Show error message to user here if needed
     } finally {
         loading.value = false
     }
@@ -487,7 +488,6 @@ async function handleSubmit() {
 
 onMounted(() => {
     fetchUserProfile()
-    // Fetch specializations if user is a teacher
     if (authStore.isTeacher) {
         fetchSpecializations()
     }
