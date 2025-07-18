@@ -21,14 +21,14 @@
 
                     <!-- Timezone Information -->
                     <div class="mt-4 p-3 bg-blue-50 rounded-lg">
-                        <p class="text-sm grid gap-4 text-blue-700">
-                            <div>
+                        <p class="text-sm grid gap-4">
+                            <div class="grid">
                                 <span class="font-medium">Your timezone:</span>
-                                <span>{{ studentTimezoneInfo?.label }}</span>
+                                <span class="mt-1 text-blue-700">{{ studentTimezoneInfo?.label }}</span>
                             </div>
-                            <div>
+                            <div class="grid">
                                 <span class="font-medium">Teacher's timezone:</span>
-                                <span>{{ teacherTimezoneInfo?.label || 'Asia/Tashkent' }}</span>
+                                <span class="mt-1 text-blue-700">{{ teacherTimezoneInfo?.label || 'Asia/Tashkent' }}</span>
                             </div>
                         </p>
                     </div>
