@@ -18,7 +18,14 @@ class NotificationService {
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASSWORD
-            }
+            },
+            pool: true,
+            maxConnections: 5,
+            maxMessages: 100,
+            connectionTimeout: 10000,
+            greetingTimeout: 5000,
+            socketTimeout: 20000,
+            keepAlive: true
         });
 
         // Initialize RabbitMQ connection (for async notifications)
@@ -132,7 +139,8 @@ class NotificationService {
             return;
         }
 
-        this.rabbitChannel.prefetch(1); // Process one message at a time
+        // INCREASE PREFETCH for better performance
+        this.rabbitChannel.prefetch(10); // Process up to 10 messages at once
         
         this.rabbitChannel.consume('email_notifications', async (msg) => {
             if (!msg) return;
@@ -141,18 +149,24 @@ class NotificationService {
                 const emailData = JSON.parse(msg.content.toString());
                 console.log(`Processing email to: ${emailData.to}, subject: ${emailData.subject}`);
                 
-                // Send the email
-                await this.sendEmail(emailData);
+                // Send the email WITH TIMEOUT
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Email sending timeout')), 25000);
+                });
+                
+                const emailPromise = this.sendEmail(emailData);
+                await Promise.race([emailPromise, timeoutPromise]);
                 
                 // Acknowledge message
                 this.rabbitChannel.ack(msg);
             } catch (error) {
                 console.error('Error sending queued email:', error);
                 
-                // Only retry if it's not a permanent error
+                // SMART RETRY LOGIC
                 const isPermanentError = 
                     error.message.includes('no recipients defined') || 
-                    error.message.includes('authentication failed');
+                    error.message.includes('authentication failed') ||
+                    error.message.includes('timeout');
                 
                 this.rabbitChannel.nack(msg, false, !isPermanentError);
             }
@@ -338,9 +352,24 @@ class NotificationService {
         `
         };
 
-        // Only queue email - don't send directly
+        // Queue email for reliable delivery
         this.queueEmail(emailData);
-        console.log('Verification email queued successfully for:', email);
+        
+        // Try immediate send (non-blocking) for faster delivery
+        setImmediate(async () => {
+            try {
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Immediate send timeout')), 10000);
+                });
+                
+                await Promise.race([this.sendEmail(emailData), timeoutPromise]);
+                console.log('Verification email sent immediately to:', email);
+            } catch (error) {
+                console.log('Immediate verification email failed (queued version will retry):', error.message);
+            }
+        });
+        
+        console.log('Verification email queued and immediate delivery attempted for:', email);
     }
 
     /**
@@ -368,9 +397,24 @@ class NotificationService {
         `
         };
 
-        // Only queue email - don't send directly
+        // Queue email for reliable delivery
         this.queueEmail(emailData);
-        console.log('Password reset email queued successfully for:', email);
+
+        // Try immediate send (non-blocking) for faster delivery
+        setImmediate(async () => {
+            try {
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Immediate send timeout')), 10000);
+                });
+                
+                await Promise.race([this.sendEmail(emailData), timeoutPromise]);
+                console.log('Password reset email sent immediately to:', email);
+            } catch (error) {
+                console.log('Immediate password reset email failed (queued version will retry):', error.message);
+            }
+        });
+        
+        console.log('Password reset email queued and immediate delivery attempted for:', email);
     }
 
     /**
