@@ -27,40 +27,14 @@
         </div>
       </div>
 
-      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">
+      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 pb-16 text-center">
         <!-- Logo Section -->
         <div class="mb-12 slide-in">
           <div class="flex items-center justify-center mb-8">
             <div class="relative">
               <div
-                class="float-educational bg-gradient-to-r from-educational-blue to-educational-purple rounded-xl p-2 shadow-lg glow-effect">
-                <svg width="40" height="40" viewBox="4 4 40 40" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="educationalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
-                      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
-                    </linearGradient>
-                  </defs>
-
-                  <!-- Rounded rectangle background with gradient -->
-                  <rect x="4" y="4" width="40" height="40" rx="10" ry="10" fill="url(#educationalGradient)" />
-
-                  <!-- Graduation cap icon (centered in the container) -->
-                  <g transform="translate(12, 12)">
-                    <!-- Main cap (mortarboard) -->
-                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"
-                      d="M2 10l10-6 10 6-10 6-10-6z" />
-
-                    <!-- Cap base/band -->
-                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"
-                      d="M6 13v4c0 2 2.686 4 6 4s6-2 6-4v-4" />
-
-                    <!-- Tassel -->
-                    <path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"
-                      d="M16 7v4" />
-                    <circle cx="16" cy="11" r="1" fill="white" />
-                  </g>
-                </svg>
+                class="float-educational glow-effect">
+                  <img src="/images/logo.svg" alt="E-stud.uz Logo" width="80" height="80" class="w-20 h-20" />
               </div>
             </div>
           </div>
