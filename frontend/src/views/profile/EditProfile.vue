@@ -441,7 +441,7 @@ async function fetchTimezones() {
 
 async function fetchTimezoneInfo(timezone) {
     try {
-        const response = await axios.get(`/api/timezones/${encodeURIComponent(timezone)}`)
+        const response = await axios.get(`/api/timezones/info/${encodeURIComponent(timezone)}`)
         if (response.data.success) {
             selectedTimezoneInfo.value = response.data.timezone
         }
