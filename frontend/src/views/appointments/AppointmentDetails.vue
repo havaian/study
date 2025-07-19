@@ -313,12 +313,12 @@ const minFollowUpDate = computed(() => {
 })
 
 const formatDateTime = (dateTime) => {
-    return format(parseISO(dateTime), 'MMM d, yyyy h:mm a')
+    return format(new Date(dateTime), 'MMM d, yyyy h:mm a')
 }
 
 const formatDate = (date) => {
     if (!date) return 'Not specified'
-    return format(parseISO(date), 'MMM d, yyyy')
+    return format(new Date(date), 'MMM d, yyyy')
 }
 
 const formatChatTime = (timestamp) => {
