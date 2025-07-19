@@ -313,16 +313,55 @@ const minFollowUpDate = computed(() => {
 })
 
 const formatDateTime = (dateTime) => {
-    return format(new Date(dateTime), 'MMM d, yyyy h:mm a')
+    const date = new Date(dateTime)
+    
+    // Use UTC methods to avoid any timezone conversion
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    const month = months[date.getUTCMonth()]
+    const day = date.getUTCDate()
+    const year = date.getUTCFullYear()
+    let hours = date.getUTCHours()
+    const minutes = date.getUTCMinutes()
+    
+    const ampm = hours >= 12 ? 'PM' : 'AM'
+    hours = hours % 12
+    hours = hours ? hours : 12 // 0 should be 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes
+    
+    return `${month} ${day}, ${year} ${hours}:${minutesStr} ${ampm}`
 }
 
 const formatDate = (date) => {
     if (!date) return 'Not specified'
-    return format(new Date(date), 'MMM d, yyyy')
+    const dateObj = new Date(date)
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    const month = months[dateObj.getUTCMonth()]
+    const day = dateObj.getUTCDate()
+    const year = dateObj.getUTCFullYear()
+    
+    return `${month} ${day}, ${year}`
 }
 
 const formatChatTime = (timestamp) => {
-    return format(new Date(timestamp), 'MMM d, h:mm a')
+    const date = new Date(timestamp)
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    const month = months[date.getUTCMonth()]
+    const day = date.getUTCDate()
+    let hours = date.getUTCHours()
+    const minutes = date.getUTCMinutes()
+    
+    const ampm = hours >= 12 ? 'PM' : 'AM'
+    hours = hours % 12
+    hours = hours ? hours : 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes
+    
+    return `${month} ${day}, ${hours}:${minutesStr} ${ampm}`
 }
 
 const formatCurrency = (amount) => {
