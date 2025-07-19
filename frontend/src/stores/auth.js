@@ -69,16 +69,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Watch for timezone changes
-  watch(
-    () => user.value?.timezone,
-    async (newTimezone, oldTimezone) => {
-      if (newTimezone && newTimezone !== oldTimezone) {
-        await fetchUserTimezoneInfo()
-      }
-    }
-  )
-
   // Fetch timezone info if user is already logged in (from localStorage)
   if (user.value?.timezone) {
     fetchUserTimezoneInfo()
