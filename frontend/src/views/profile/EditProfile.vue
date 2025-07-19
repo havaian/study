@@ -34,15 +34,12 @@
                                             </option>
                                         </optgroup>
                                     </select>
-                                    <div v-if="timezonesLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                                        <div class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
-                                    </div>
                                 </div>
                                 <p class="mt-1 text-sm text-gray-500">
                                     Your timezone affects appointment scheduling and availability display.
                                 </p>
                                 <p v-if="selectedTimezoneInfo && currentTimeDisplay" class="mt-1 text-xs text-blue-600">
-                                    Current time: {{ currentTimeDisplay }}
+                                    Current time: {{ formatTimeDisplay(currentTime) }}
                                 </p>
                             </div>
                         </div>
@@ -273,7 +270,8 @@ import axios from 'axios'
 const router = useRouter()
 const authStore = useAuthStore()
 const loading = ref(false)
-const timezonesLoading = ref(false)
+const timezoneDisplay = computed(() => authStore.userTimezoneDisplay)
+const currentTime = computed(() => authStore.userCurrentTime)
 
 // Timezone data from API
 const groupedTimezones = ref({})
@@ -434,6 +432,10 @@ const removeCertification = (index) => {
     formData.certifications.splice(index, 1)
 }
 
+const formatTimeDisplay = (utcTimeString) => {
+  return authStore.formatTimeInUserTimezone(utcTimeString)
+}
+
 const formatDay = (dayOfWeek) => {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     return days[dayOfWeek - 1]
@@ -442,7 +444,6 @@ const formatDay = (dayOfWeek) => {
 // API functions
 async function fetchTimezones() {
     try {
-        timezonesLoading.value = true
         const response = await axios.get('/api/timezones/grouped/regions')
         
         if (response.data.success) {
@@ -465,8 +466,6 @@ async function fetchTimezones() {
                 { value: 'Asia/Dubai', label: 'UAE (UTC+4)', offset: 4 }
             ]
         }
-    } finally {
-        timezonesLoading.value = false
     }
 }
 
