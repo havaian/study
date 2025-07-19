@@ -318,20 +318,6 @@ const formData = reactive({
 
 const educationalHistoryInput = ref('')
 
-// Debounce mechanism to prevent rapid API calls
-const fetchTimezoneDebounced = (() => {
-    let timeoutId = null
-    return (timezone) => {
-        clearTimeout(timeoutId)
-        return new Promise((resolve) => {
-            timeoutId = setTimeout(async () => {
-                await fetchTimezoneInfo(timezone)
-                resolve()
-            }, 300) // 300ms debounce
-        })
-    }
-})()
-
 // Computed property for current time display
 const currentTimeDisplay = computed(() => {
     if (!selectedTimezoneInfo.value?.currentTime) return null
@@ -385,8 +371,8 @@ const currentTimeDisplay = computed(() => {
 watch(() => formData.timezone, async (newTimezone, oldTimezone) => {
     // Only fetch if timezone actually changed and is not empty
     if (newTimezone && newTimezone !== oldTimezone) {
-        // Use debounced fetch to prevent rapid API calls
-        await fetchTimezoneDebounced(newTimezone)
+        // Fetch timezone info for the edit profile display
+        await fetchTimezoneInfo(newTimezone)
         
         // Update auth store timezone (this will trigger auth store's own watcher)
         // No need to manually call fetchUserTimezoneInfo as the auth store watcher will handle it
@@ -546,9 +532,6 @@ async function fetchUserProfile() {
         const response = await axios.get('/api/users/me')
         const user = response.data.user || response.data
 
-        // Store the current timezone before updating formData
-        const currentFormTimezone = formData.timezone
-
         // Update form data
         formData.firstName = user.firstName
         formData.lastName = user.lastName
@@ -576,9 +559,8 @@ async function fetchUserProfile() {
             educationalHistoryInput.value = user.educationalHistory || ''
         }
 
-        // Only fetch timezone info if the timezone actually changed from the form default
-        // This prevents duplicate calls since the watcher will also fire
-        if (formData.timezone && formData.timezone !== currentFormTimezone) {
+        // Fetch timezone info for the current timezone
+        if (formData.timezone) {
             await fetchTimezoneInfo(formData.timezone)
         }
     } catch (error) {
@@ -618,7 +600,8 @@ async function handleSubmit() {
         if (response.data.user) {
             authStore.user = { ...authStore.user, ...response.data.user }
             localStorage.setItem('user', JSON.stringify(authStore.user))
-            // Note: Auth store watcher will automatically call fetchUserTimezoneInfo when timezone changes
+            // Refresh auth store timezone info
+            await authStore.fetchUserTimezoneInfo()
         }
         
         router.push({ name: authStore.isTeacher ? 'teacher-profile' : 'student-profile' })
