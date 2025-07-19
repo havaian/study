@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -11,13 +11,48 @@ export const useAuthStore = defineStore('auth', () => {
   const isTeacher = computed(() => user.value?.role === 'teacher')
   const isStudent = computed(() => user.value?.role === 'student')
 
+  const timezoneInfo = ref(null)
+  const timezoneLoading = ref(false)
+
+  async function fetchUserTimezoneInfo() {
+    if (!user.value?.timezone) return
+
+    try {
+      timezoneLoading.value = true
+      const response = await axios.get(`/api/timezones/${user.value.timezone}`)
+      if (response.data.success) {
+        timezoneInfo.value = response.data.timezone
+      }
+    } catch (error) {
+      console.error('Error fetching user timezone info:', error)
+      timezoneInfo.value = null
+    } finally {
+      timezoneLoading.value = false
+    }
+  }
+
+  // Watch for timezone changes
+  watch(
+    () => user.value?.timezone,
+    async (newTimezone, oldTimezone) => {
+      if (newTimezone && newTimezone !== oldTimezone) {
+        await fetchUserTimezoneInfo()
+      }
+    }
+  )
+
+  // Fetch timezone info if user is already logged in (from localStorage)
+  if (user.value?.timezone) {
+    fetchUserTimezoneInfo()
+  }
+
   async function login(email, password) {
     try {
       const response = await axios.post('/api/users/login', { email, password })
       token.value = response.data.token
       user.value = response.data.user
 
-      console.log(response.data);
+      await fetchUserTimezoneInfo()
 
       // Persist to localStorage
       localStorage.setItem('token', token.value)
@@ -41,6 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
   function logout() {
     user.value = null
     token.value = null
+    timezoneInfo.value = null // Clear timezone info on logout
     localStorage.removeItem('token')
     localStorage.removeItem('user')
   }
@@ -53,6 +89,9 @@ export const useAuthStore = defineStore('auth', () => {
     isStudent,
     login,
     register,
-    logout
+    logout,
+    timezoneInfo: readonly(timezoneInfo),
+    timezoneLoading: readonly(timezoneLoading),
+    fetchUserTimezoneInfo
   }
 })

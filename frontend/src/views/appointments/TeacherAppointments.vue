@@ -191,16 +191,23 @@ const userTimezone = computed(() => {
 // Utility functions
 const formatTimeDisplay = (utcTimeString) => {
     try {
-        // Parse as UTC time and display directly without timezone conversion
         const utcDate = new Date(utcTimeString)
-        const hours = utcDate.getUTCHours()
-        const minutes = utcDate.getUTCMinutes()
         
-        const period = hours >= 12 ? 'PM' : 'AM'
-        const displayHours = hours % 12 || 12
-        const displayMinutes = minutes.toString().padStart(2, '0')
+        // Check if time is UTC+0 and apply user's timezone from store
+        if (utcDate.getTimezoneOffset() === 0 && authStore.timezoneInfo) {
+            const userOffset = authStore.timezoneInfo.offset || 0
+            const localHour = (utcDate.getUTCHours() + userOffset) % 24
+            const localMinute = utcDate.getUTCMinutes()
+            
+            const period = localHour >= 12 ? 'PM' : 'AM'
+            const displayHours = localHour % 12 || 12
+            const displayMinutes = localMinute.toString().padStart(2, '0')
+            
+            return `${displayHours}:${displayMinutes} ${period}`
+        }
         
-        return `${displayHours}:${displayMinutes} ${period}`
+        // Fallback to standard formatting
+        return format(parseISO(utcTimeString), 'h:mm a')
     } catch (error) {
         console.error('Error formatting time:', error)
         return utcTimeString
@@ -244,6 +251,11 @@ async function fetchAppointments() {
         const response = await axios.get(`/api/appointments/teacher/${authStore.user._id}`, { params })
         appointments.value = response.data.appointments
         totalPages.value = Math.ceil(response.data.pagination.total / response.data.pagination.limit)
+        
+        // Ensure timezone info is loaded from store
+        if (!authStore.timezoneInfo && authStore.user?.timezone) {
+            await authStore.fetchUserTimezoneInfo()
+        }
     } catch (error) {
         console.error('Error fetching appointments:', error)
     } finally {

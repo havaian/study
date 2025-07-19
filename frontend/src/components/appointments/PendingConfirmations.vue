@@ -216,7 +216,29 @@ const pendingCount = computed(() => appointments.value.length)
 
 // Utility functions
 const formatDateTime = (dateTime) => {
-    return format(parseISO(dateTime), 'MMM d, yyyy h:mm a')
+    try {
+        const utcDate = new Date(dateTime)
+        
+        // Check if time is UTC+0 and apply user's timezone from store
+        if (utcDate.getTimezoneOffset() === 0 && authStore.timezoneInfo) {
+            const userOffset = authStore.timezoneInfo.offset || 0
+            const localHour = (utcDate.getUTCHours() + userOffset) % 24
+            const localMinute = utcDate.getUTCMinutes()
+            
+            const period = localHour >= 12 ? 'PM' : 'AM'
+            const displayHours = localHour % 12 || 12
+            const displayMinutes = localMinute.toString().padStart(2, '0')
+            
+            const day = format(parseISO(dateTime), 'MMM d, yyyy')
+            return `${day} ${displayHours}:${displayMinutes} ${period}`
+        }
+        
+        // Fallback to standard formatting
+        return format(parseISO(dateTime), 'MMM d, yyyy h:mm a')
+    } catch (error) {
+        console.error('Error formatting time:', error)
+        return dateTime
+    }
 }
 
 const calculateAge = (dateOfBirth) => {
@@ -360,6 +382,10 @@ function handlePageChange(page) {
 
 // Lifecycle
 onMounted(() => {
+    if (!authStore.timezoneInfo && authStore.user?.timezone) {
+        await authStore.fetchUserTimezoneInfo()
+    }
+    
     fetchPendingConfirmations()
 
     // Auto-refresh every 2 minutes to keep data current
