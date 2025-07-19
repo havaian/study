@@ -220,7 +220,8 @@ exports.updateUserProfile = async (req, res) => {
             'firstName', 'lastName', 'phone', 'profilePicture',
             'address', 'bio', 'languages', 'availability',
             'lessonFee', 'educationalHistory', 'emergencyContact',
-            'specializations', 'education', 'certifications', 'experience'
+            'specializations', 'education', 'certifications', 'experience',
+            'timezone'
         ];
 
         const updates = {};
@@ -232,9 +233,15 @@ exports.updateUserProfile = async (req, res) => {
             }
         });
 
-        // Decode bio if present
+        // Decode bio if present     
         if (updates.bio) {
             updates.bio = decodeURIComponent(updates.bio);
+        }
+
+        // Also decode any other HTML entities
+        if (updates.timezone) {
+            // Decode HTML entities in timezone value
+            updates.timezone = decodeURIComponent(updates.timezone.replace(/&#x2F;/g, '/'));
         }
 
         // Update user
