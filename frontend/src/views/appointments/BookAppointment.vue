@@ -298,14 +298,9 @@ async function handleSubmit() {
         // Convert the selected time to proper UTC+5 format
         const selectedDateTime = formData.time
 
-        // Parse the selected time and convert it to represent UTC+5
-        const appointmentTime = new Date(selectedDateTime)
-        // Subtract 5 hours so when backend treats it as UTC, it represents the correct UTC+5 time
-        const utc5AdjustedTime = new Date(appointmentTime.getTime() - (5 * 60 * 60 * 1000))
-
         const appointmentData = {
             teacherId: route.params.teacherId,
-            dateTime: utc5AdjustedTime.toISOString(), // Send adjusted time
+            dateTime: selectedDateTime, // Send adjusted time
             type: formData.type,
             shortDescription: formData.shortDescription
         }
