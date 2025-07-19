@@ -107,20 +107,16 @@
                                 <p v-if="teacherCurrentTime" class="text-xs text-gray-500 mt-1">
                                     Teacher's current time: {{ teacherCurrentTime }}
                                 </p>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    Appointment times will be converted to your timezone when booking
-                                </p>
                             </div>
 
                             <div>
                                 <h3 class="font-medium text-gray-900">Available Days</h3>
                                 <p class="text-sm text-gray-500 mb-2">
-                                    Times shown in teacher's timezone ({{ teacherTimezoneAbbr }})
+                                    Times shown in teacher's timezone
                                 </p>
                                 <ul class="mt-2 space-y-2">
                                     <li v-for="day in availableDays" :key="day.dayOfWeek" class="text-gray-600">
                                         {{ formatDay(day.dayOfWeek) }}: {{ day.startTime }} - {{ day.endTime }}
-                                        <span class="text-xs text-gray-500">({{ teacherTimezoneAbbr }})</span>
                                     </li>
                                     <li v-if="availableDays.length === 0" class="text-gray-500">
                                         No availability information provided.

@@ -75,7 +75,7 @@
                       <div v-if="timezoneLoading" class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
                     </div>
                     <p v-if="currentTime" class="text-xs text-gray-500 mt-1">
-                      Current time: {{ currentTime }}
+                      Current time: {{ formatTimeDisplay(currentTime) }}
                     </p>
                   </dd>
                 </div>
@@ -128,14 +128,13 @@
                 <span class="font-medium">Times shown in your timezone:</span> {{ timezoneDisplay }}
               </p>
               <p v-if="currentTime" class="text-xs text-blue-600 mt-1">
-                Current time: {{ currentTime }}
+                Current time: {{ formatTimeDisplay(currentTime) }}
               </p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div v-for="day in availableDays" :key="day.dayOfWeek" class="bg-gray-50 p-4 rounded-lg">
                 <h3 class="font-medium text-gray-900">{{ formatDay(day.dayOfWeek) }}</h3>
                 <p class="text-gray-600">{{ day.startTime }} - {{ day.endTime }}</p>
-                <p class="text-xs text-gray-500 mt-1">{{ timezoneAbbr }}</p>
               </div>
               <div v-if="availableDays.length === 0" class="bg-gray-50 p-4 rounded-lg">
                 <p class="text-gray-500">No availability set. Please update your profile.</p>
@@ -170,34 +169,16 @@ const user = ref(null)
 const loading = ref(true)
 const timezoneInfo = ref(null)
 const timezoneLoading = ref(false)
+const timezoneDisplay = computed(() => authStore.userTimezoneDisplay)
+const currentTime = computed(() => authStore.userCurrentTime)
+
+const formatTimeDisplay = (utcTimeString) => {
+  return authStore.formatTimeInUserTimezone(utcTimeString)
+}
 
 const availableDays = computed(() => {
   if (!user.value?.availability) return []
   return user.value.availability.filter(day => day.isAvailable)
-})
-
-const timezoneDisplay = computed(() => {
-  if (!user.value?.timezone) return 'Asia/Tashkent (UTC+5)'
-  if (timezoneInfo.value) {
-    return timezoneInfo.value.label
-  }
-  return `${user.value.timezone} (Loading...)`
-})
-
-const timezoneAbbr = computed(() => {
-  if (!timezoneInfo.value) return 'UTC+5'
-  
-  const offset = timezoneInfo.value.offset
-  const sign = offset >= 0 ? '+' : ''
-  const hours = Math.floor(Math.abs(offset))
-  const minutes = Math.abs(offset) % 1 === 0.5 ? ':30' : (Math.abs(offset) % 1 === 0.75 ? ':45' : '')
-  
-  return `UTC${sign}${offset === 0 ? '0' : offset > 0 ? hours + minutes : '-' + hours + minutes}`
-})
-
-const currentTime = computed(() => {
-  if (!timezoneInfo.value?.currentTime) return null
-  return format(new Date(timezoneInfo.value.currentTime), 'MMM d, h:mm a')
 })
 
 // Computed property for decoded bio

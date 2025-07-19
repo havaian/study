@@ -43,20 +43,17 @@ class TimezoneService {
             { value: 'Europe/Moscow', label: 'Moscow (UTC+3)', offset: 3, region: 'Europe', abbreviation: 'MSK' },
             { value: 'Asia/Istanbul', label: 'Turkey (UTC+3)', offset: 3, region: 'Asia', abbreviation: 'TRT' },
             { value: 'Asia/Dubai', label: 'UAE (UTC+4)', offset: 4, region: 'Asia', abbreviation: 'GST' },
+            { value: 'Asia/Yerevan', label: 'Armenia (UTC+4)', offset: 4, region: 'Asia', abbreviation: 'AMT' },
             
-            // UTC+4:30 to UTC+5:30
-            { value: 'Asia/Kabul', label: 'Afghanistan (UTC+4:30)', offset: 4.5, region: 'Asia', abbreviation: 'AFT' },
-            { value: 'Asia/Karachi', label: 'Pakistan (UTC+5)', offset: 5, region: 'Asia', abbreviation: 'PKT' },
+            // UTC+5 to UTC+6
             { value: 'Asia/Tashkent', label: 'Uzbekistan (UTC+5)', offset: 5, region: 'Asia', abbreviation: 'UZT' },
-            { value: 'Asia/Kolkata', label: 'India (UTC+5:30)', offset: 5.5, region: 'Asia', abbreviation: 'IST' },
-            
-            // UTC+5:45 to UTC+6:30
-            { value: 'Asia/Kathmandu', label: 'Nepal (UTC+5:45)', offset: 5.75, region: 'Asia', abbreviation: 'NPT' },
+            { value: 'Asia/Karachi', label: 'Pakistan (UTC+5)', offset: 5, region: 'Asia', abbreviation: 'PKT' },
+            { value: 'Asia/Almaty', label: 'Kazakhstan (UTC+6)', offset: 6, region: 'Asia', abbreviation: 'ALMT' },
             { value: 'Asia/Dhaka', label: 'Bangladesh (UTC+6)', offset: 6, region: 'Asia', abbreviation: 'BST' },
-            { value: 'Asia/Yangon', label: 'Myanmar (UTC+6:30)', offset: 6.5, region: 'Asia', abbreviation: 'MMT' },
             
             // UTC+7 to UTC+8
             { value: 'Asia/Bangkok', label: 'Thailand (UTC+7)', offset: 7, region: 'Asia', abbreviation: 'ICT' },
+            { value: 'Asia/Jakarta', label: 'Indonesia (UTC+7)', offset: 7, region: 'Asia', abbreviation: 'WIB' },
             { value: 'Asia/Shanghai', label: 'China (UTC+8)', offset: 8, region: 'Asia', abbreviation: 'CST' },
             { value: 'Asia/Singapore', label: 'Singapore (UTC+8)', offset: 8, region: 'Asia', abbreviation: 'SGT' },
             
@@ -95,10 +92,20 @@ class TimezoneService {
         const minutes = targetTime.getUTCMinutes().toString().padStart(2, '0');
         const seconds = targetTime.getUTCSeconds().toString().padStart(2, '0');
         
-        const sign = offset >= 0 ? '+' : '';
-        const offsetFormatted = `${sign}${Math.abs(offset).toString().padStart(2, '0')}:00`;
+        // Fix the offset formatting - ensure proper sign and format
+        const sign = offset >= 0 ? '+' : '-';
+        const absOffset = Math.abs(offset);
+        const offsetHours = Math.floor(absOffset).toString().padStart(2, '0');
+        const offsetMinutes = ((absOffset % 1) * 60).toString().padStart(2, '0');
+        const offsetFormatted = `${sign}${offsetHours}:${offsetMinutes}`;
         
-        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetFormatted}`;
+        // Construct the ISO string properly
+        const isoString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetFormatted}`;
+        
+        // Log for debugging
+        console.log(`Generated timezone string for ${timezoneValue} (offset: ${offset}):`, isoString);
+        
+        return isoString;
     }
 }
 

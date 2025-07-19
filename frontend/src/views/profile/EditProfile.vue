@@ -34,12 +34,15 @@
                                             </option>
                                         </optgroup>
                                     </select>
+                                    <div v-if="timezonesLoading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                        <div class="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
+                                    </div>
                                 </div>
                                 <p class="mt-1 text-sm text-gray-500">
                                     Your timezone affects appointment scheduling and availability display.
                                 </p>
                                 <p v-if="selectedTimezoneInfo && currentTimeDisplay" class="mt-1 text-xs text-blue-600">
-                                    Current time: {{ formatTimeDisplay(currentTime) }}
+                                    Current time: {{ currentTimeDisplay }}
                                 </p>
                             </div>
                         </div>
@@ -270,8 +273,7 @@ import axios from 'axios'
 const router = useRouter()
 const authStore = useAuthStore()
 const loading = ref(false)
-const timezoneDisplay = computed(() => authStore.userTimezoneDisplay)
-const currentTime = computed(() => authStore.userCurrentTime)
+const timezonesLoading = ref(false)
 
 // Timezone data from API
 const groupedTimezones = ref({})
@@ -321,40 +323,61 @@ const currentTimeDisplay = computed(() => {
     if (!selectedTimezoneInfo.value?.currentTime) return null
     
     try {
-        // Handle different possible formats of currentTime
-        const timeString = selectedTimezoneInfo.value.currentTime
-        let date
+        let timeString = selectedTimezoneInfo.value.currentTime
         
         if (typeof timeString === 'string') {
-            // Try to parse as ISO string
-            date = new Date(timeString)
+            // Fix malformed datetime strings from backend
+            // Pattern: 2025-07-18T23:08:4505:00 should be 2025-07-18T23:08:45+05:00
+            const malformedPattern = /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(\d{2})(\d{2}:\d{2})$/
+            const match = timeString.match(malformedPattern)
+            
+            if (match) {
+                // Reconstruct proper ISO string
+                const [, dateTimePart, offsetHours, offsetMinutes] = match
+                timeString = `${dateTimePart}+${offsetHours}:${offsetMinutes}`
+                console.log('Fixed malformed datetime:', selectedTimezoneInfo.value.currentTime, '->', timeString)
+            }
+            
+            // Also handle case where seconds and offset are concatenated
+            // Pattern: 2025-07-18T19:09:0009:00 should be 2025-07-18T19:09:00+09:00
+            const anotherMalformedPattern = /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(\d{2})(\d{2}:\d{2})$/
+            if (!match && timeString.match(anotherMalformedPattern)) {
+                timeString = timeString.replace(anotherMalformedPattern, '$1+$2:$3')
+                console.log('Fixed another malformed datetime:', selectedTimezoneInfo.value.currentTime, '->', timeString)
+            }
+            
+            // Try to parse the corrected string
+            const date = new Date(timeString)
             
             // If invalid date, return null
             if (isNaN(date.getTime())) {
-                console.warn('Invalid date string:', timeString)
+                console.warn('Invalid date string after correction:', timeString)
                 return null
             }
+            
+            return format(date, 'MMM d, h:mm a')
         } else {
             // If it's already a Date object or number
-            date = new Date(timeString)
+            const date = new Date(timeString)
+            return format(date, 'MMM d, h:mm a')
         }
-        
-        return format(date, 'MMM d, h:mm a')
     } catch (error) {
-        console.error('Error formatting current time:', error)
+        console.error('Error formatting current time:', error, selectedTimezoneInfo.value.currentTime)
         return null
     }
 })
 
 // Watch for timezone changes to fetch current time
-watch(() => formData.timezone, async (newTimezone) => {
-    if (newTimezone) {
+watch(() => formData.timezone, async (newTimezone, oldTimezone) => {
+    // Only fetch if timezone actually changed and is not empty
+    if (newTimezone && newTimezone !== oldTimezone) {
+        // Fetch timezone info for the edit profile display
         await fetchTimezoneInfo(newTimezone)
-        // Also update auth store if user is logged in
-        if (authStore.user) {
+        
+        // Update auth store timezone (this will trigger auth store's own watcher)
+        // No need to manually call fetchUserTimezoneInfo as the auth store watcher will handle it
+        if (authStore.user && authStore.user.timezone !== newTimezone) {
             authStore.user.timezone = newTimezone
-            // Trigger auth store to fetch new timezone info
-            await authStore.fetchUserTimezoneInfo()
         }
     }
 })
@@ -432,10 +455,6 @@ const removeCertification = (index) => {
     formData.certifications.splice(index, 1)
 }
 
-const formatTimeDisplay = (utcTimeString) => {
-  return authStore.formatTimeInUserTimezone(utcTimeString)
-}
-
 const formatDay = (dayOfWeek) => {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     return days[dayOfWeek - 1]
@@ -444,6 +463,7 @@ const formatDay = (dayOfWeek) => {
 // API functions
 async function fetchTimezones() {
     try {
+        timezonesLoading.value = true
         const response = await axios.get('/api/timezones/grouped/regions')
         
         if (response.data.success) {
@@ -466,6 +486,8 @@ async function fetchTimezones() {
                 { value: 'Asia/Dubai', label: 'UAE (UTC+4)', offset: 4 }
             ]
         }
+    } finally {
+        timezonesLoading.value = false
     }
 }
 
