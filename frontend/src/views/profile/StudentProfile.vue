@@ -4,13 +4,19 @@
       <!-- Profile Header -->
       <div class="p-6 sm:p-8 border-b border-gray-200">
         <div class="flex flex-col sm:flex-row items-center">
-          <img :src="user?.profilePicture || ''" :alt="user?.firstName"
+          <img :src="user?.profilePicture || '/images/user-placeholder.jpg'" :alt="user?.firstName"
             class="h-32 w-32 rounded-full object-cover" />
           <div class="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left">
             <h1 class="text-2xl font-bold text-gray-900">
               {{ user?.firstName }} {{ user?.lastName }}
             </h1>
             <p class="text-gray-600">Student</p>
+            <div class="mt-2">
+              <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                {{ getTimezoneDisplay(user?.timezone) }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -38,6 +44,10 @@
                 <dt class="text-sm font-medium text-gray-500">Gender</dt>
                 <dd class="mt-1 text-gray-900">{{ formatGender(user?.gender) }}</dd>
               </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Timezone</dt>
+                <dd class="mt-1 text-gray-900">{{ getTimezoneDisplay(user?.timezone) }}</dd>
+              </div>
             </dl>
           </div>
 
@@ -56,6 +66,21 @@
               </div>
             </dl>
           </div>
+        </div>
+
+        <!-- Location -->
+        <div class="mt-8">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Location</h2>
+          <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">City</dt>
+              <dd class="mt-1 text-gray-900">{{ user?.address?.city || 'Not provided' }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Street</dt>
+              <dd class="mt-1 text-gray-900">{{ user?.address?.street || 'Not provided' }}</dd>
+            </div>
+          </dl>
         </div>
 
         <!-- Emergency Contact -->
@@ -97,6 +122,19 @@ import axios from 'axios'
 const authStore = useAuthStore()
 const user = ref(null)
 
+// Available timezones for display
+const availableTimezones = [
+  { value: 'Asia/Tashkent', label: 'Asia/Tashkent (UTC+5) - Uzbekistan' },
+  { value: 'Asia/Almaty', label: 'Asia/Almaty (UTC+6) - Kazakhstan' },
+  { value: 'Asia/Yekaterinburg', label: 'Asia/Yekaterinburg (UTC+5) - Russia' },
+  { value: 'Europe/Moscow', label: 'Europe/Moscow (UTC+3) - Russia' },
+  { value: 'Asia/Dubai', label: 'Asia/Dubai (UTC+4) - UAE' },
+  { value: 'Asia/Karachi', label: 'Asia/Karachi (UTC+5) - Pakistan' },
+  { value: 'Asia/Kolkata', label: 'Asia/Kolkata (UTC+5:30) - India' },
+  { value: 'Asia/Dhaka', label: 'Asia/Dhaka (UTC+6) - Bangladesh' },
+  { value: 'UTC', label: 'UTC (UTC+0) - Universal Time' }
+]
+
 const formatDate = (date) => {
   if (!date) return 'Not provided'
   return format(new Date(date), 'MMMM d, yyyy')
@@ -107,10 +145,16 @@ const formatGender = (gender) => {
   return gender.charAt(0).toUpperCase() + gender.slice(1)
 }
 
+const getTimezoneDisplay = (timezone) => {
+  if (!timezone) return 'Asia/Tashkent (UTC+5) - Uzbekistan'
+  const tz = availableTimezones.find(t => t.value === timezone)
+  return tz ? tz.label : `${timezone} (Unknown)`
+}
+
 async function fetchUserProfile() {
   try {
     const response = await axios.get('/api/users/me')
-    user.value = response.data.user
+    user.value = response.data.user || response.data
   } catch (error) {
     console.error('Error fetching user profile:', error)
   }

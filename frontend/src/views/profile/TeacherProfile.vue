@@ -11,7 +11,7 @@
         <!-- Profile Header -->
         <div class="p-6 sm:p-8 border-b border-gray-200">
           <div class="flex flex-col sm:flex-row items-center sm:items-start">
-            <img :src="user.profilePicture || ''" :alt="user.firstName"
+            <img :src="user.profilePicture || '/images/user-placeholder.jpg'" :alt="user.firstName"
               class="h-32 w-32 rounded-full object-cover" />
             <div class="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left flex-1">
               <h1 class="text-2xl font-bold text-gray-900">
@@ -34,6 +34,10 @@
                 <span v-for="lang in user.languages" :key="lang"
                   class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
                   {{ lang }}
+                </span>
+                <span
+                  class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  {{ getTimezoneDisplay(user.timezone) }}
                 </span>
               </div>
             </div>
@@ -61,15 +65,17 @@
                 </div>
                 <div>
                   <dt class="text-sm font-medium text-gray-500">Lesson Fee</dt>
-                  <dd class="mt-1 text-gray-900">
-                    {{ formatLessonFee }}
-                  </dd>
+                  <dd class="mt-1 text-gray-900">{{ formatLessonFee }}</dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Timezone</dt>
+                  <dd class="mt-1 text-gray-900">{{ getTimezoneDisplay(user.timezone) }}</dd>
                 </div>
               </dl>
             </div>
 
-            <!-- Education & Experience -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Education & Certifications -->
+            <div>
               <h2 class="text-xl font-semibold text-gray-900 mb-4">Education</h2>
               <dl class="space-y-4">
                 <div v-for="edu in user.education" :key="edu.degree">
@@ -80,14 +86,14 @@
                   No education information provided.
                 </div>
               </dl>
-              
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">Certification</h2>
+
+              <h2 class="text-xl font-semibold text-gray-900 mb-4 mt-6">Certifications</h2>
               <dl class="space-y-4">
                 <div v-for="cert in user.certifications" :key="cert.issuer">
-                  <dt class="text-sm font-medium text-gray-900">{{ cert.issuer }}</dt>
-                  <dd class="mt-1 text-gray-500">{{ cert.name }} ({{ cert.year }})</dd>
+                  <dt class="text-sm font-medium text-gray-900">{{ cert.name }}</dt>
+                  <dd class="mt-1 text-gray-500">{{ cert.issuer }} ({{ cert.year }})</dd>
                 </div>
-                <div v-if="!user.certification || user.certification.length === 0" class="text-gray-500">
+                <div v-if="!user.certifications || user.certifications.length === 0" class="text-gray-500">
                   No certification information provided.
                 </div>
               </dl>
@@ -109,10 +115,14 @@
           <!-- Availability -->
           <div class="mt-8">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">Availability</h2>
+            <p class="text-sm text-gray-500 mb-4">
+              Times shown in your timezone: {{ getTimezoneDisplay(user.timezone) }}
+            </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div v-for="day in availableDays" :key="day.dayOfWeek" class="bg-gray-50 p-4 rounded-lg">
                 <h3 class="font-medium text-gray-900">{{ formatDay(day.dayOfWeek) }}</h3>
                 <p class="text-gray-600">{{ day.startTime }} - {{ day.endTime }}</p>
+                <p class="text-xs text-gray-500 mt-1">{{ getTimezoneAbbr(user.timezone) }}</p>
               </div>
               <div v-if="availableDays.length === 0" class="bg-gray-50 p-4 rounded-lg">
                 <p class="text-gray-500">No availability set. Please update your profile.</p>
@@ -145,6 +155,19 @@ const authStore = useAuthStore()
 const user = ref(null)
 const loading = ref(true)
 
+// Available timezones for display
+const availableTimezones = [
+  { value: 'Asia/Tashkent', label: 'Asia/Tashkent (UTC+5) - Uzbekistan', abbr: 'UTC+5' },
+  { value: 'Asia/Almaty', label: 'Asia/Almaty (UTC+6) - Kazakhstan', abbr: 'UTC+6' },
+  { value: 'Asia/Yekaterinburg', label: 'Asia/Yekaterinburg (UTC+5) - Russia', abbr: 'UTC+5' },
+  { value: 'Europe/Moscow', label: 'Europe/Moscow (UTC+3) - Russia', abbr: 'UTC+3' },
+  { value: 'Asia/Dubai', label: 'Asia/Dubai (UTC+4) - UAE', abbr: 'UTC+4' },
+  { value: 'Asia/Karachi', label: 'Asia/Karachi (UTC+5) - Pakistan', abbr: 'UTC+5' },
+  { value: 'Asia/Kolkata', label: 'Asia/Kolkata (UTC+5:30) - India', abbr: 'UTC+5:30' },
+  { value: 'Asia/Dhaka', label: 'Asia/Dhaka (UTC+6) - Bangladesh', abbr: 'UTC+6' },
+  { value: 'UTC', label: 'UTC (UTC+0) - Universal Time', abbr: 'UTC+0' }
+]
+
 const availableDays = computed(() => {
   if (!user.value?.availability) return []
   return user.value.availability.filter(day => day.isAvailable)
@@ -168,7 +191,7 @@ const formatLessonFee = computed(() => {
 
   // If fee is an object with amount property
   if (typeof fee === 'object' && fee !== null && 'amount' in fee) {
-    return `${new Intl.NumberFormat('uz-UZ').format(fee)} ${fee.currency || 'UZS'}`
+    return `${new Intl.NumberFormat('uz-UZ').format(fee.amount)} ${fee.currency || 'UZS'}`
   }
   // If it's just a number
   else if (typeof fee === 'number') {
@@ -195,15 +218,27 @@ const formattedAddress = computed(() => {
 })
 
 const formatDay = (dayOfWeek) => {
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-  return days[dayOfWeek]
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+  return days[dayOfWeek - 1]
+}
+
+const getTimezoneDisplay = (timezone) => {
+  if (!timezone) return 'Asia/Tashkent (UTC+5)'
+  const tz = availableTimezones.find(t => t.value === timezone)
+  return tz ? tz.label : `${timezone} (Unknown)`
+}
+
+const getTimezoneAbbr = (timezone) => {
+  if (!timezone) return 'UTC+5'
+  const tz = availableTimezones.find(t => t.value === timezone)
+  return tz ? tz.abbr : 'UTC+5'
 }
 
 async function fetchUserProfile() {
   try {
     loading.value = true
     const response = await axios.get('/api/users/me')
-    user.value = response.data
+    user.value = response.data.user || response.data
   } catch (error) {
     console.error('Error fetching user profile:', error)
   } finally {

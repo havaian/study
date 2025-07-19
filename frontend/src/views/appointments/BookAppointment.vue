@@ -19,6 +19,18 @@
                         </span>
                     </div>
 
+                    <!-- Timezone Information -->
+                    <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                        <p class="text-sm text-blue-700">
+                            <span class="font-medium">Your timezone:</span> {{ userTimezone }}
+                            <span class="ml-2 font-medium">Teacher's timezone:</span> {{ teacher.timezone ||
+                            'Asia/Tashkent' }}
+                        </p>
+                        <p class="text-xs text-blue-600 mt-1">
+                            All times are shown in your local timezone for convenience.
+                        </p>
+                    </div>
+
                     <form @submit.prevent="handleSubmit" class="mt-6 space-y-6">
                         <!-- Date Selection -->
                         <div>
@@ -33,7 +45,7 @@
 
                         <!-- Time Slots -->
                         <div v-if="formData.date">
-                            <label class="label">Available Time Slots</label>
+                            <label class="label">Available Time Slots ({{ userTimezone }})</label>
                             <div class="mt-2 grid grid-cols-3 gap-3">
                                 <button v-for="slot in availableSlots" :key="slot.start" type="button"
                                     class="btn-secondary"
@@ -70,8 +82,8 @@
                         <!-- Short description -->
                         <div>
                             <label for="description" class="label">Short description</label>
-                            <textarea id="description" v-model="formData.shortDescription" rows="3" class="input mt-1" required
-                                :class="{ 'border-red-500': validationErrors.shortDescription }"></textarea>
+                            <textarea id="description" v-model="formData.shortDescription" rows="3" class="input mt-1"
+                                required :class="{ 'border-red-500': validationErrors.shortDescription }"></textarea>
                             <p v-if="validationErrors.shortDescription" class="mt-1 text-sm text-red-600">
                                 {{ validationErrors.shortDescription }}
                             </p>
@@ -113,12 +125,15 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { format, addDays, parseISO, subMinutes, addMinutes, isWithinInterval } from 'date-fns'
+import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz'
 import { usePaymentStore } from '@/stores/payment'
+import { useAuthStore } from '@/stores/auth'
 import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
 const paymentStore = usePaymentStore()
+const authStore = useAuthStore()
 
 const teacher = ref(null)
 const loading = ref(true)
@@ -145,69 +160,50 @@ const formData = reactive({
     shortDescription: ''
 })
 
-// Fixed to use UTC+5 timezone
+// Get user's timezone from auth store or default
+const userTimezone = computed(() => {
+    return authStore.user?.timezone || 'Asia/Tashkent'
+})
+
+// Calculate min/max dates in user's timezone
 const minDate = computed(() => {
-    // Create date in UTC+5 timezone
     const now = new Date()
-    const utc5Offset = 5 * 60 // UTC+5 in minutes
-    const utc5Date = new Date(now.getTime() + (utc5Offset * 60 * 1000))
-    return format(utc5Date, 'yyyy-MM-dd')
+    return formatInTimeZone(now, userTimezone.value, 'yyyy-MM-dd')
 })
 
 const maxDate = computed(() => {
-    // Create date in UTC+5 timezone and add 30 days
     const now = new Date()
-    const utc5Offset = 5 * 60 // UTC+5 in minutes
-    const utc5Date = new Date(now.getTime() + (utc5Offset * 60 * 1000))
-    const maxDate = addDays(utc5Date, 30)
-    return format(maxDate, 'yyyy-MM-dd')
+    const maxDate = addDays(now, 30)
+    return formatInTimeZone(maxDate, userTimezone.value, 'yyyy-MM-dd')
 })
 
 // Safe formatting function for currency
 const formatCurrency = (amount) => {
     if (amount === undefined || amount === null) {
-        return '0'; // Return zero for undefined or null values
+        return '0'
     }
-    // Ensure amount is treated as a number
-    const numAmount = Number(amount);
-    // Check if it's a valid number
+    const numAmount = Number(amount)
     if (isNaN(numAmount)) {
-        console.error('Invalid fee amount:', amount);
-        return '0';
+        console.error('Invalid fee amount:', amount)
+        return '0'
     }
-    return new Intl.NumberFormat('uz-UZ').format(numAmount);
+    return new Intl.NumberFormat('uz-UZ').format(numAmount)
 }
 
 // Function to safely format the teacher's fee
 const formatFee = () => {
-    if (!teacher.value) return '0';
-    return formatCurrency(teacher.value.lessonFee);
+    if (!teacher.value) return '0'
+    return formatCurrency(teacher.value.lessonFee)
 }
 
-// Keep the original format function for other date formatting needs
-const formatTime = (time) => {
-    return format(parseISO(time), 'h:mm a')
-}
-
-// Fixed to display UTC+5 time correctly
-const formatTimeDisplay = (timeString) => {
+// Format time display in user's timezone
+const formatTimeDisplay = (utcTimeString) => {
     try {
-        // Parse the time string and add 5 hours to convert to UTC+5
-        const timeDate = new Date(timeString)
-        const utc5Time = new Date(timeDate.getTime() + 0)
-
-        const hours = utc5Time.getUTCHours()
-        const minutes = utc5Time.getUTCMinutes()
-
-        // Format manually to avoid timezone conversion
-        const period = hours >= 12 ? 'PM' : 'AM'
-        const displayHours = hours % 12 || 12 // Convert 0 to 12 for 12 AM
-        const displayMinutes = minutes.toString().padStart(2, '0')
-
-        return `${displayHours}:${displayMinutes} ${period}`
+        const utcDate = new Date(utcTimeString)
+        return formatInTimeZone(utcDate, userTimezone.value, 'h:mm a')
     } catch (error) {
         console.error('Error formatting time:', error)
-        return timeString // Return original string if parsing fails
+        return utcTimeString
     }
 }
 
@@ -224,8 +220,7 @@ async function fetchTeacherProfile() {
     try {
         loading.value = true
         const response = await axios.get(`/api/users/teachers/${route.params.teacherId}`)
-        // Assign the teacher property from the response data
-        teacher.value = response.data.teacher;
+        teacher.value = response.data.teacher
     } catch (error) {
         console.error('Error fetching teacher profile:', error)
     } finally {
@@ -236,17 +231,19 @@ async function fetchTeacherProfile() {
 async function fetchAvailableSlots() {
     try {
         const response = await axios.get(`/api/appointments/availability/${route.params.teacherId}`, {
-            params: { date: formData.date }
+            params: {
+                date: formData.date,
+                timezone: userTimezone.value // Send user's timezone to backend
+            }
         })
-        // Process the slots - don't modify the original time strings
+
+        // Slots come from backend as UTC times, keep them as-is
         availableSlots.value = response.data.availableSlots.map(slot => ({
             ...slot,
-            // Keep the original UTC time string
-            start: slot.start
+            start: slot.start // UTC time from backend
         }))
 
         formData.time = '' // Reset selected time when date changes
-        // Clear the time validation error when fetching new slots
         validationErrors.time = ''
     } catch (error) {
         console.error('Error fetching available slots:', error)
@@ -278,14 +275,13 @@ function validateForm() {
     }
 
     if (!formData.shortDescription.trim()) {
-        validationErrors.shortDescription = 'Please provide a short descripion'
+        validationErrors.shortDescription = 'Please provide a short description'
         isValid = false
     }
 
     return isValid
 }
 
-// Fixed to send correct UTC+5 time to backend
 async function handleSubmit() {
     if (!validateForm()) {
         return
@@ -295,25 +291,19 @@ async function handleSubmit() {
         submitting.value = true
         error.value = ''
 
-        // Convert the selected time to proper UTC+5 format
-        const selectedDateTime = formData.time
-
-        // Parse the selected time and convert it to represent UTC+5
-        const appointmentTime = new Date(selectedDateTime)
-        // Subtract 5 hours so when backend treats it as UTC, it represents the correct UTC+5 time
-        const utc5AdjustedTime = new Date(appointmentTime.getTime() - (5 * 60 * 60 * 1000))
-
+        // The selected time is already in UTC from the backend
+        // Send it directly without any conversion
         const appointmentData = {
             teacherId: route.params.teacherId,
-            dateTime: utc5AdjustedTime.toISOString(), // Send adjusted time
+            dateTime: formData.time, // Already UTC from backend
             type: formData.type,
-            shortDescription: formData.shortDescription
+            shortDescription: formData.shortDescription,
+            studentTimezone: userTimezone.value // Send student's timezone for reference
         }
 
         const response = await axios.post('/api/appointments', appointmentData)
         await paymentStore.createCheckoutSession(response.data.appointment._id)
 
-        // Note: The redirect to Stripe should be handled by the payment store
     } catch (err) {
         console.error('Error booking appointment:', err)
         error.value = err.response?.data?.message || 'Failed to book appointment'
