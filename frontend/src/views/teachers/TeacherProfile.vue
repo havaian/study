@@ -35,6 +35,10 @@
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
                                     {{ lang }}
                                 </span>
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                    {{ getTimezoneAbbr(teacher.timezone) }}
+                                </span>
                             </div>
                         </div>
 
@@ -74,7 +78,7 @@
                             </li>
                         </ul>
 
-                        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Certification</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Certifications</h3>
                         <ul class="space-y-2">
                             <li v-for="cert in teacher.certifications" :key="cert.issuer" class="text-gray-600">
                                 {{ cert.issuer }} - {{ cert.name }} ({{ cert.year }})
@@ -91,16 +95,27 @@
                         <div class="space-y-4">
                             <div>
                                 <h3 class="font-medium text-gray-900">Fee</h3>
-                                <p class="text-gray-600">
-                                    {{ formatLessonFee }}
+                                <p class="text-gray-600">{{ formatLessonFee }}</p>
+                            </div>
+
+                            <div>
+                                <h3 class="font-medium text-gray-900">Teacher's Timezone</h3>
+                                <p class="text-gray-600">{{ getTimezoneDisplay(teacher.timezone) }}</p>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    Appointment times will be converted to your timezone when booking
                                 </p>
                             </div>
 
                             <div>
                                 <h3 class="font-medium text-gray-900">Available Days</h3>
+                                <p class="text-sm text-gray-500 mb-2">
+                                    Times shown in teacher's timezone ({{ getTimezoneAbbr(teacher.timezone) }})
+                                </p>
                                 <ul class="mt-2 space-y-2">
                                     <li v-for="day in availableDays" :key="day.dayOfWeek" class="text-gray-600">
                                         {{ formatDay(day.dayOfWeek) }}: {{ day.startTime }} - {{ day.endTime }}
+                                        <span class="text-xs text-gray-500">({{ getTimezoneAbbr(teacher.timezone)
+                                            }})</span>
                                     </li>
                                     <li v-if="availableDays.length === 0" class="text-gray-500">
                                         No availability information provided.
@@ -110,9 +125,7 @@
 
                             <div>
                                 <h3 class="font-medium text-gray-900">Location</h3>
-                                <p class="text-gray-600">
-                                    {{ formattedAddress }}
-                                </p>
+                                <p class="text-gray-600">{{ formattedAddress }}</p>
                             </div>
                         </div>
                     </div>
@@ -121,17 +134,18 @@
                 <!-- Reviews Section - Only show if reviews exist or review system is working -->
                 <div v-if="reviewsLoaded" class="p-6 sm:p-8 border-t border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Student Reviews</h2>
-                    
+
                     <!-- No reviews yet -->
                     <div v-if="reviews.length === 0" class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                         <h3 class="mt-2 text-sm font-medium text-gray-900">No reviews yet</h3>
                         <p class="mt-1 text-sm text-gray-500">Be the first to leave a review for this teacher!</p>
                     </div>
-                    
+
                     <!-- Reviews list -->
                     <div v-else class="space-y-6">
                         <div v-for="review in reviews" :key="review._id"
@@ -191,6 +205,19 @@ const loading = ref(true)
 const reviewsLoaded = ref(false)
 const hasUpcomingAppointment = ref(false)
 
+// Available timezones for display
+const availableTimezones = [
+    { value: 'Asia/Tashkent', label: 'Asia/Tashkent (UTC+5) - Uzbekistan', abbr: 'UTC+5' },
+    { value: 'Asia/Almaty', label: 'Asia/Almaty (UTC+6) - Kazakhstan', abbr: 'UTC+6' },
+    { value: 'Asia/Yekaterinburg', label: 'Asia/Yekaterinburg (UTC+5) - Russia', abbr: 'UTC+5' },
+    { value: 'Europe/Moscow', label: 'Europe/Moscow (UTC+3) - Russia', abbr: 'UTC+3' },
+    { value: 'Asia/Dubai', label: 'Asia/Dubai (UTC+4) - UAE', abbr: 'UTC+4' },
+    { value: 'Asia/Karachi', label: 'Asia/Karachi (UTC+5) - Pakistan', abbr: 'UTC+5' },
+    { value: 'Asia/Kolkata', label: 'Asia/Kolkata (UTC+5:30) - India', abbr: 'UTC+5:30' },
+    { value: 'Asia/Dhaka', label: 'Asia/Dhaka (UTC+6) - Bangladesh', abbr: 'UTC+6' },
+    { value: 'UTC', label: 'UTC (UTC+0) - Universal Time', abbr: 'UTC+0' }
+]
+
 const availableDays = computed(() => {
     if (!teacher.value?.availability) return []
     return teacher.value.availability.filter(day => day.isAvailable)
@@ -241,13 +268,25 @@ const formattedAddress = computed(() => {
 })
 
 const formatDay = (dayOfWeek) => {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    return days[dayOfWeek]
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    return days[dayOfWeek - 1]
 }
 
 const formatDate = (date) => {
     if (!date) return ''
     return format(new Date(date), 'MMM d, yyyy')
+}
+
+const getTimezoneDisplay = (timezone) => {
+    if (!timezone) return 'Asia/Tashkent (UTC+5) - Uzbekistan'
+    const tz = availableTimezones.find(t => t.value === timezone)
+    return tz ? tz.label : `${timezone} (Unknown)`
+}
+
+const getTimezoneAbbr = (timezone) => {
+    if (!timezone) return 'UTC+5'
+    const tz = availableTimezones.find(t => t.value === timezone)
+    return tz ? tz.abbr : 'UTC+5'
 }
 
 async function fetchTeacherProfile() {
@@ -293,8 +332,8 @@ async function checkUpcomingAppointments() {
 
     try {
         const response = await axios.get(`/api/appointments/student/${authStore.user._id}`, {
-            params: { 
-                status: 'scheduled', 
+            params: {
+                status: 'scheduled',
                 teacher: teacher.value._id  // Use teacher filter instead of teacherId
             }
         })

@@ -27,6 +27,13 @@
 
                 <!-- Appointment Info -->
                 <div class="p-6 space-y-6">
+                    <!-- Timezone Notice -->
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <p class="text-sm text-blue-700">
+                            <span class="font-medium">Viewing in your timezone:</span> {{ userTimezone }}
+                        </p>
+                    </div>
+
                     <!-- Participants -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -70,6 +77,7 @@
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Date & Time</h3>
                             <p class="text-gray-900">{{ formatDateTime(appointment.dateTime) }}</p>
+                            <p class="text-sm text-gray-500 mt-1">{{ userTimezone }}</p>
                         </div>
 
                         <div>
@@ -168,7 +176,7 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-medium text-gray-900">Chat History</h3>
                             <button @click="showChatLog = !showChatLog"
-                                class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent  hover:text-indigo-900">
+                                class="text-sm bg-gradient-to-r from-educational-blue to-educational-purple bg-clip-text text-transparent hover:text-indigo-900">
                                 {{ showChatLog ? 'Hide Chat' : 'Show Chat' }}
                             </button>
                         </div>
@@ -286,11 +294,12 @@
 </template>
 
 <script setup>
-import { format, parseISO, differenceInYears, isWithinInterval, subMinutes, addMinutes } from 'date-fns'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { usePaymentStore } from '@/stores/payment'
+import { format, parseISO, differenceInYears, isWithinInterval, subMinutes, addMinutes, addDays } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import axios from 'axios'
 
 const route = useRoute()
@@ -307,22 +316,31 @@ const followUpDate = ref('')
 const followUpNotes = ref('')
 const submitting = ref(false)
 
-const minFollowUpDate = computed(() => {
-    const tomorrow = addDays(new Date(), 1)
-    return format(tomorrow, 'yyyy-MM-dd')
+// Get user's timezone
+const userTimezone = computed(() => {
+    return authStore.user?.timezone || 'Asia/Tashkent'
 })
 
+const minFollowUpDate = computed(() => {
+    const tomorrow = addDays(new Date(), 1)
+    return formatInTimeZone(tomorrow, userTimezone.value, 'yyyy-MM-dd')
+})
+
+// Format datetime in user's timezone
 const formatDateTime = (dateTime) => {
-    return format(parseISO(dateTime), 'MMM d, yyyy h:mm a')
+    const utcDate = parseISO(dateTime)
+    return formatInTimeZone(utcDate, userTimezone.value, 'MMM d, yyyy h:mm a')
 }
 
 const formatDate = (date) => {
     if (!date) return 'Not specified'
-    return format(parseISO(date), 'MMM d, yyyy')
+    const utcDate = parseISO(date)
+    return formatInTimeZone(utcDate, userTimezone.value, 'MMM d, yyyy')
 }
 
 const formatChatTime = (timestamp) => {
-    return format(new Date(timestamp), 'MMM d, h:mm a')
+    const date = new Date(timestamp)
+    return formatInTimeZone(date, userTimezone.value, 'MMM d, h:mm a')
 }
 
 const formatCurrency = (amount) => {
