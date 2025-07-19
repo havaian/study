@@ -381,11 +381,11 @@ function handlePageChange(page) {
 }
 
 // Lifecycle
-onMounted(() => {
+onMounted(async () => {
     if (!authStore.timezoneInfo && authStore.user?.timezone) {
         await authStore.fetchUserTimezoneInfo()
     }
-    
+
     fetchPendingConfirmations()
 
     // Auto-refresh every 2 minutes to keep data current
