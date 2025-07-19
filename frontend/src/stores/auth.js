@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, readonly } from 'vue'
 import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       timezoneLoading.value = true
-      const response = await axios.get(`/api/timezones/${user.value.timezone}`)
+      const response = await axios.get(`/api/timezones/info/${user.value.timezone}`)
       if (response.data.success) {
         timezoneInfo.value = response.data.timezone
       }
