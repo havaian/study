@@ -219,10 +219,10 @@ const formatDateTime = (dateTime) => {
     try {
         const utcDate = new Date(dateTime)
         
-        // Check if time is UTC+0 and apply user's timezone from store
-        if (utcDate.getTimezoneOffset() === 0 && authStore.timezoneInfo) {
+        // If we have timezone info from store, use it to convert time
+        if (authStore.timezoneInfo) {
             const userOffset = authStore.timezoneInfo.offset || 0
-            const localHour = (utcDate.getUTCHours() + userOffset) % 24
+            const localHour = (utcDate.getUTCHours() + userOffset + 24) % 24
             const localMinute = utcDate.getUTCMinutes()
             
             const period = localHour >= 12 ? 'PM' : 'AM'

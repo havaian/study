@@ -324,10 +324,10 @@ const formatTimeDisplay = (utcTimeString) => {
     try {
         const utcDate = new Date(utcTimeString)
         
-        // Check if time is UTC+0 and apply user's timezone from store
-        if (utcDate.getTimezoneOffset() === 0 && authStore.timezoneInfo) {
+        // If we have timezone info from store, use it to convert time
+        if (authStore.timezoneInfo) {
             const userOffset = authStore.timezoneInfo.offset || 0
-            const localHour = (utcDate.getUTCHours() + userOffset) % 24
+            const localHour = (utcDate.getUTCHours() + userOffset + 24) % 24
             const localMinute = utcDate.getUTCMinutes()
             
             const period = localHour >= 12 ? 'PM' : 'AM'
@@ -414,7 +414,7 @@ async function fetchAppointment() {
             appointment.value.followUp.recommended) {
             findFollowUpAppointment()
         }
-        
+
         // Ensure timezone info is loaded from store
         if (!authStore.timezoneInfo && authStore.user?.timezone) {
             await authStore.fetchUserTimezoneInfo()
