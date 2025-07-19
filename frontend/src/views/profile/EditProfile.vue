@@ -41,8 +41,8 @@
                                 <p class="mt-1 text-sm text-gray-500">
                                     Your timezone affects appointment scheduling and availability display.
                                 </p>
-                                <p v-if="selectedTimezoneInfo" class="mt-1 text-xs text-blue-600">
-                                    Current time: {{ formatCurrentTime(selectedTimezoneInfo.currentTime) }}
+                                <p v-if="selectedTimezoneInfo && currentTimeDisplay" class="mt-1 text-xs text-blue-600">
+                                    Current time: {{ currentTimeDisplay }}
                                 </p>
                             </div>
                         </div>
@@ -318,10 +318,46 @@ const formData = reactive({
 
 const educationalHistoryInput = ref('')
 
+// Computed property for current time display
+const currentTimeDisplay = computed(() => {
+    if (!selectedTimezoneInfo.value?.currentTime) return null
+    
+    try {
+        // Handle different possible formats of currentTime
+        const timeString = selectedTimezoneInfo.value.currentTime
+        let date
+        
+        if (typeof timeString === 'string') {
+            // Try to parse as ISO string
+            date = new Date(timeString)
+            
+            // If invalid date, return null
+            if (isNaN(date.getTime())) {
+                console.warn('Invalid date string:', timeString)
+                return null
+            }
+        } else {
+            // If it's already a Date object or number
+            date = new Date(timeString)
+        }
+        
+        return format(date, 'MMM d, h:mm a')
+    } catch (error) {
+        console.error('Error formatting current time:', error)
+        return null
+    }
+})
+
 // Watch for timezone changes to fetch current time
 watch(() => formData.timezone, async (newTimezone) => {
     if (newTimezone) {
         await fetchTimezoneInfo(newTimezone)
+        // Also update auth store if user is logged in
+        if (authStore.user) {
+            authStore.user.timezone = newTimezone
+            // Trigger auth store to fetch new timezone info
+            await authStore.fetchUserTimezoneInfo()
+        }
     }
 })
 
@@ -343,11 +379,6 @@ const getTimezoneAbbr = (timezone) => {
     const minutes = Math.abs(offset) % 1 === 0.5 ? ':30' : (Math.abs(offset) % 1 === 0.75 ? ':45' : '')
     
     return `UTC${sign}${offset === 0 ? '0' : offset > 0 ? hours + minutes : '-' + hours + minutes}`
-}
-
-const formatCurrentTime = (isoString) => {
-    if (!isoString) return ''
-    return format(new Date(isoString), 'MMM d, h:mm a')
 }
 
 // Get available specializations for a specific dropdown, excluding already selected ones
@@ -440,7 +471,10 @@ async function fetchTimezones() {
 }
 
 async function fetchTimezoneInfo(timezone) {
+    if (!timezone) return
+    
     try {
+        // Use the same format as the backend expects
         const response = await axios.get(`/api/timezones/info/${encodeURIComponent(timezone)}`)
         if (response.data.success) {
             selectedTimezoneInfo.value = response.data.timezone
@@ -504,11 +538,6 @@ async function fetchUserProfile() {
             educationalHistoryInput.value = user.educationalHistory || ''
         }
 
-        // Update auth store with timezone if it changed
-        if (authStore.user && authStore.user.timezone !== formData.timezone) {
-            authStore.user.timezone = formData.timezone
-        }
-
         // Fetch timezone info for the current timezone
         if (formData.timezone) {
             await fetchTimezoneInfo(formData.timezone)
@@ -550,6 +579,8 @@ async function handleSubmit() {
         if (response.data.user) {
             authStore.user = { ...authStore.user, ...response.data.user }
             localStorage.setItem('user', JSON.stringify(authStore.user))
+            // Refresh auth store timezone info
+            await authStore.fetchUserTimezoneInfo()
         }
         
         router.push({ name: authStore.isTeacher ? 'teacher-profile' : 'student-profile' })
