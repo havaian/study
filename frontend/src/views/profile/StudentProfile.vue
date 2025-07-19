@@ -131,18 +131,8 @@ const user = ref(null)
 const timezoneInfo = ref(null)
 const timezoneLoading = ref(false)
 
-const timezoneDisplay = computed(() => {
-  if (!user.value?.timezone) return 'Asia/Tashkent (UTC+5) - Uzbekistan'
-  if (timezoneInfo.value) {
-    return timezoneInfo.value.label
-  }
-  return `${user.value.timezone} (Loading...)`
-})
-
-const currentTime = computed(() => {
-  if (!timezoneInfo.value?.currentTime) return null
-  return format(new Date(timezoneInfo.value.currentTime), 'MMM d, h:mm a')
-})
+const timezoneDisplay = computed(() => authStore.userTimezoneDisplay)
+const currentTime = computed(() => authStore.userCurrentTime)
 
 const formatDate = (date) => {
   if (!date) return 'Not provided'

@@ -14,12 +14,50 @@ export const useAuthStore = defineStore('auth', () => {
   const timezoneInfo = ref(null)
   const timezoneLoading = ref(false)
 
+  // Create computed properties for easy access
+  const userTimezoneDisplay = computed(() => {
+    return timezoneInfo.value?.label || 'Asia/Tashkent (UTC+5) - Uzbekistan'
+  })
+
+  const userCurrentTime = computed(() => {
+    if (!timezoneInfo.value?.currentTime) return null
+    const date = new Date(timezoneInfo.value.currentTime)
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+  })
+
+  const formatTimeInUserTimezone = (utcTimeString) => {
+    if (!timezoneInfo.value || !utcTimeString) return utcTimeString
+    
+    try {
+      const utcDate = new Date(utcTimeString)
+      const userOffset = timezoneInfo.value.offset || 0
+      const localHour = (utcDate.getUTCHours() + userOffset + 24) % 24
+      const localMinute = utcDate.getUTCMinutes()
+      
+      const period = localHour >= 12 ? 'PM' : 'AM'
+      const displayHours = localHour % 12 || 12
+      const displayMinutes = localMinute.toString().padStart(2, '0')
+      
+      return `${displayHours}:${displayMinutes} ${period}`
+    } catch (error) {
+      console.error('Error formatting time:', error)
+      return utcTimeString
+    }
+  }
+
   async function fetchUserTimezoneInfo() {
     if (!user.value?.timezone) return
 
     try {
       timezoneLoading.value = true
-      const response = await axios.get(`/api/timezones/info/${user.value.timezone}`)
+      const [region, city] = user.value.timezone.split('/')
+      const response = await axios.get(`/api/timezones/info/${region}/${city}`)
       if (response.data.success) {
         timezoneInfo.value = response.data.timezone
       }
@@ -76,7 +114,7 @@ export const useAuthStore = defineStore('auth', () => {
   function logout() {
     user.value = null
     token.value = null
-    timezoneInfo.value = null // Clear timezone info on logout
+    timezoneInfo.value = null
     localStorage.removeItem('token')
     localStorage.removeItem('user')
   }
@@ -92,6 +130,9 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     timezoneInfo: readonly(timezoneInfo),
     timezoneLoading: readonly(timezoneLoading),
+    userTimezoneDisplay: readonly(userTimezoneDisplay),
+    userCurrentTime: readonly(userCurrentTime),
+    formatTimeInUserTimezone,
     fetchUserTimezoneInfo
   }
 })
