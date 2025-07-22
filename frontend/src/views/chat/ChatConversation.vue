@@ -320,7 +320,7 @@ function initializeSocket() {
         return
     }
 
-    socket.value = io('https://dev.e-stud.uz', {
+    socket.value = io('https://e.stud.uz', {
         query: { token },
         path: '/socket.io/',
         transports: ['websocket', 'polling'],

@@ -17,7 +17,7 @@ class EducationalAssistant {
      * @returns {String} System prompt
      */
     getSystemPrompt() {
-        return `You are an AI educational assistant for dev.e-stud.uz, an online educational lesson platform in Uzbekistan.
+        return `You are an AI educational assistant for e.stud.uz, an online educational lesson platform in Uzbekistan.
 Your role is to provide general academic performance information, basic educational guidance, and answer common academic performance-related questions.
 
 Important guidelines:

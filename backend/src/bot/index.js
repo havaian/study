@@ -52,14 +52,14 @@
 //     bot.command("start", async (ctx) => {
 //         try {
 //             await ctx.reply(
-//                 "👋 Welcome to dev.e-stud.uz bot!\n\n" +
+//                 "👋 Welcome to e.stud.uz bot!\n\n" +
 //                 "I can help you manage your educational appointments and lessons.\n\n" +
 //                 "Here's what you can do:\n" +
-//                 "- Link your dev.e-stud.uz account\n" +
+//                 "- Link your e.stud.uz account\n" +
 //                 "- View your upcoming appointments\n" +
 //                 "- Get reminders for lessons\n" +
 //                 "- Chat with virtual educational assistant\n\n" +
-//                 "To begin, please use the /link command to connect your dev.e-stud.uz account."
+//                 "To begin, please use the /link command to connect your e.stud.uz account."
 //             );
 //         } catch (error) {
 //             console.error("Error in start command:", error);
@@ -72,7 +72,7 @@
 //             await ctx.reply(
 //                 "🙋‍♂️ Available commands:\n\n" +
 //                 "/start - Start the bot\n" +
-//                 "/link - Link your dev.e-stud.uz account\n" +
+//                 "/link - Link your e.stud.uz account\n" +
 //                 "/appointments - View your appointments\n" +
 //                 "/profile - View your profile\n" +
 //                 "/unlink - Unlink your account\n" +
@@ -92,8 +92,8 @@
 //             ctx.session.userData = ctx.session.userData || {};
 
 //             await ctx.reply(
-//                 "To link your dev.e-stud.uz account, I'll need your email address.\n\n" +
-//                 "Please enter the email you used to register on dev.e-stud.uz:"
+//                 "To link your e.stud.uz account, I'll need your email address.\n\n" +
+//                 "Please enter the email you used to register on e.stud.uz:"
 //             );
 //         } catch (error) {
 //             console.error("Error in link command:", error);
@@ -150,7 +150,7 @@
                     
 //                     // Specific error messages based on the error
 //                     if (error.response?.status === 404) {
-//                         await ctx.reply("❌ Email not found. Please make sure your email is registered with dev.e-stud.uz.");
+//                         await ctx.reply("❌ Email not found. Please make sure your email is registered with e.stud.uz.");
 //                     } else if (error.message.includes('API_URL environment variable')) {
 //                         await ctx.reply("❌ System configuration error. Please contact support.");
 //                         console.error(error.message);
@@ -182,7 +182,7 @@
 
 //                     if (response.data.message === 'Telegram account linked successfully') {
 //                         await ctx.reply(
-//                             "🎉 Your dev.e-stud.uz account has been successfully linked!\n\n" +
+//                             "🎉 Your e.stud.uz account has been successfully linked!\n\n" +
 //                             "You'll now receive notifications about your appointments and lessons.\n\n" +
 //                             "Use /appointments to view your upcoming appointments or /help to see all available commands."
 //                         );
@@ -398,7 +398,7 @@
 
 //             if (!ctx.session.userData.userId || !ctx.session.userData.token) {
 //                 await ctx.reply(
-//                     "You need to link your dev.e-stud.uz account first. Use /link to get started."
+//                     "You need to link your e.stud.uz account first. Use /link to get started."
 //                 );
 //                 return;
 //             }
@@ -483,7 +483,7 @@
 
 //             if (!ctx.session.userData.userId || !ctx.session.userData.token) {
 //                 await ctx.reply(
-//                     "You need to link your dev.e-stud.uz account first. Use /link to get started."
+//                     "You need to link your e.stud.uz account first. Use /link to get started."
 //                 );
 //                 return;
 //             }
@@ -575,7 +575,7 @@
 
 //             if (!user) {
 //                 await ctx.reply(
-//                     "Your account is not linked. Use /link to connect your dev.e-stud.uz account."
+//                     "Your account is not linked. Use /link to connect your e.stud.uz account."
 //                 );
 //                 return;
 //             }
@@ -583,7 +583,7 @@
 //             ctx.session.step = 'unlink_confirm';
 
 //             await ctx.reply(
-//                 "⚠️ Are you sure you want to unlink your dev.e-stud.uz account? You will no longer receive notifications.\n\n" +
+//                 "⚠️ Are you sure you want to unlink your e.stud.uz account? You will no longer receive notifications.\n\n" +
 //                 "Please reply with 'Yes' to confirm or 'No' to cancel."
 //             );
 //         } catch (error) {
@@ -613,7 +613,7 @@
 //             ctx.session.step = 'assistant_chat';
 
 //             await ctx.reply(
-//                 "👨‍⚕️ I'm the dev.e-stud.uz virtual educational assistant. I can answer general educational questions and provide academic performance information.\n\n" +
+//                 "👨‍⚕️ I'm the e.stud.uz virtual educational assistant. I can answer general educational questions and provide academic performance information.\n\n" +
 //                 "What would you like to know about? (Type /stop to end the chat)"
 //             );
 //         } catch (error) {
@@ -651,7 +651,7 @@
 
 //             if (!ctx.session.userData || !ctx.session.userData.userId || !ctx.session.userData.token) {
 //                 await ctx.reply(
-//                     "You need to link your dev.e-stud.uz account first. Use /link to get started."
+//                     "You need to link your e.stud.uz account first. Use /link to get started."
 //                 );
 //                 return;
 //             }
@@ -787,7 +787,7 @@
 //                 const user = await User.findOne({ telegramId: ctx.chat.id.toString() });
                 
 //                 if (!user) {
-//                     await ctx.reply("Your account is not linked to dev.e-stud.uz.");
+//                     await ctx.reply("Your account is not linked to e.stud.uz.");
 //                     ctx.session.step = 'idle';
 //                     return;
 //                 }
@@ -797,7 +797,7 @@
 //                 await user.save();
                 
 //                 await ctx.reply(
-//                     "✅ Your dev.e-stud.uz account has been unlinked successfully.\n\n" +
+//                     "✅ Your e.stud.uz account has been unlinked successfully.\n\n" +
 //                     "You will no longer receive notifications through Telegram.\n\n" +
 //                     "You can link your account again at any time by using the /link command."
 //                 );
@@ -808,7 +808,7 @@
 //                 );
 //             }
 //         } else if (answer === 'no' || answer === 'n') {
-//             await ctx.reply("Account unlinking canceled. Your account remains linked to dev.e-stud.uz.");
+//             await ctx.reply("Account unlinking canceled. Your account remains linked to e.stud.uz.");
 //         } else {
 //             await ctx.reply("Please answer with Yes or No.");
 //             return; // Keep in the same step
